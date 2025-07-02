@@ -1,14 +1,12 @@
-package com.jdriven.library.presentation;
+package com.jdriven.library.presentation
 
 import com.jdriven.library.service.BookService
-import org.apache.catalina.webresources.war.Handler
 import org.springframework.http.HttpMethod
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.resource.NoResourceFoundException
-
 
 @RestController
 @RequestMapping("/books")

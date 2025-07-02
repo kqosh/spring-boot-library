@@ -1,15 +1,13 @@
-package com.jdriven.library.presentation;
+package com.jdriven.library.presentation
 
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.data.crossstore.ChangeSetPersister
-
-//import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.http.ResponseEntity
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class BookTest() {
@@ -21,20 +19,22 @@ class BookTest() {
 	private lateinit var restTemplate: TestRestTemplate
 
 	@Test
-	fun found() {
-		Assertions.assertThat(get("qqqq123").contains("qqqq"));
+	fun findIsbn_found() {
+		findIsbn( "123", 200)
 	}
 
 	@Test
-	fun notFound() {
-		try {
-			get("qqqq123").contains("qqqq404")
-		} catch (ex: Exception) {
-			Assertions.assertThat(ex is ChangeSetPersister.NotFoundException)
-		}
+	fun findIsbn_notFound() {
+		findIsbn( "123NotFound", 404)
 	}
 
-	private fun get(isbn: String): String {//qqqq Book
-		return restTemplate.getForObject("http://localhost:${port}/books/qqqqq", String::class.java);
+	private fun findIsbn(isbn: String, expectedStatus: Int) {
+		val rsp = get(isbn)
+		Assertions.assertEquals(expectedStatus, rsp.statusCode.value(), rsp.toString())
+		Assertions.assertTrue(rsp.body!!.contains(isbn), rsp.toString())
+	}
+
+	private fun get(isbn: String): ResponseEntity<String> {//qqqq Book
+		return restTemplate.getForEntity("http://localhost:${port}/books/${isbn}", String::class.java)
 	}
 }

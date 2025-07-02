@@ -1,9 +1,7 @@
-package com.jdriven.library.presentation;
+package com.jdriven.library.presentation
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -12,6 +10,6 @@ class VersionController {
 
 	@GetMapping
 	fun version(): String {
-		return "version qqqq get from app.props?";
+		return "version qqqq get from app.props?" //qqqq also use mvn replace
 	}
 }

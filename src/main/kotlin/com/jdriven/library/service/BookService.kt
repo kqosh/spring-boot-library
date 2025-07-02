@@ -1,15 +1,16 @@
 package com.jdriven.library.service
 
-import org.springframework.http.HttpMethod
+import com.jdriven.library.access.model.BookEntity
+import com.jdriven.library.access.model.BookRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @Service
-public class BookService {
+public class BookService(private val repository: BookRepository) {
 
 	@Transactional(readOnly = true)
-	fun find(isbn: String): String? {
-		return if (isbn == "123NotFound") null else "qqqq $isbn" //qqqq find in db
+	fun find(isbn: String): BookEntity? {
+		return if (isbn == "123NotFound") null else repository.find(isbn)
 	}
 }

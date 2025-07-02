@@ -1,5 +1,6 @@
 package com.jdriven.library.presentation
 
+import com.jdriven.library.access.model.BookEntity
 import com.jdriven.library.service.BookService
 import org.springframework.http.HttpMethod
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,7 +14,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException
 class BookController(private val service: BookService) {
 
 	@GetMapping("/{isbn}")
-	fun greeting(@PathVariable(value = "isbn") isbn: String): String {
+	fun findByIsbn(@PathVariable(value = "isbn") isbn: String): BookEntity {
 		return service.find(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/books/{isbn}")
 	}
 

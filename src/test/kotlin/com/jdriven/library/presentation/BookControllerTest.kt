@@ -1,6 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.access.model.BookEntity
+import com.jdriven.library.presentation.model.Book
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +22,7 @@ class BookControllerTest() {
 	@Test
 	fun findIsbn_found() {
 		val isbn = "123"
-		val rsp = restTemplate.getForEntity("http://localhost:${port}/books/${isbn}", BookEntity::class.java)
+		val rsp = restTemplate.getForEntity("http://localhost:${port}/books/${isbn}", Book::class.java)
 		Assertions.assertEquals(200, rsp.statusCode.value(), rsp.toString())
 		Assertions.assertEquals(isbn, rsp.body!!.isbn, rsp.toString())
 	}

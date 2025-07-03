@@ -1,6 +1,6 @@
 package com.jdriven.library.presentation
 
-import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -19,7 +19,9 @@ class VersionTest() {
 
 	@Test
 	fun version() {
-		Assertions.assertThat(this.restTemplate.getForObject("http://localhost:${port}/version",
-				String::class.java)).contains("qqqq")
+		val rsp = restTemplate.getForObject("http://localhost:${port}/version", String::class.java)
+		Assertions.assertTrue(rsp.contains("0.0.1-SNAPSHOT"), rsp)
+//		org.assertj.core.api.Assertions.assertThat(this.restTemplate.getForObject("http://localhost:${port}/version",
+//			String::class.java)).contains("qqqq")
 	}
 }

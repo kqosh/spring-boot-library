@@ -3,11 +3,12 @@ package com.jdriven.library.service
 import com.jdriven.library.access.model.BookEntity
 import com.jdriven.library.access.model.BookRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-public class BookService(private val repository: BookRepository) {
+public class BookService(private val repository: BookRepository)  {
 
 	@Transactional(readOnly = true)
 	fun find(isbn: String): BookEntity? {

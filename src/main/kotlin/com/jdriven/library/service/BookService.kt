@@ -11,6 +11,6 @@ public class BookService(private val repository: BookRepository) {
 
 	@Transactional(readOnly = true)
 	fun find(isbn: String): BookEntity? {
-		return if (isbn == "123NotFound") null else repository.find(isbn)
+		return if (isbn == "123NotFound") null else repository.findByIsbn(isbn)
 	}
 }

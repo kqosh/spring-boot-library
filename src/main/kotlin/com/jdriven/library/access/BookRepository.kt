@@ -1,13 +1,17 @@
 package com.jdriven.library.access.model
 
+import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class BookRepository {
+interface BookRepository: CrudRepository<BookEntity, Long> {
 
-    fun find(isbn: String): BookEntity? {
-        val book = BookEntity() //qqqq find in db
-        book.isbn = isbn
-        return book
-    }
+    fun findByIsbn(isbn: String): BookEntity?
+
+//
+//    fun findByIsbn(isbn: String): BookEntity? {
+//        val book = BookEntity() //qqqq find in db
+//        book.isbn = isbn
+//        return book
+//    }
 }

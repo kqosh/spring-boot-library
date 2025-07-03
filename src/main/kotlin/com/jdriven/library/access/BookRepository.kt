@@ -7,11 +7,4 @@ import org.springframework.stereotype.Repository
 interface BookRepository: CrudRepository<BookEntity, Long> {
 
     fun findByIsbn(isbn: String): BookEntity?
-
-//
-//    fun findByIsbn(isbn: String): BookEntity? {
-//        val book = BookEntity() //qqqq find in db
-//        book.isbn = isbn
-//        return book
-//    }
 }

@@ -21,7 +21,5 @@ class VersionTest() {
 	fun version() {
 		val rsp = restTemplate.getForObject("http://localhost:${port}/version", String::class.java)
 		Assertions.assertTrue(rsp.contains("0.0.1-SNAPSHOT"), rsp)
-//		org.assertj.core.api.Assertions.assertThat(this.restTemplate.getForObject("http://localhost:${port}/version",
-//			String::class.java)).contains("qqqq")
 	}
 }

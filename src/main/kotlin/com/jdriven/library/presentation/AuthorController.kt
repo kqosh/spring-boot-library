@@ -29,7 +29,6 @@ class AuthorController(private val service: AuthorService) {
 		val entity = AuthorEntity()
 		entity.name = request.name
 		service.create(entity)
-//		return Author.of(entity)
 	}
 
 	@DeleteMapping("/{name}")

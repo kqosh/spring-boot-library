@@ -10,6 +10,6 @@ data class Book(
 ) {
 
     companion object {
-        fun of(entity: BookEntity): Book = Book(entity.isbn!!, entity.authorName, entity.title, entity.publisher)
+        fun of(entity: BookEntity): Book = Book(entity.isbn!!, entity.author?.name, entity.title, entity.publisher)
     }
 }

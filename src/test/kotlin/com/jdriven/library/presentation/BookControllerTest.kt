@@ -24,6 +24,7 @@ class BookControllerTest() {
 		val rsp = restTemplate.getForEntity("http://localhost:${port}/books/${isbn}", Book::class.java)
 		Assertions.assertEquals(200, rsp.statusCode.value(), rsp.toString())
 		Assertions.assertEquals(isbn, rsp.body!!.isbn, rsp.toString())
+		Assertions.assertEquals("Jan Klaassen", rsp.body!!.authorName, rsp.toString())
 	}
 
 	@Test

@@ -29,9 +29,11 @@ class BookControllerTest() {
 
 	@Test
 	fun findIsbn_notFound() {
-		val isbn = "123NotFound"
+		val isbn = "isbnNotFound"
 		val rsp = restTemplate.getForEntity("http://localhost:${port}/books/${isbn}", String::class.java)
 		Assertions.assertEquals(404, rsp.statusCode.value(), rsp.toString())
 		Assertions.assertTrue(rsp.body!!.contains(isbn), rsp.toString())
 	}
+
+	//qqqq test create, delete, borrow, return
 }

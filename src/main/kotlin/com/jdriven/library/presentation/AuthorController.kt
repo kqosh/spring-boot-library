@@ -31,8 +31,4 @@ class AuthorController(private val service: AuthorService) {
 	fun deleteByName(@PathVariable(value = "name") name: String) {
 		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
 	}
-
-	//qqqq add (create), update, delete book
-	//qqqq find by title xor author or both
-	//qqqq borrow xor return book
 }

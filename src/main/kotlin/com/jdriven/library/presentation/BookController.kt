@@ -27,7 +27,16 @@ class BookController(private val service: BookService) {
 		service.create(book) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${book.authorName}")
 	}
 
+	@PatchMapping("/{isbn}/borrow/{memberNumber}")
+	fun borrow(@PathVariable(value = "isbn") isbn: String, @PathVariable(value = "memberNumber") memberNumber: String) {
+		//qqqq
+	}
+
+	@PatchMapping("/{isbn}/return")
+	fun returnBook(@PathVariable(value = "isbn") isbn: String) {
+		//qqqq
+	}
+
 	//qqqq add (create), update, delete book
 	//qqqq find by title xor author or both
-	//qqqq borrow xor return book
 }

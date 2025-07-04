@@ -12,6 +12,11 @@ public class BookService(private val repository: BookRepository)  {
 
 	@Transactional(readOnly = true)
 	fun find(isbn: String): BookEntity? {
-		return if (isbn == "123NotFound") null else repository.findByIsbn(isbn)
+		return if (isbn == "123NotFound") null else repository.findByIsbn(isbn)//qqqq use non existend db value
 	}
+//
+//	@Transactional
+//	fun create(book: BookEntity) {
+//		return if (isbn == "123NotFound") null else repository.findByIsbn(isbn)
+//	}qqqq
 }

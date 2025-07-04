@@ -1,22 +1,25 @@
 package com.jdriven.library.service
 
-import com.jdriven.library.access.model.BookEntity
+import com.jdriven.library.access.model.AuthorRepository
 import com.jdriven.library.access.model.BookRepository
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
+import com.jdriven.library.service.model.Book
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-public class BookService(private val repository: BookRepository)  {
+class BookService(private val bookRepository: BookRepository, private val authorRepository: AuthorRepository)  {
 
 	@Transactional(readOnly = true)
-	fun find(isbn: String): BookEntity? {
-		return if (isbn == "123NotFound") null else repository.findByIsbn(isbn)//qqqq use non existend db value
+	fun find(isbn: String): Book? {
+		return bookRepository.findByIsbn(isbn)?.let { Book.of(it) } ?: null
 	}
-//
-//	@Transactional
-//	fun create(book: BookEntity) {
-//		return if (isbn == "123NotFound") null else repository.findByIsbn(isbn)
-//	}qqqq
+
+	@Transactional
+	fun create(book: Book): Book? {
+		val authorEntity = authorRepository.findByName(book.authorName!!)
+		if (authorEntity == null) return null
+
+		val bookEntity = book.toEntity(authorEntity)
+		return Book.of(bookRepository.save(bookEntity))
+	}
 }

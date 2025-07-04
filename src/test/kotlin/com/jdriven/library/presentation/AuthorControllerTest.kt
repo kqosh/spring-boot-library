@@ -1,7 +1,7 @@
 package com.jdriven.library.presentation
 
-import com.jdriven.library.presentation.model.Author
-import com.jdriven.library.presentation.model.CreateAuthorRequest
+import com.jdriven.library.service.model.Author
+import com.jdriven.library.service.model.CreateAuthorRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

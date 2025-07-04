@@ -2,17 +2,23 @@ package com.jdriven.library.service
 
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.AuthorRepository
+import com.jdriven.library.service.model.Author
+import com.jdriven.library.service.model.CreateAuthorRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-public class AuthorService(private val repository: AuthorRepository)  {
+class AuthorService(private val repository: AuthorRepository)  {
 
 	@Transactional
-	fun create(author: AuthorEntity) = repository.save(author)
-	@Transactional(readOnly = true)
+	fun create(request: CreateAuthorRequest): Author? {
+		val entity = AuthorEntity()
+		entity.name = request.name
+		return Author.of(repository.save(entity))
+	}
 
-	fun find(name: String): AuthorEntity? = repository.findByName(name)
+	@Transactional(readOnly = true)
+	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) } ?: null
 //
 //	@Transactional
 //	fun update(author: AuthorEntity): AuthorEntity? {
@@ -23,10 +29,10 @@ public class AuthorService(private val repository: AuthorRepository)  {
 //	}qqqq
 
 	@Transactional
-	fun delete(name: String): AuthorEntity? {
-		val author = find(name)
-		if (author == null) return null
-		repository.deleteById(author.id!!)
-		return author
+	fun delete(name: String): Author? {
+		val authorEntity = repository.findByName(name)
+		if (authorEntity == null) return null
+		repository.deleteById(authorEntity.id!!)
+		return Author.of(authorEntity)
 	}
 }

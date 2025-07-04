@@ -1,6 +1,6 @@
 package com.jdriven.library.presentation
 
-import com.jdriven.library.presentation.model.Book
+import com.jdriven.library.service.model.Book
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,4 +1,4 @@
-package com.jdriven.library.presentation.model
+package com.jdriven.library.service.model
 
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.BookEntity
@@ -8,7 +8,7 @@ data class Author(
     val books: List<Book> = emptyList()
 ) {
 
-    fun toEntity(): AuthorEntity {
+    fun toEntity(): AuthorEntity {//qqqq drop
         val entity = AuthorEntity()
         entity.name = this.name
         entity.books = this.books.map { it -> it.toEntity(entity) }

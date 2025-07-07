@@ -44,19 +44,21 @@ class AuthorControllerTest() {
 	@Test
 	fun createFindDelete() {
 		val baseUrl = "http://localhost:${port}/authors"
-
 		val name = "Jan"
-		val createRequest = CreateAuthorRequest( name)
+		run {
+			val createRequest = CreateAuthorRequest( name)
+			val createRsp = restTemplate.postForEntity<String?>(baseUrl, createRequest, String::class.java)
+			assertEquals(201, createRsp.statusCode.value(), createRsp.toString())
+		}
+		run {
+			val findRsp1 = restTemplate.getForEntity("${baseUrl}/${name}", Author::class.java)
+			assertEquals(200, findRsp1.statusCode.value(), findRsp1.toString())
+		}
+		run {
+			restTemplate.delete("${baseUrl}/${name}", null, String::class.java)
 
-		val createRsp = restTemplate.postForEntity<String?>(baseUrl, createRequest, String::class.java)
-		assertEquals(201, createRsp.statusCode.value(), createRsp.toString())
-
-		val findRsp1 = restTemplate.getForEntity("${baseUrl}/${name}", Author::class.java)
-		assertEquals(200, findRsp1.statusCode.value(), findRsp1.toString())
-
-		restTemplate.delete("${baseUrl}/${name}", createRequest, String::class.java)
-
-		val findRsp2 = restTemplate.getForEntity("${baseUrl}/${name}", String::class.java)
-		assertEquals(404, findRsp2.statusCode.value(), findRsp2.toString())
+			val findRsp2 = restTemplate.getForEntity("${baseUrl}/${name}", String::class.java)
+			assertEquals(404, findRsp2.statusCode.value(), findRsp2.toString())
+		}
 	}
 }

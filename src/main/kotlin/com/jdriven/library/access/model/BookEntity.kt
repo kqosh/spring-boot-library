@@ -32,7 +32,4 @@ class BookEntity {
 
     @OneToMany(mappedBy = "book", targetEntity = CheckoutEntity::class)
     var loans: List<CheckoutEntity> = emptyList()
-
-    //qqqq borrowedBy fk to member
-    //qqqq registrations: List<Member>
 }

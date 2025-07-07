@@ -28,5 +28,5 @@ class BookController(private val service: BookService) {
 	}
 
 	//qqqq add (create), update, delete book
-	//qqqq find by title xor author or both
+	//qqqq find by part of title xor author or both
 }

@@ -19,14 +19,6 @@ class AuthorService(private val repository: AuthorRepository)  {
 
 	@Transactional(readOnly = true)
 	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) }
-//
-//	@Transactional
-//	fun update(author: AuthorEntity): AuthorEntity? {
-//		val author = find(author.name)
-//		if (author == null) return null
-//		repository.deleteById(author.id!!)
-//		return author
-//	}qqqq
 
 	@Transactional
 	fun delete(name: String): Author? {

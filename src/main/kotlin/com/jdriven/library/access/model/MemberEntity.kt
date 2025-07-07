@@ -18,8 +18,9 @@ class MemberEntity {
     @Column(nullable = false, unique = true)
     lateinit var number: String
 
+    @Column(nullable = false)
     lateinit var name: String
 
     @OneToMany(mappedBy = "member", targetEntity = CheckoutEntity::class)
-    var loans: List<CheckoutEntity> = emptyList()
+    var checkouts: List<CheckoutEntity> = emptyList()
 }

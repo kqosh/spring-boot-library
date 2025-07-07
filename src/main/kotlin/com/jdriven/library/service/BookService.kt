@@ -11,7 +11,7 @@ class BookService(private val bookRepository: BookRepository, private val author
 
 	@Transactional(readOnly = true)
 	fun find(isbn: String): Book? {
-		return bookRepository.findByIsbn(isbn)?.let { Book.of(it) } ?: null
+		return bookRepository.findByIsbn(isbn)?.let { Book.of(it) }
 	}
 
 	@Transactional

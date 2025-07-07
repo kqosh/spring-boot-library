@@ -19,22 +19,12 @@ class BookController(private val service: BookService) {
 		return service.find(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/books/${isbn}")
 	}
 
-
+	//qqqq only by admin
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	fun create(@RequestBody book: Book) {
 		logger.info("create $book")
 		service.create(book) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${book.authorName}")
-	}
-
-	@PatchMapping("/{isbn}/borrow/{memberNumber}")
-	fun borrow(@PathVariable(value = "isbn") isbn: String, @PathVariable(value = "memberNumber") memberNumber: String) {
-		//qqqq
-	}
-
-	@PatchMapping("/{isbn}/return")
-	fun returnBook(@PathVariable(value = "isbn") isbn: String) {
-		//qqqq
 	}
 
 	//qqqq add (create), update, delete book

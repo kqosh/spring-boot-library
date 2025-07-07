@@ -23,9 +23,15 @@ class BookEntity {
 
     var publisher: String? = null
 
+    @Column(name = "number_of_copies")
+    var numberOfCopies: Int = 10
+
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_book_author"))
     var author: AuthorEntity? = null
+
+    @OneToMany(mappedBy = "book", targetEntity = CheckoutEntity::class)
+    var loans: List<CheckoutEntity> = emptyList()
 
     //qqqq borrowedBy fk to member
     //qqqq registrations: List<Member>

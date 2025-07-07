@@ -18,7 +18,7 @@ class AuthorService(private val repository: AuthorRepository)  {
 	}
 
 	@Transactional(readOnly = true)
-	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) } ?: null
+	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) }
 //
 //	@Transactional
 //	fun update(author: AuthorEntity): AuthorEntity? {

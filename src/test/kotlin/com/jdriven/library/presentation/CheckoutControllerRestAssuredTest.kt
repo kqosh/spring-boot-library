@@ -1,17 +1,15 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.model.Checkout
+import io.restassured.RestAssured
+import io.restassured.RestAssured.given
+import io.restassured.common.mapper.TypeRef
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpMethod
-import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -20,32 +18,33 @@ class CheckoutControllerRestAssuredTest() {
 	@LocalServerPort
 	private var port: Int? = null
 
-//	@BeforeEach
-//	fun setup() {
-//		RestAssured.port = port
-//	}
+	@BeforeEach
+	fun setup() {
+		RestAssured.port = port!!
+	}
 
 	@Test
 	fun findByMemberNumber() {
 		val nr = "nr101"
 
-// qqqq convert to restassured
-//		val responseEntity = findCkeckouts(nr)
-//
-//		val checkouts: List<Checkout> = responseEntity.body!!
-//		assertEquals(200, responseEntity.statusCode.value(), responseEntity.toString())
-//		assertEquals(2, checkouts.size, responseEntity.toString())
-//
-//		val checkoutsByIsbn: Map<String, Checkout> = checkouts.associateBy { it.book.isbn }
-//		assertEquals(LocalDate.of(2025, 7, 8), checkoutsByIsbn["isbn123"]!!.checkoutAt, responseEntity.toString())
-//		assertEquals(LocalDate.of(2025, 7, 15), checkoutsByIsbn["isbn124"]!!.checkoutAt, responseEntity.toString())
+		val checkouts: List<Checkout> = findCheckouts(nr, 200)
+
+		assertEquals(2, checkouts.size)
+
+		val checkoutsByIsbn: Map<String, Checkout> = checkouts.associateBy { it.book.isbn }
+		assertEquals(LocalDate.of(2025, 7, 8), checkoutsByIsbn["isbn123"]!!.checkoutAt)
+		assertEquals(LocalDate.of(2025, 7, 15), checkoutsByIsbn["isbn124"]!!.checkoutAt)
 	}
 
-//	private fun findCkeckouts(memberNr: String): ResponseEntity<List<Checkout>> {
-// qqqq convert to restassured or drop
-//		val responseType = object : ParameterizedTypeReference<List<Checkout>>() {}
-//		return restTemplate.exchange("http://localhost:${port}/checkouts/${memberNr}", HttpMethod.GET, null, responseType)
-//	}
+	private fun findCheckouts(memberNr: String, expectedStatusCode: Int): List<Checkout> {
+		return given()
+			.log().all()
+			.`when`().get("http://localhost:${port}/checkouts/${memberNr}")
+			.then()
+			.log().all()
+			.statusCode(expectedStatusCode)
+			.extract().body().`as`(object : TypeRef<List<Checkout>>() {})
+	}
 
 	@Test
 	fun findByMemberNumber_notFound() {

@@ -5,6 +5,7 @@ import com.jdriven.library.service.model.Book
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.resource.NoResourceFoundException
 
@@ -15,6 +16,8 @@ class BookController(private val service: BookService) {
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
 	@GetMapping("/{isbn}")
+	@PreAuthorize("hasRole('USER')")
+//	@PreAuthorize("hasRole('ADMIN', 'USER')")qqqq
 	fun findByIsbn(@PathVariable(value = "isbn") isbn: String): Book {
 		return service.find(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/books/${isbn}")
 	}
@@ -22,6 +25,7 @@ class BookController(private val service: BookService) {
 	//qqqq only by admin
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasRole('ADMIN')")
 	fun create(@RequestBody book: Book) {
 		logger.info("create $book")
 		service.create(book) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${book.authorName}")

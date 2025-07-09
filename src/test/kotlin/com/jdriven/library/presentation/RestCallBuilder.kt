@@ -36,11 +36,14 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     }
 
     fun post(): ResponseBodyExtractionOptions {
-        return given()
+        val requestSpec = given()
             .log().all()
             . auth().basic(_username, _password)
             .contentType(ContentType.JSON)
-            .body(_body)
+
+        if (_body != null) requestSpec.body(_body)
+
+        return requestSpec
             .`when`().post(url)
             .then()
             .log().all()
@@ -48,15 +51,13 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
             .extract().body()
     }
 
-    fun delete() {//qqqq: ResponseBodyExtractionOptions {
+    fun delete() {
         given()
             .log().all()
             . auth().basic(_username, _password)
-//            .body(_body)qqqq drop
             .`when`().delete(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
-//            .extract().body()qqqq
     }
 }

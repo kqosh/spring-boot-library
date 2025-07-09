@@ -2,6 +2,8 @@ package com.jdriven.library.presentation
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -15,20 +17,28 @@ class SecurityConfig {
 
     // Definieer een admin- en een user-gebruiker voor de test qqqq eng
     @Bean
-    fun userDetailsService(): InMemoryUserDetailsManager {
+    fun userDetailsService(): InMemoryUserDetailsManager {//qqqq JdbcUserDetailsManager
         val admin = User.withDefaultPasswordEncoder()
             .username("admin")
             .password("pwadmin")
 //            .roles("ADMIN", "USER")qqqq
             .roles("ADMIN")
             .build()
-        val user = User.withDefaultPasswordEncoder()
-            .username("user")
+        val memeber1 = User.withDefaultPasswordEncoder()
+            .username("nr101")
             .password("pwuser")
             .roles("USER")
             .build()
-        return InMemoryUserDetailsManager(admin, user)
+        val memeber2 = User.withDefaultPasswordEncoder()
+            .username("nr102")
+            .password("pwuser")
+            .roles("USER")
+            .build()
+        return InMemoryUserDetailsManager(admin, memeber1, memeber2)
     }
+
+    @Bean
+    fun roleHierarchy(): RoleHierarchy = RoleHierarchyImpl.fromHierarchy("ADMIN > USER")
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {

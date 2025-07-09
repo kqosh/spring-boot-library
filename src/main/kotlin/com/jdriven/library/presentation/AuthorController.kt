@@ -6,6 +6,7 @@ import com.jdriven.library.service.model.CreateAuthorRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.resource.NoResourceFoundException
 
@@ -16,18 +17,21 @@ class AuthorController(private val service: AuthorService) {
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
 	@GetMapping("/{name}")
+	@PreAuthorize("hasRole('ADMIN')")
 	fun findByName(@PathVariable(value = "name") name: String): Author {
 		return service.find(name) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${name}")
 	}
 
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasRole('ADMIN')")
 	fun create(@RequestBody request: CreateAuthorRequest) {
 		logger.info("create $request")
 		service.create(request)
 	}
 
 	@DeleteMapping("/{name}")
+	@PreAuthorize("hasRole('ADMIN')")
 	fun deleteByName(@PathVariable(value = "name") name: String) {
 		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
 	}

@@ -17,12 +17,10 @@ class BookController(private val service: BookService) {
 
 	@GetMapping("/{isbn}")
 	@PreAuthorize("hasRole('USER')")
-//	@PreAuthorize("hasRole('ADMIN', 'USER')")qqqq
 	fun findByIsbn(@PathVariable(value = "isbn") isbn: String): Book {
 		return service.find(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/books/${isbn}")
 	}
 
-	//qqqq only by admin
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('ADMIN')")
@@ -31,6 +29,6 @@ class BookController(private val service: BookService) {
 		service.create(book) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${book.authorName}")
 	}
 
-	//qqqq add (create), update, delete book
+	//qqqq update, delete book
 	//qqqq find by part of title xor author or both
 }

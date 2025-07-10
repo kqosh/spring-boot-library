@@ -14,7 +14,9 @@ class AuthorService(private val repository: AuthorRepository)  {
 	fun create(request: CreateAuthorRequest): Author? {
 		val entity = AuthorEntity()
 		entity.name = request.name
-		return Author.of(repository.save(entity))
+		var qqqq = repository.save(entity)
+		return Author.of(qqqq)
+//		return Author.of(repository.save(entity))qqqq
 	}
 
 	@Transactional(readOnly = true)

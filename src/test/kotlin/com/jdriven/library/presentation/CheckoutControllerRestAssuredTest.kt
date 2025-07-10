@@ -2,8 +2,8 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.model.Checkout
 import io.restassured.RestAssured
-import io.restassured.RestAssured.given
 import io.restassured.common.mapper.TypeRef
+import io.restassured.response.ResponseBodyExtractionOptions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,22 +37,20 @@ class CheckoutControllerRestAssuredTest() {
 	}
 
 	private fun findCheckouts(memberNr: String, expectedStatusCode: Int): List<Checkout> {
-		return given()
-			.log().all()
-			.`when`().get("http://localhost:${port}/checkouts/${memberNr}")
-			.then()
-			.log().all()
-			.statusCode(expectedStatusCode)
-			.extract().body().`as`(object : TypeRef<List<Checkout>>() {})
+		return get(memberNr, expectedStatusCode).`as`(object : TypeRef<List<Checkout>>() {})
+	}
+
+	private fun get(memberNr: String, expectedStatusCode: Int): ResponseBodyExtractionOptions {
+		return RestCallBuilder("http://localhost:${port}/checkouts/${memberNr}", expectedStatusCode)
+			.username(memberNr)
+			.password("pwuser")
+			.get()
 	}
 
 	@Test
 	fun findByMemberNumber_notFound() {
 		val nr = "Doesnt Exist"
-// qqqq convert to restassured or drop
-//		val rsp = restTemplate.getForEntity("http://localhost:${port}/checkouts/${nr}", String::class.java)
-//		assertEquals(404, rsp.statusCode.value(), rsp.toString())
-//		assertTrue(rsp.body!!.contains(nr.replace(" ", "%20")), rsp.toString())
+		get(nr, 401)
 	}
 
 	@Test

@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class CheckoutControllerTest() {
+class CheckoutControllerTest() {//qqqq drop
 
 	@LocalServerPort
 	private var port: Int? = null

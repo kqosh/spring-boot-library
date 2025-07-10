@@ -28,6 +28,7 @@ class CheckoutService(
 	@Transactional(readOnly = true)
 	fun findByMember(memberNumber: String): List<Checkout>? {
 		val member = memberRepository.findByNumber(memberNumber) ?: return null
+		val qqqq = checkoutRepository.findByMemberAndReturned(member).map { it -> Checkout.of(it) }
 		return checkoutRepository.findByMemberAndReturned(member).map { it -> Checkout.of(it) }
 	}
 
@@ -36,6 +37,7 @@ class CheckoutService(
 		val member = memberRepository.findByNumber(memberNumber) ?: return null
 		val entity = checkoutRepository.findByMemberAndReturned(member).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		entity.returned = true
+//		checkoutRepository.save(entity) //qqqq is this needed foracontainer mananaged bean?
 		return Checkout.of(entity)
 	}
 }

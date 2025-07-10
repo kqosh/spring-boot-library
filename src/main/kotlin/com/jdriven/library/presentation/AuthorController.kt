@@ -17,7 +17,7 @@ class AuthorController(private val service: AuthorService) {
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
 	@GetMapping("/{name}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER')")
 	fun findByName(@PathVariable(value = "name") name: String): Author {
 		return service.find(name) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${name}")
 	}

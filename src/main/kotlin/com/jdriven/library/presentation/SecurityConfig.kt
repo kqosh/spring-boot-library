@@ -21,8 +21,7 @@ class SecurityConfig {
         val admin = User.withDefaultPasswordEncoder()
             .username("admin")
             .password("pwadmin")
-//            .roles("ADMIN", "USER")qqqq
-            .roles("ADMIN")
+            .roles("ADMIN", "USER")
             .build()
         val memeber1 = User.withDefaultPasswordEncoder()
             .username("nr101")
@@ -36,9 +35,9 @@ class SecurityConfig {
             .build()
         return InMemoryUserDetailsManager(admin, memeber1, memeber2)
     }
-
-    @Bean
-    fun roleHierarchy(): RoleHierarchy = RoleHierarchyImpl.fromHierarchy("ADMIN > USER")
+//
+//    @Bean
+//    fun roleHierarchy(): RoleHierarchy = RoleHierarchyImpl.fromHierarchy("ADMIN > USER")qqqq
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {

@@ -35,6 +35,22 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
             .extract().body()
     }
 
+    fun patch(): ResponseBodyExtractionOptions {
+        var requestSpec = given()
+            .log().all()
+            . auth().basic(_username, _password)
+            .contentType(ContentType.JSON)
+
+        if (_body != null) requestSpec = requestSpec.body(_body)
+
+        return requestSpec
+            .`when`().patch(url)
+            .then()
+            .log().all()
+            .statusCode(expectedStatusCode)
+            .extract().body()
+    }
+
     fun post(): ResponseBodyExtractionOptions {
         var requestSpec = given()
             .log().all()

@@ -40,17 +40,23 @@ class CheckoutControllerRestAssuredTest() {
 		return get(memberNr, expectedStatusCode).`as`(object : TypeRef<List<Checkout>>() {})
 	}
 
-	private fun get(memberNr: String, expectedStatusCode: Int): ResponseBodyExtractionOptions {
+	private fun get(memberNr: String, expectedStatusCode: Int, userId: String = memberNr, password: String = "pwuser"): ResponseBodyExtractionOptions {
 		return RestCallBuilder("http://localhost:${port}/checkouts/${memberNr}", expectedStatusCode)
-			.username(memberNr)
-			.password("pwuser")
+			.username(userId)
+			.password(password)
 			.get()
+	}
+
+	@Test
+	fun findByMemberNumber_noAccess() {
+		val nr = "Doesnt Exist"
+		get(nr, 401)
 	}
 
 	@Test
 	fun findByMemberNumber_notFound() {
 		val nr = "Doesnt Exist"
-		get(nr, 401)
+		get(nr, 404, "nr101")
 	}
 
 	@Test
@@ -59,26 +65,23 @@ class CheckoutControllerRestAssuredTest() {
 		val isbn = "isbn444"
 		val baseUrl = "http://localhost:${port}/checkouts/${nr}/${isbn}"
 // qqqq convert to restassured or drop
-//		run {
+		run {
+			val createRsp = RestCallBuilder(baseUrl, 201).username("nr102").password("pwuser").post()
 //			val createRsp = restTemplate.postForEntity<String?>(baseUrl, null, String::class.java)
 //			assertEquals(201, createRsp.statusCode.value(), createRsp.toString())
-//		}
-//		run {
-//			val findRsp1 = findCkeckouts(nr)
+		}
+		run {
+			val checkouts = findCheckouts(nr, 200)
 //			assertEquals(200, findRsp1.statusCode.value(), findRsp1.toString())
-//			assertEquals(1, findRsp1.body!!.size, findRsp1.toString())
-//		}
-//		run {
+			assertEquals(1, checkouts.size, checkouts.toString())
+		}
+		run {
+			RestCallBuilder("${baseUrl}/return", 200).username("nr102").password("pwuser").patch()
 //			restTemplate.patchForObject("${baseUrl}/return", null, String::class.java)
 //
-//			val findRsp2 = findCkeckouts(nr)
+			val checkouts = findCheckouts(nr, 200)
 //			assertEquals(200, findRsp2.statusCode.value(), findRsp2.toString())
-//			assertEquals(0, findRsp2.body!!.size, findRsp2.toString())
-//		}
-	}
-
-	@Test
-	fun createFindReturn_withRestAssured() {
-		//qqqq
+			assertEquals(0, checkouts.size, checkouts.toString())
+		}
 	}
 }

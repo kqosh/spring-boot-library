@@ -23,8 +23,8 @@ class AuthorControllerTest() {
 		RestAssured.port = port!!
 	}
 
-	private fun findByName(name: String, expectedStatusCode: Int): ResponseBodyExtractionOptions {
-		return RestAssuredUtils.get("http://localhost:${port}/authors/${name}", expectedStatusCode, "admin", "pwadmin")
+	private fun findByName(name: String, expectedStatusCode: Int, userId: String = "admin", password: String = "pwadmin"): ResponseBodyExtractionOptions {
+		return RestAssuredUtils.get("http://localhost:${port}/authors/${name}", expectedStatusCode, userId, password)
 	}
 
 	@Test
@@ -40,9 +40,21 @@ class AuthorControllerTest() {
 	}
 
 	@Test
+	fun findByName_userDoesNotExist() {
+		val name = "Jan Klaassen"
+		findByName(name, 401, "nr013", "pwuser").asString()
+	}
+
+	@Test
+	fun findByName_wrongPassword() {
+		val name = "Jan Klaassen"
+		findByName(name, 401, "nr101", "wrong-pw").asString()
+	}
+
+	@Test
 	fun findByName_notFound() {
 		val name = "Doesnt Exist"
-		val rsp = findByName(name, 404).asString()//restTemplate.getForEntity("http://localhost:${port}/authors/${name}", String::class.java)
+		val rsp = findByName(name, 404).asString()
 		assertTrue(rsp.contains(name.replace(" ", "%20")), rsp.toString())
 	}
 
@@ -60,6 +72,15 @@ class AuthorControllerTest() {
 			RestCallBuilder("${baseUrl}/${name}", 200).username("admin").password("pwadmin").delete()
 
 			findByName(name, 404)
+		}
+	}
+
+	@Test
+	fun createNotAllowed() {
+		val baseUrl = "http://localhost:${port}/authors"
+		val name = "Henk"
+		run {
+			RestCallBuilder(baseUrl, 403).body(CreateAuthorRequest(name)).username("nr101").password("pwuser").post()
 		}
 	}
 }

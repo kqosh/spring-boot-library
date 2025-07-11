@@ -7,16 +7,12 @@ import jakarta.persistence.*
     name = "authorities",
     uniqueConstraints = [
         UniqueConstraint(
-            name = "ix_auth_username", //qqqq uc_*
+            name = "uc_auth_username",
             columnNames = ["username", "authority"]
         )
     ]
 )
 class Authorities {
-//
-//    @Column(nullable = false, length = 50)
-//    lateinit var username: String
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class CheckoutControllerRestAssuredTest() {//qqqq rename
+class CheckoutControllerTest() {
 
 	@LocalServerPort
 	private var port: Int? = null

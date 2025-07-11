@@ -31,5 +31,5 @@ class CheckoutEntity {
 
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_checkout_users"), nullable = false, name = "username")
-    lateinit var user: Users
+    lateinit var user: UserEntity
 }

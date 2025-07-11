@@ -4,7 +4,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UsersRepository: CrudRepository<Users, Long> {
+interface UserRepository: CrudRepository<UserEntity, Long> {
 
-    fun findByUsername(name: String): Users?
+    fun findByUsername(name: String): UserEntity?
 }

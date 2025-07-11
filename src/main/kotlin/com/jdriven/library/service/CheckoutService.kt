@@ -3,7 +3,7 @@ package com.jdriven.library.service
 import com.jdriven.library.access.model.BookRepository
 import com.jdriven.library.access.model.CheckoutEntity
 import com.jdriven.library.access.model.CheckoutRepository
-import com.jdriven.library.access.model.UsersRepository
+import com.jdriven.library.access.model.UserRepository
 import com.jdriven.library.service.model.Checkout
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CheckoutService(
 	private val checkoutRepository: CheckoutRepository,
-	private val usersRepository: UsersRepository,
+	private val userRepository: UserRepository,
 	private val bookRepository: BookRepository)  {
 
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
 	@Transactional
 	fun create(username: String, isbn: String): Checkout? {
-		val user = usersRepository.findByUsername(username)
+		val user = userRepository.findByUsername(username)
 		if (user == null) {
 			throw IllegalArgumentException("user not found: $username")
 		}
@@ -41,13 +41,13 @@ class CheckoutService(
 
 	@Transactional(readOnly = true)
 	fun findByUsername(username: String): List<Checkout>? {
-		val user = usersRepository.findByUsername(username) ?: return null
+		val user = userRepository.findByUsername(username) ?: return null
 		return checkoutRepository.findByUserAndReturned(user).map { it -> Checkout.of(it) }
 	}
 
 	@Transactional
 	fun returnBook(username: String, isbn: String): Checkout? {
-		val user = usersRepository.findByUsername(username)
+		val user = userRepository.findByUsername(username)
 		if (user == null) {
 			throw IllegalArgumentException("user not found: $username")
 		}

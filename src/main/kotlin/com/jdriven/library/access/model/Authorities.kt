@@ -23,5 +23,5 @@ class Authorities {//qqqq AuthorityEntity
 
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_authorities_users"), nullable = false, name="username")
-    lateinit var user: Users
+    lateinit var user: UserEntity
 }

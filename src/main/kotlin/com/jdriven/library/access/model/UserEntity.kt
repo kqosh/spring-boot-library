@@ -8,7 +8,7 @@ import jakarta.persistence.Table
 
 @Entity(name = "User")
 @Table(name = "users")
-class Users {//qqqq rename to UserEntity, rename repo conform
+class UserEntity {
 
     @Id
     @Column(nullable = false, length = 50)

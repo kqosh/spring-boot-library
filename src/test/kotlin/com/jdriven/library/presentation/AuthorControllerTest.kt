@@ -24,7 +24,7 @@ class AuthorControllerTest() {
 	}
 
 	private fun findByName(name: String, expectedStatusCode: Int, userId: String = "admin", password: String = "pwadmin"): ResponseBodyExtractionOptions {
-		return RestAssuredUtils.get("http://localhost:${port}/authors/${name}", expectedStatusCode, userId, password)
+		return RestCallBuilder("http://localhost:${port}/authors/${name}", expectedStatusCode).username(userId).password(password).get()
 	}
 
 	@Test

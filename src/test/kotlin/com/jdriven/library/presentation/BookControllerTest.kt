@@ -2,7 +2,6 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.model.Book
 import io.restassured.RestAssured
-import io.restassured.RestAssured.given
 import io.restassured.response.ResponseBodyExtractionOptions
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -23,7 +22,7 @@ class BookControllerTest() {
 	}
 
 	private fun findByIsbn(isbn: String, expectedStatusCode: Int): ResponseBodyExtractionOptions =
-		RestAssuredUtils.get("http://localhost:${port}/books/${isbn}", expectedStatusCode, "nr101")
+		RestCallBuilder("http://localhost:${port}/books/${isbn}", expectedStatusCode).username("nr101").password("pwuser").get()
 
 	@Test
 	fun findIsbn_found() {

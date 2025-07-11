@@ -26,7 +26,7 @@ class CheckoutController(private val service: CheckoutService) {
 	}
 
 	private fun validateUser(username: String, authentication: Authentication) {
-		if (authentication.authorities.map { it -> it.authority }.contains("ROLE_ADMIN")) return // admin can do stuff for other users
+		if (authentication.authorities.map { it -> it.authority }.contains("ROLE_ADMIN")) return // admin is allowed to do stuff for other users
 		if (username != authentication.name) {
 			logger.warn("username = $username != ${authentication.name} = authentication.name")
 			throw ResponseStatusException(HttpStatus.FORBIDDEN, "other user not allowed")

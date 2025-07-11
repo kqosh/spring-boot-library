@@ -2,7 +2,7 @@ package com.jdriven.library.access.model
 
 import jakarta.persistence.*
 
-@Entity(name = "authorities")//qqqq Authority
+@Entity(name = "Authority")
 @Table(
     name = "authorities",
     uniqueConstraints = [
@@ -12,7 +12,7 @@ import jakarta.persistence.*
         )
     ]
 )
-class Authorities {//qqqq AuthorityEntity
+class AuthorityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

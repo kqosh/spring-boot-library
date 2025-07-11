@@ -1,6 +1,8 @@
 package com.jdriven.library.presentation
 
+import io.restassured.RestAssured
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,12 +16,17 @@ class VersionTest() {
 	@LocalServerPort
 	private var port: Int? = null
 
+	@BeforeEach
+	fun setup() {
+		RestAssured.port = port!!
+	}
+
 	@Autowired
 	private lateinit var restTemplate: TestRestTemplate
 
 	@Test
 	fun version() {
-		val rsp = restTemplate.getForObject("http://localhost:${port}/version", String::class.java)
-		Assertions.assertTrue(rsp.contains("0.0.1-SNAPSHOT"), rsp)
+		val body = RestCallBuilder("http://localhost:${port}/version", 200).get().asString()
+		Assertions.assertTrue(body.contains("0.0.1-SNAPSHOT"))
 	}
 }

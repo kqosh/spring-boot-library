@@ -40,7 +40,7 @@ class AuthorControllerTest() {
 	}
 
 	@Test
-	fun findByName_userDoesNotExist() {
+	fun findByName_loginUsernameDoesNotExist() {
 		val name = "Jan Klaassen"
 		findByName(name, 401, "nr013", "pwuser").asString()
 	}

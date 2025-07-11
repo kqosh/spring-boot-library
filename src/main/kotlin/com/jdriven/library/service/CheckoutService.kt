@@ -21,15 +21,15 @@ class CheckoutService(
 	fun create(username: String, isbn: String): Checkout? {
 		val user = userRepository.findByUsername(username)
 		if (user == null) {
-			throw IllegalArgumentException("user not found: $username")
+			throw IllegalArgumentException("user not found: $username")//qqqq eigen ut
 		}
 		val book = bookRepository.findByIsbn(isbn)
 		if (book == null) {
-			throw IllegalArgumentException("book not found: $isbn")
+			throw IllegalArgumentException("book not found: $isbn")//qqqq eigen ut
 		}
 		val currentCheckouts = checkoutRepository.findByBookAndReturned(book, returned = true)
 		if (currentCheckouts.size >= book.numberOfCopies) {
-			throw IllegalStateException("no books available for: $isbn")
+			throw IllegalStateException("no books available for: $isbn")//qqqq eigen ut
 		}
 
 		val entity = CheckoutEntity()

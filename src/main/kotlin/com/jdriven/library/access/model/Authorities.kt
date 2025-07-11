@@ -16,7 +16,7 @@ class AuthorityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long? = null
+    var id: Long? = null
 
     @Column(nullable = false, length = 50)
     lateinit var authority: String

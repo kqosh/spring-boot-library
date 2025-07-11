@@ -13,7 +13,7 @@ class AuthorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long? = null
+    var id: Long? = null
 
     @Column(nullable = false, unique = true)
     lateinit var name: String

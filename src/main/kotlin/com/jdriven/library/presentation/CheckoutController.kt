@@ -43,10 +43,8 @@ class CheckoutController(private val service: CheckoutService) {
 		validateUser(username, authentication)
 		try {
 			service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.POST, "/checkouts/${username}/${isbn}")
-		} catch (ex: IllegalArgumentException) {
-			throw ResponseStatusException(HttpStatus.valueOf(400), ex.message!!)
-		} catch (ex: IllegalStateException) {
-			throw ResponseStatusException(HttpStatus.valueOf(409), ex.message!!)
+		} catch (ex: Exception) {
+			RestCallUtils.handleException(ex)
 		}
 	}
 
@@ -57,15 +55,8 @@ class CheckoutController(private val service: CheckoutService) {
 		validateUser(username, authentication)
 		try {
 			service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
-		} catch (ex: IllegalArgumentException) {
-			throw ResponseStatusException(HttpStatus.valueOf(400), ex.message!!)
+		} catch (ex: Exception) {
+			RestCallUtils.handleException(ex)
 		}
 	}
-//	qqqq
-//	private fun  handleException(ex: Exception) {
-//		when (ex) {
-//			is IllegalArgumentException -> throw HttpClientErrorException(HttpStatus.valueOf(400), ex.message!!)
-//			is IllegalStateException -> throw HttpClientErrorException(HttpStatus.valueOf(409), ex.message!!)
-//			else -> throw ex
-//	}
 }

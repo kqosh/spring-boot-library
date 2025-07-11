@@ -22,7 +22,7 @@ class BookControllerTest() {
 	}
 
 	private fun findByIsbn(isbn: String, expectedStatusCode: Int): ResponseBodyExtractionOptions =
-		RestCallBuilder("http://localhost:${port}/books/${isbn}", expectedStatusCode).username("nr101").password("pwuser").get()
+		RestCallBuilder("http://localhost:${port}/books/${isbn}", expectedStatusCode).username("user101").password("pwuser").get()
 
 	@Test
 	fun findIsbn_found() {

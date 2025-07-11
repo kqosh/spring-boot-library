@@ -26,7 +26,7 @@ class CheckoutControllerTest() {
 
 	@Test
 	fun findByUsername() {
-		val username = "nr101"
+		val username = "user101"
 
 		val checkouts: List<Checkout> = findCheckouts(username, 200)
 
@@ -56,8 +56,8 @@ class CheckoutControllerTest() {
 
 	@Test
 	fun findByUsername_otherUserNotAllowed() {
-		val username = "nr101" //qqqq replace all nr10 -> user10
-		assertTrue(get(username, 403, "nr102", "pwuser").asString().contains("other user not allowed"))//qqqq add more errorbody asserts
+		val username = "user101" //qqqq replace all user10 -> user10
+		assertTrue(get(username, 403, "user102", "pwuser").asString().contains("other user not allowed"))//qqqq add more errorbody asserts
 	}
 
 	@Test
@@ -68,18 +68,18 @@ class CheckoutControllerTest() {
 
 	@Test
 	fun createFindReturn() {
-		val nr = "nr102"
+		val nr = "user102"
 		val isbn = "isbn444"
 		val baseUrl = "http://localhost:${port}/checkouts/${nr}/${isbn}"
 		run {
-			RestCallBuilder(baseUrl, 201).username("nr102").password("pwuser").post()
+			RestCallBuilder(baseUrl, 201).username("user102").password("pwuser").post()
 		}
 		run {
 			val checkouts = findCheckouts(nr, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 		}
 		run {
-			RestCallBuilder("${baseUrl}/return", 200).username("nr102").password("pwuser").patch()
+			RestCallBuilder("${baseUrl}/return", 200).username("user102").password("pwuser").patch()
 
 			val checkouts = findCheckouts(nr, 200)
 			assertEquals(0, checkouts.size, checkouts.toString())

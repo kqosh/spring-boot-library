@@ -48,7 +48,7 @@ class AuthorControllerTest() {
 	@Test
 	fun findByName_wrongPassword() {
 		val name = "Jan Klaassen"
-		findByName(name, 401, "nr101", "wrong-pw").asString()
+		findByName(name, 401, "user101", "wrong-pw").asString()
 	}
 
 	@Test
@@ -80,7 +80,7 @@ class AuthorControllerTest() {
 		val baseUrl = "http://localhost:${port}/authors"
 		val name = "Henk"
 		run {
-			RestCallBuilder(baseUrl, 403).body(CreateAuthorRequest(name)).username("nr101").password("pwuser").post()
+			RestCallBuilder(baseUrl, 403).body(CreateAuthorRequest(name)).username("user101").password("pwuser").post()
 		}
 	}
 }

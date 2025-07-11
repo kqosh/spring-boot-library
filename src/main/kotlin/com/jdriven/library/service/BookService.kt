@@ -20,12 +20,12 @@ class BookService(private val bookRepository: BookRepository, private val author
 
 	@Transactional
 	fun create(book: Book): Book? {
-		var authorEntity = getOrCreate(book)
+		var authorEntity = findOrCreate(book)
 		val bookEntity = book.toEntity(authorEntity)
 		return Book.of(bookRepository.save(bookEntity))
 	}
 
-	private fun getOrCreate(book: Book): AuthorEntity {
+	private fun findOrCreate(book: Book): AuthorEntity {
 		var authorEntity = authorRepository.findByName(book.authorName!!)
 		if (authorEntity == null) {
 			authorEntity = AuthorEntity()
@@ -37,11 +37,8 @@ class BookService(private val bookRepository: BookRepository, private val author
 
 	@Transactional
 	fun update(book: Book): Book? {
-		val authorEntity = authorRepository.findByName(book.authorName!!)
-		if (authorEntity == null) {
-			throw IllegalArgumentException("author not found: ${book.authorName}")//qqqq ut
-		}
 		val bookEntity = bookRepository.findByIsbn(book.isbn) ?: return null
+		var authorEntity = findOrCreate(book)
 		return Book.of(book.updateEntity(bookEntity, authorEntity))
 	}
 

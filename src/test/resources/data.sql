@@ -3,9 +3,9 @@ VALUES (101, 'Jan Klaassen'),
        (102, 'Rene Goscinny');
 
 INSERT INTO book (id, isbn, title, author_id, publisher, number_of_copies)
-VALUES (201, 'isbn123', 'De poppenkast deel 1', 101, 'De Uitgeverij', 8),
-       (202, 'isbn124', 'De poppenkast deel 2', 101, 'De Uitgeverij', 9),
-       (203, 'isbn444', 'Asterix & Oblix',      102, 'Dargaud', 12);
+VALUES (201, 'isbn123', 'De poppenkast deel 1', 101, 'De Uitgeverij', 1),
+       (202, 'isbn124', 'De poppenkast deel 2', 101, 'De Uitgeverij', 2),
+       (203, 'isbn444', 'Asterix & Oblix',      102, 'Dargaud', 3);
 
 INSERT INTO users (username, password, enabled)
 VALUES ('admin', 'pwadmin', true),

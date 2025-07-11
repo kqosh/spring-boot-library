@@ -2,7 +2,7 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.AuthorService
 import com.jdriven.library.service.model.Author
-import com.jdriven.library.service.model.CreateAuthorRequest
+import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -19,20 +19,22 @@ class AuthorController(private val service: AuthorService) {
 	@GetMapping("/{name}")
 	@PreAuthorize("hasRole('USER')")
 	fun findByName(@PathVariable(value = "name") name: String): Author {
+		logger.info("findByName $name")
 		return service.find(name) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${name}")
 	}
 
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('ADMIN')")
-	fun create(@RequestBody request: CreateAuthorRequest) {
+	fun create(@RequestBody request: CreateOrUpdateAuthorRequest) {
 		logger.info("create $request")
 		service.create(request)
 	}
 
 	@DeleteMapping("/{name}")
 	@PreAuthorize("hasRole('ADMIN')")
-	fun deleteByName(@PathVariable(value = "name") name: String) {
+	fun delete(@PathVariable(value = "name") name: String) {
+		logger.info("deleteByName $name")
 		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
 	}
 }

@@ -33,7 +33,12 @@ class CheckoutController(private val service: CheckoutService) {
 		}
 	}
 
-	//qqqq find by book
+	@GetMapping("/book/{isbn}")
+	@PreAuthorize("hasRole('ADMIN')")
+	fun findByBook(@PathVariable(value = "isbn") isbn: String): List<Checkout> {
+		logger.info("findByBook $isbn")
+		return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
+	}
 
 	@PostMapping("{username}/{isbn}")
 	@ResponseStatus(HttpStatus.CREATED)

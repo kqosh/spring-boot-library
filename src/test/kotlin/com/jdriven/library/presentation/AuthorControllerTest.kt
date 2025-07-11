@@ -1,7 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.model.Author
-import com.jdriven.library.service.model.CreateAuthorRequest
+import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import io.restassured.RestAssured
 import io.restassured.response.ResponseBodyExtractionOptions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -63,7 +63,7 @@ class AuthorControllerTest() {
 		val baseUrl = "http://localhost:${port}/authors"
 		val name = "Klaas"
 		run {
-			RestCallBuilder(baseUrl, 201).body(CreateAuthorRequest(name)).username("admin").password("pwadmin").post()
+			RestCallBuilder(baseUrl, 201).body(CreateOrUpdateAuthorRequest(name)).username("admin").password("pwadmin").post()
 		}
 		run {
 			findByName(name, 200)
@@ -78,9 +78,17 @@ class AuthorControllerTest() {
 	@Test
 	fun createNotAllowed() {
 		val baseUrl = "http://localhost:${port}/authors"
+		run {
+			RestCallBuilder(baseUrl, 403).body(CreateOrUpdateAuthorRequest("Henk")).username("user101").password("pwuser").post()
+		}
+	}
+
+	@Test
+	fun deleteNotAllowed() {
+		val baseUrl = "http://localhost:${port}/authors/Henk"
 		val name = "Henk"
 		run {
-			RestCallBuilder(baseUrl, 403).body(CreateAuthorRequest(name)).username("user101").password("pwuser").post()
+			RestCallBuilder(baseUrl, 403).username("user101").password("pwuser").delete()
 		}
 	}
 }

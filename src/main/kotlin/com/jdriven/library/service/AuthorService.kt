@@ -3,7 +3,7 @@ package com.jdriven.library.service
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.AuthorRepository
 import com.jdriven.library.service.model.Author
-import com.jdriven.library.service.model.CreateAuthorRequest
+import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,7 +14,7 @@ class AuthorService(private val repository: AuthorRepository)  {
 	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) }
 
 	@Transactional
-	fun create(request: CreateAuthorRequest): Author? {
+	fun create(request: CreateOrUpdateAuthorRequest): Author? {
 		val entity = AuthorEntity()
 		entity.name = request.name
 		return Author.of(repository.save(entity))

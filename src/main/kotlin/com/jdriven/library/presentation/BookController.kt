@@ -19,6 +19,7 @@ class BookController(private val service: BookService) {
 	@GetMapping("/{isbn}")
 	@PreAuthorize("hasRole('USER')")
 	fun findByIsbn(@PathVariable(value = "isbn") isbn: String): Book {
+		logger.info("findByIsbn $isbn")
 		return service.find(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/books/${isbn}")
 	}
 
@@ -33,7 +34,7 @@ class BookController(private val service: BookService) {
 	@PutMapping("/{isbn}")
 	@PreAuthorize("hasRole('ADMIN')")
 	fun update(@PathVariable(value = "isbn") isbn: String, @RequestBody book: Book) {
-		logger.info("update $isbn, $book")//qqqq more logging
+		logger.info("update $isbn, $book")
 		if (isbn != book.isbn) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "isbn = $isbn != ${book.isbn} = book.isbn")//qqqq eigen ut
 		service.update(book) ?: throw NoResourceFoundException(HttpMethod.PUT, "/books/${book.isbn}")
 	}

@@ -18,7 +18,7 @@ class SecurityConfig {
 
 // Following bean can be useful for testing. NB '.roles(...)' automatically adds a "ROLE_" prefix.
 //    @Bean
-//    fun userDetailsService(): InMemoryUserDetailsManager {//qqqq JdbcUserDetailsManager
+//    fun userDetailsService(): InMemoryUserDetailsManager {
 //        val admin = User.withDefaultPasswordEncoder()
 //            .username("admin")
 //            .password("pwadmin")

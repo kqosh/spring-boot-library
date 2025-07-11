@@ -15,25 +15,25 @@ class CheckoutController(private val service: CheckoutService) {
 
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
-	@GetMapping("/{memberNumber}")
+	@GetMapping("/{username}")
 	@PreAuthorize("hasRole('USER')")
-	fun findByMember(@PathVariable(value = "memberNumber") memberNumber: String): List<Checkout> {
-		return service.findByMember(memberNumber) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${memberNumber}")
+	fun findByUsername(@PathVariable(value = "username") username: String): List<Checkout> {
+		return service.findByUsername(username) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${username}")
 	}
 
 	//qqqq find by book
 
-	@PostMapping("{memberNumber}/{isbn}")
+	@PostMapping("{username}/{isbn}")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('USER')")
-	fun create(@PathVariable(value = "memberNumber") memberNumber: String, @PathVariable(value = "isbn") isbn: String) {
-		logger.info("create $memberNumber, $isbn")
-		service.create(memberNumber, isbn) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/checkouts/${memberNumber}/${isbn}")
+	fun create(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String) {
+		logger.info("create $username, $isbn")
+		service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/checkouts/${username}/${isbn}")
 	}
 
-	@PatchMapping("{memberNumber}/{isbn}/return")
+	@PatchMapping("{username}/{isbn}/return")
 	@PreAuthorize("hasRole('USER')")
-	fun returnBook(@PathVariable(value = "memberNumber") memberNumber: String, @PathVariable(value = "isbn") isbn: String) {
-		service.returnBook(memberNumber, isbn) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/checkouts/${memberNumber}/${isbn}/return")
+	fun returnBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String) {
+		service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/checkouts/${username}/${isbn}/return")
 	}
 }

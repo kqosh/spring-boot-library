@@ -24,7 +24,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun findByMemberNumber() {
+	fun findByUsername() {
 		val nr = "nr101"
 
 		val checkouts: List<Checkout> = findCheckouts(nr, 200)
@@ -36,25 +36,25 @@ class CheckoutControllerTest() {
 		assertEquals(LocalDate.of(2025, 7, 15), checkoutsByIsbn["isbn124"]!!.checkoutAt)
 	}
 
-	private fun findCheckouts(memberNr: String, expectedStatusCode: Int): List<Checkout> {
-		return get(memberNr, expectedStatusCode).`as`(object : TypeRef<List<Checkout>>() {})
+	private fun findCheckouts(username: String, expectedStatusCode: Int): List<Checkout> {
+		return get(username, expectedStatusCode).`as`(object : TypeRef<List<Checkout>>() {})
 	}
 
-	private fun get(memberNr: String, expectedStatusCode: Int, userId: String = memberNr, password: String = "pwuser"): ResponseBodyExtractionOptions {
-		return RestCallBuilder("http://localhost:${port}/checkouts/${memberNr}", expectedStatusCode)
+	private fun get(username: String, expectedStatusCode: Int, userId: String = username, password: String = "pwuser"): ResponseBodyExtractionOptions {
+		return RestCallBuilder("http://localhost:${port}/checkouts/${username}", expectedStatusCode)
 			.username(userId)
 			.password(password)
 			.get()
 	}
 
 	@Test
-	fun findByMemberNumber_noAccess() {
+	fun findByUsername_noAccess() {
 		val nr = "Doesnt Exist"
 		get(nr, 401)
 	}
 
 	@Test
-	fun findByMemberNumber_notFound() {
+	fun findByUsername_notFound() {
 		val nr = "Doesnt Exist"
 		get(nr, 404, "nr101")
 	}

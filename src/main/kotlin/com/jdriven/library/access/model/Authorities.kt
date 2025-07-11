@@ -2,7 +2,7 @@ package com.jdriven.library.access.model
 
 import jakarta.persistence.*
 
-@Entity(name = "authorities")
+@Entity(name = "authorities")//qqqq Authority
 @Table(
     name = "authorities",
     uniqueConstraints = [
@@ -12,7 +12,7 @@ import jakarta.persistence.*
         )
     ]
 )
-class Authorities {
+class Authorities {//qqqq AuthorityEntity
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,19 +24,4 @@ class Authorities {
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_authorities_users"), nullable = false, name="username")
     lateinit var user: Users
-
-    /*qqqq
-    CREATE TABLE users (
-    username VARCHAR_IGNORECASE(50) NOT NULL PRIMARY KEY,
-    password VARCHAR(500) NOT NULL,
-    enabled BOOLEAN NOT NULL
-);
-
-CREATE TABLE authorities (
-    username VARCHAR_IGNORECASE(50) NOT NULL,
-    authority VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_authorities_users FOREIGN KEY(username) REFERENCES users(username)
-);
-CREATE UNIQUE INDEX ix_auth_username ON authorities (username, authority);
-     */
 }

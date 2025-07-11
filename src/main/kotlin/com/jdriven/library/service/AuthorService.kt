@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class AuthorService(private val repository: AuthorRepository)  {
 
+	@Transactional(readOnly = true)
+	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) }
+
 	@Transactional
 	fun create(request: CreateAuthorRequest): Author? {
 		val entity = AuthorEntity()
@@ -17,13 +20,9 @@ class AuthorService(private val repository: AuthorRepository)  {
 		return Author.of(repository.save(entity))
 	}
 
-	@Transactional(readOnly = true)
-	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) }
-
 	@Transactional
 	fun delete(name: String): Author? {
-		val authorEntity = repository.findByName(name)
-		if (authorEntity == null) return null
+		val authorEntity = repository.findByName(name) ?: return null
 		repository.deleteById(authorEntity.id!!)
 		return Author.of(authorEntity)
 	}

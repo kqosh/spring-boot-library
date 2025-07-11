@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @RestController
@@ -17,8 +19,18 @@ class CheckoutController(private val service: CheckoutService) {
 
 	@GetMapping("/{username}")
 	@PreAuthorize("hasRole('USER')")
-	fun findByUsername(@PathVariable(value = "username") username: String): List<Checkout> {
+	fun findByUsername(@PathVariable(value = "username") username: String, authentication: Authentication): List<Checkout> {
+		logger.info("findByUsername $username")
+		validateUser(username, authentication)
 		return service.findByUsername(username) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${username}")
+	}
+
+	private fun validateUser(username: String, authentication: Authentication) {
+		if (authentication.authorities.map { it -> it.authority }.contains("ROLE_ADMIN")) return // admin can do stuff for other users
+		if (username != authentication.name) {
+			logger.warn("username = $username != ${authentication.name} = authentication.name")
+			throw ResponseStatusException(HttpStatus.FORBIDDEN, "other user not allowed")
+		}
 	}
 
 	//qqqq find by book
@@ -26,14 +38,34 @@ class CheckoutController(private val service: CheckoutService) {
 	@PostMapping("{username}/{isbn}")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('USER')")
-	fun create(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String) {
+	fun create(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("create $username, $isbn")
-		service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/checkouts/${username}/${isbn}")
+		validateUser(username, authentication)
+		try {
+			service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.POST, "/checkouts/${username}/${isbn}")
+		} catch (ex: IllegalArgumentException) {
+			throw ResponseStatusException(HttpStatus.valueOf(400), ex.message!!)
+		} catch (ex: IllegalStateException) {
+			throw ResponseStatusException(HttpStatus.valueOf(409), ex.message!!)
+		}
 	}
 
 	@PatchMapping("{username}/{isbn}/return")
 	@PreAuthorize("hasRole('USER')")
-	fun returnBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String) {
-		service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/checkouts/${username}/${isbn}/return")
+	fun returnBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
+		logger.info("returnBook $username, $isbn")
+		validateUser(username, authentication)
+		try {
+			service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
+		} catch (ex: IllegalArgumentException) {
+			throw ResponseStatusException(HttpStatus.valueOf(400), ex.message!!)
+		}
 	}
+//	qqqq
+//	private fun  handleException(ex: Exception) {
+//		when (ex) {
+//			is IllegalArgumentException -> throw HttpClientErrorException(HttpStatus.valueOf(400), ex.message!!)
+//			is IllegalStateException -> throw HttpClientErrorException(HttpStatus.valueOf(409), ex.message!!)
+//			else -> throw ex
+//	}
 }

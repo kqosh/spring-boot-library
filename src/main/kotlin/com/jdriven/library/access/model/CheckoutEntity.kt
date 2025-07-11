@@ -3,7 +3,7 @@ package com.jdriven.library.access.model
 import jakarta.persistence.*
 import java.time.LocalDate
 
-@Entity(name = "checkout")
+@Entity(name = "Checkout")
 @Table(
     name = "checkout",
     uniqueConstraints = [

@@ -4,9 +4,11 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 
-@Entity(name = "users")
-class Users {
+@Entity(name = "User")
+@Table(name = "users")
+class Users {//qqqq rename to UserEntity, rename repo conform
 
     @Id
     @Column(nullable = false, length = 50)

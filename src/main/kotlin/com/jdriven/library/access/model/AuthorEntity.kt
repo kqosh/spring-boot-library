@@ -2,7 +2,7 @@ package com.jdriven.library.access.model
 
 import jakarta.persistence.*
 
-@Entity(name = "author")
+@Entity(name = "Author")
 @Table(
     name = "author",
     indexes = [

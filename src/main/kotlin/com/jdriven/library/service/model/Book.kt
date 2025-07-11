@@ -10,13 +10,14 @@ data class Book(
     var publisher: String? = null
 ) {
 
-    fun toEntity(authorEntity: AuthorEntity): BookEntity {
-        val entity = BookEntity()
-        entity.isbn = this.isbn
-        entity.author = authorEntity
-        entity.title = this.title
-        entity.publisher = this.publisher
-        return entity
+    fun toEntity(authorEntity: AuthorEntity): BookEntity = updateEntity(BookEntity(), authorEntity)
+
+    fun updateEntity(bookEntity: BookEntity, authorEntity: AuthorEntity): BookEntity {
+        bookEntity.isbn = this.isbn
+        bookEntity.author = authorEntity
+        bookEntity.title = this.title
+        bookEntity.publisher = this.publisher
+        return bookEntity
     }
 
     companion object {

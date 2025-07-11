@@ -2,7 +2,7 @@ package com.jdriven.library.access.model
 
 import jakarta.persistence.*
 
-@Entity(name = "book")
+@Entity(name = "Book")
 @Table(
     name = "book",
     indexes = [
@@ -31,5 +31,5 @@ class BookEntity {
     var author: AuthorEntity? = null
 
     @OneToMany(mappedBy = "book", targetEntity = CheckoutEntity::class)
-    var loans: List<CheckoutEntity> = emptyList()
+    var checkouts: List<CheckoutEntity> = emptyList()
 }

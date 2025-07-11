@@ -40,4 +40,24 @@ class BookControllerTest() {
 	}
 
 	//qqqq test create, delete
+	/*qqqq
+
+	@Test
+	fun createFindDelete() {
+		val baseUrl = "http://localhost:${port}/authors"
+		val name = "Klaas"
+		run {
+			RestCallBuilder(baseUrl, 201).body(CreateAuthorRequest(name)).username("admin").password("pwadmin").post()
+		}
+		run {
+			findByName(name, 200)
+		}
+		run {
+			RestCallBuilder("${baseUrl}/${name}", 200).username("admin").password("pwadmin").delete()
+
+			findByName(name, 404)
+		}
+	}
+
+	 */
 }

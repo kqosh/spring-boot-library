@@ -13,7 +13,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import java.time.LocalDate
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class CheckoutControllerRestAssuredTest() {
+class CheckoutControllerRestAssuredTest() {//qqqq rename
 
 	@LocalServerPort
 	private var port: Int? = null
@@ -64,23 +64,17 @@ class CheckoutControllerRestAssuredTest() {
 		val nr = "nr102"
 		val isbn = "isbn444"
 		val baseUrl = "http://localhost:${port}/checkouts/${nr}/${isbn}"
-// qqqq convert to restassured or drop
 		run {
 			val createRsp = RestCallBuilder(baseUrl, 201).username("nr102").password("pwuser").post()
-//			val createRsp = restTemplate.postForEntity<String?>(baseUrl, null, String::class.java)
-//			assertEquals(201, createRsp.statusCode.value(), createRsp.toString())
 		}
 		run {
 			val checkouts = findCheckouts(nr, 200)
-//			assertEquals(200, findRsp1.statusCode.value(), findRsp1.toString())
 			assertEquals(1, checkouts.size, checkouts.toString())
 		}
 		run {
 			RestCallBuilder("${baseUrl}/return", 200).username("nr102").password("pwuser").patch()
-//			restTemplate.patchForObject("${baseUrl}/return", null, String::class.java)
-//
+
 			val checkouts = findCheckouts(nr, 200)
-//			assertEquals(200, findRsp2.statusCode.value(), findRsp2.toString())
 			assertEquals(0, checkouts.size, checkouts.toString())
 		}
 	}

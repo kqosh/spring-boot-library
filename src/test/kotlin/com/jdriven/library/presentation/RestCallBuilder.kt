@@ -36,12 +36,13 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     }
 
     fun patch(): ResponseBodyExtractionOptions {
-        var requestSpec = given()
+        val requestSpec = given()
             .log().all()
             . auth().basic(_username, _password)
             .contentType(ContentType.JSON)
 
-        if (_body != null) requestSpec = requestSpec.body(_body)
+        if (_body != null) requestSpec.body(_body)
+//        if (_body != null) requestSpec = requestSpec.body(_body)
 
         return requestSpec
             .`when`().patch(url)
@@ -52,12 +53,13 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     }
 
     fun post(): ResponseBodyExtractionOptions {
-        var requestSpec = given()
+        val requestSpec = given()
             .log().all()
             . auth().basic(_username, _password)
             .contentType(ContentType.JSON)
 
-        if (_body != null) requestSpec = requestSpec.body(_body)
+        if (_body != null) requestSpec.body(_body)
+//        if (_body != null) requestSpec = requestSpec.body(_body)qqqq
 
         return requestSpec
             .`when`().post(url)
@@ -66,33 +68,6 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
             .statusCode(expectedStatusCode)
             .extract().body()
     }
-//
-//    fun request(methode: HttpMethod): ResponseBodyExtractionOptions {
-//        var requestSpec = given()
-//            .log().all()
-//            . auth().basic(_username, _password)
-//            .contentType(ContentType.JSON)
-//
-//        if (_body != null) requestSpec = requestSpec.body(_body)
-//
-//
-//        var qqqq: ResponseOptions? = null
-//        when(methode) {
-//            HttpMethod.GET -> qqqq = requestSpec.`when`().get(url)
-//            HttpMethod.DELETE -> requestSpec.delete(url)
-//            HttpMethod.HEAD -> requestSpec.head(url)
-//            HttpMethod.PATCH -> requestSpec.patch(url)
-//            HttpMethod.POST -> requestSpec.post(url)
-//            HttpMethod.PUT -> requestSpec.put(url)
-//            else -> throw IllegalArgumentException("method=$methode")
-//        }
-//
-//        return requestSpec.`when`().post(url)
-//            .then()
-//            .log().all()
-//            .statusCode(expectedStatusCode)
-//            .extract().body()
-//    }
 
     fun delete() {
         given()

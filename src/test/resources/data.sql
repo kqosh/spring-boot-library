@@ -11,6 +11,18 @@ INSERT INTO member (id, number, name)
 VALUES (301, 'nr101', 'name101'),
        (302, 'nr102', 'name103');
 
+INSERT INTO users (username, password, enabled)
+VALUES ('admin', 'pwadmin', true),
+       ('nr101', 'pwuser', true),
+       ('nr102', 'pwuser', true);
+
+-- NB @PreAuthorize("hasRole('USER')") automatically prefixes 'USER' with 'ROLE_'
+INSERT INTO authorities (id, authority, username)
+VALUES (500, 'ROLE_ADMIN', 'admin'),
+       (501, 'ROLE_USER', 'admin'),
+       (502, 'ROLE_USER', 'nr101'),
+       (503, 'ROLE_USER', 'nr102');
+
 INSERT INTO checkout (id, member_id, book_id, checkout_at, returned)
 VALUES (401, 301, 201, '2025-07-08', false),
        (402, 301, 202, '2025-07-15', false),

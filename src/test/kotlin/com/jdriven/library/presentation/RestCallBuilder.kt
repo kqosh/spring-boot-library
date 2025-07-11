@@ -3,6 +3,7 @@ package com.jdriven.library.presentation
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import io.restassured.response.ResponseBodyExtractionOptions
+import io.restassured.specification.RequestSpecification
 
 class RestCallBuilder(private val url: String, private val expectedStatusCode: Int) {
     private var _username: String? = null
@@ -25,10 +26,7 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     }
 
     fun get(): ResponseBodyExtractionOptions {
-        return given()
-            .log().all()
-            . auth().basic(_username, _password)
-            .`when`().get(url)
+        return givenWhen().get(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
@@ -36,16 +34,7 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     }
 
     fun patch(): ResponseBodyExtractionOptions {
-        val requestSpec = given()
-            .log().all()
-            . auth().basic(_username, _password)
-            .contentType(ContentType.JSON)
-
-        if (_body != null) requestSpec.body(_body)
-//        if (_body != null) requestSpec = requestSpec.body(_body)
-
-        return requestSpec
-            .`when`().patch(url)
+        return givenWhen().patch(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
@@ -53,16 +42,8 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     }
 
     fun post(): ResponseBodyExtractionOptions {
-        val requestSpec = given()
-            .log().all()
-            . auth().basic(_username, _password)
-            .contentType(ContentType.JSON)
-
-        if (_body != null) requestSpec.body(_body)
-//        if (_body != null) requestSpec = requestSpec.body(_body)qqqq
-
-        return requestSpec
-            .`when`().post(url)
+        return givenWhen()
+            .post(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
@@ -70,12 +51,17 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     }
 
     fun delete() {
-        given()
-            .log().all()
-            . auth().basic(_username, _password)
-            .`when`().delete(url)
+        givenWhen().delete(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
+    }
+
+    private fun givenWhen(): RequestSpecification {
+        val requestSpec = given().log().all()
+        if (_username != null) requestSpec.auth().basic(_username, _password)
+        requestSpec.contentType(ContentType.JSON)
+        if (_body != null) requestSpec.body(_body)
+        return requestSpec.`when`()
     }
 }

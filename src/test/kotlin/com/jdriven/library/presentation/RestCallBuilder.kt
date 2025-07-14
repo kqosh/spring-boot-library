@@ -50,6 +50,15 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
             .extract().body()
     }
 
+    fun put(): ResponseBodyExtractionOptions {
+        return givenWhen()
+            .put(url)
+            .then()
+            .log().all()
+            .statusCode(expectedStatusCode)
+            .extract().body()
+    }
+
     fun delete() {
         givenWhen().delete(url)
             .then()

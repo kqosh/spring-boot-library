@@ -35,8 +35,7 @@ class BookController(private val service: BookService) {
 	@PreAuthorize("hasRole('ADMIN')")
 	fun update(@PathVariable(value = "isbn") isbn: String, @RequestBody book: Book) {
 		logger.info("update $isbn, $book")
-		if (isbn != book.isbn) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "isbn = $isbn != ${book.isbn} = book.isbn")//qqqq eigen ut
-		service.update(book) ?: throw NoResourceFoundException(HttpMethod.PUT, "/books/${book.isbn}")
+		service.update(isbn, book) ?: throw NoResourceFoundException(HttpMethod.PUT, "/books/${book.isbn}")
 	}
 
 	@DeleteMapping("/{isbn}")

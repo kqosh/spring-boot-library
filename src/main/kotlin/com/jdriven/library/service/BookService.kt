@@ -30,14 +30,14 @@ class BookService(private val bookRepository: BookRepository, private val author
 		if (authorEntity == null) {
 			authorEntity = AuthorEntity()
 			authorEntity.name = book.authorName!!
-			authorRepository.save(authorEntity)//qqqq eigen ut for post en put
+			authorRepository.save(authorEntity)
 		}
 		return authorEntity
 	}
 
 	@Transactional
-	fun update(book: Book): Book? {
-		val bookEntity = bookRepository.findByIsbn(book.isbn) ?: return null
+	fun update(isbn: String, book: Book): Book? {
+		val bookEntity = bookRepository.findByIsbn(isbn) ?: return null
 		var authorEntity = findOrCreate(book)
 		return Book.of(book.updateEntity(bookEntity, authorEntity))
 	}

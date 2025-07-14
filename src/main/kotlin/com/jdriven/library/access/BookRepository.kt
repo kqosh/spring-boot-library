@@ -8,13 +8,8 @@ import org.springframework.stereotype.Repository
 interface BookRepository: CrudRepository<BookEntity, Long> {
 
     fun findByIsbn(isbn: String): BookEntity?
-//
-//    fun search(authorName: String?, title: String?): List<BookEntity> {
-//        if (authorName.isNullOrEmpty() && title.isNullOrEmpty()) throw IllegalArgumentException("authorName and title must both be empyt")
-//        return searchqqqq(authorName, title)
-//    }
 
-    //qqqq func index
+    // This query usually requires a functional indexes on Book.title and Author.name.
     @Query(
         """
         SELECT b FROM Book b 
@@ -23,4 +18,6 @@ interface BookRepository: CrudRepository<BookEntity, Long> {
     """
     )
     fun search(authorName: String?, title: String?): List<BookEntity>
+
+    //qqqq find all limit 50
 }

@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository
 interface AuthorRepository: CrudRepository<AuthorEntity, Long> {
 
     fun findByName(name: String): AuthorEntity?
+
+    //qqqq find all limit 50
 }

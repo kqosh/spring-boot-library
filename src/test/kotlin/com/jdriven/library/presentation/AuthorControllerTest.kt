@@ -91,4 +91,6 @@ class AuthorControllerTest() {
 			RestCallBuilder(baseUrl, 403).username("user101").password("pwuser").delete()
 		}
 	}
+
+	//qqqq cannot delete als er nog een book is
 }

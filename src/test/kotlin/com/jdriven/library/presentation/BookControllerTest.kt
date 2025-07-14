@@ -5,13 +5,13 @@ import com.jdriven.library.service.model.PaginatedResponse
 import io.restassured.RestAssured
 import io.restassured.common.mapper.TypeRef
 import io.restassured.response.ResponseBodyExtractionOptions
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.boot.test.web.server.LocalServerPort
-import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class BookControllerTest() {
@@ -31,28 +31,28 @@ class BookControllerTest() {
 	fun findIsbn_found() {
 		val isbn = "isbn123"
 		val book = findByIsbn(isbn, 200).`as`(Book::class.java)!!
-		Assertions.assertEquals(isbn, book.isbn)
-		Assertions.assertEquals("Jan Klaassen", book.authorName)
+		assertEquals(isbn, book.isbn)
+		assertEquals("Jan Klaassen", book.authorName)
 	}
 
 	@Test
 	fun findIsbn_notFound() {
 		val isbn = "isbnNotFound"
 		val body = findByIsbn(isbn, 404).asString()
-		Assertions.assertTrue(body.contains(isbn), body)
+		assertTrue(body.contains(isbn), body)
 	}
 
 	@Test
 	fun search_byAuthor() {
-		val booksPage = searchAsBooks("RENE", null, 200)
-		Assertions.assertEquals(1, booksPage.content.size)
-		Assertions.assertEquals("Rene Goscinny", booksPage.content[0].authorName)
+		val page = searchAsBooks("RENE", null, 200)
+		assertEquals(1, page.content.size)
+		assertEquals("Rene Goscinny", page.content[0].authorName)
 	}
 
 	@Test
 	fun search_byAuthorNotFound() {
-		val booksPage = searchAsBooks("HARRY", null, 200)
-		Assertions.assertEquals(0, booksPage.content.size)
+		val page = searchAsBooks("HARRY", null, 200)
+		assertEquals(0, page.content.size)
 	}
 
 	@Test
@@ -62,23 +62,23 @@ class BookControllerTest() {
 
 	@Test
 	fun search_byTitle() {
-		val booksPage = searchAsBooks(null, "DE POP", 200)
-		Assertions.assertEquals(3, booksPage.content.size)
-		booksPage.content.forEach { Assertions.assertTrue(it.title!!.startsWith("De poppenkast")) }
+		val page = searchAsBooks(null, "DE POP", 200)
+		assertEquals(3, page.content.size)
+		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
 	@Test
 	fun search_byTitlePageSize2() {
-		val booksPage = searchAsBooks(null, "DE POP", 200, 0, 2)
-		Assertions.assertEquals(2, booksPage.content.size)
-		booksPage.content.forEach { Assertions.assertTrue(it.authorName!!.startsWith("Jan")) }
+		val page = searchAsBooks(null, "DE POP", 200, 0, 2)
+		assertEquals(2, page.content.size)
+		page.content.forEach { assertTrue(it.authorName!!.startsWith("Jan")) }
 	}
 
 	@Test
 	fun search_byAuthorAndTitle() {
-		val booksPage = searchAsBooks("jan", "de poppenkast", 200)
-		Assertions.assertEquals(2, booksPage.content.size)
-		booksPage.content.forEach { Assertions.assertTrue(it.title!!.startsWith("De poppenkast")) }
+		val page = searchAsBooks("jan", "de poppenkast", 200)
+		assertEquals(2, page.content.size)
+		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
 	//qqqq pagesize=2

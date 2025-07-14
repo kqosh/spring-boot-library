@@ -1,7 +1,8 @@
 INSERT INTO author (id, name)
 VALUES (101, 'Jan Klaassen'),
        (102, 'Rene Goscinny'),
-       (103, 'Katrijn Klaassen');
+       (103, 'Katrijn Klaassen'),
+       (104, 'Klaas Jansen');
 
 INSERT INTO book (id, isbn, title, author_id, publisher, number_of_copies)
 VALUES (201, 'isbn123', 'De poppenkast deel 1', 101, 'De Uitgeverij', 1),

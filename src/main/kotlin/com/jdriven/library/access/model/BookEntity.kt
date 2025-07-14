@@ -2,6 +2,9 @@ package com.jdriven.library.access.model
 
 import jakarta.persistence.*
 
+/**
+ * When the last book with this ISBN is decommissioned do not delete tit, instead set its numberOfCopies to 0.
+ */
 @Entity(name = "Book")
 @Table(
     name = "book",

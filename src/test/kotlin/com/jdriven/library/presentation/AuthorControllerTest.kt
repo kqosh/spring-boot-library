@@ -2,7 +2,9 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.model.Author
 import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
+import com.jdriven.library.service.model.PaginatedResponse
 import io.restassured.RestAssured
+import io.restassured.common.mapper.TypeRef
 import io.restassured.response.ResponseBodyExtractionOptions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -93,4 +95,27 @@ class AuthorControllerTest() {
 	}
 
 	//qqqq cannot delete als er nog een book is
+
+	@Test
+	fun search_byAuthorNotFound() {
+		val page = searchAsAuthors("Q", 200)
+		assertEquals(0, page.content.size)
+	}
+
+	@Test
+	fun search_byName() {
+		val page = searchAsAuthors("k", 200)
+		assertEquals(2, page.content.size)
+		page.content.forEach { assertTrue(it.name!!.startsWith("K")) }
+	}
+
+	private fun searchAsAuthors(author: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<Author> =
+		searchAsRspOptions(author, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<Author>>() {})
+
+	private fun searchAsRspOptions(name: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
+		var url = "http://localhost:${port}/authors/search?page=${pageIndex}"
+		if (pageSize != null) url += "&size=${pageSize}"
+		if (name != null) url += "&name=${name}"
+		return RestCallBuilder(url, expectedStatusCode).username("user101").password("pwuser").get()
+	}
 }

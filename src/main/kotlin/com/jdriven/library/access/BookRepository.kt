@@ -20,6 +20,4 @@ interface BookRepository: CrudRepository<BookEntity, Long> {
     """
     )
     fun search(authorName: String?, title: String?, pageable: Pageable): Page<BookEntity>
-
-    //qqqq find all limit 50
 }

@@ -57,8 +57,6 @@ class BookService(private val bookRepository: BookRepository, private val author
 	fun search(authorName: String?, title: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<Book> {
 		if (authorName.isNullOrEmpty() && title.isNullOrEmpty()) throw IllegalArgumentException("authorName and title must both be empyt")
 		val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("author.name", "title"))
-//		return PaginatedResponse.of(bookRepository.search(authorName, title, pageRequest))
-//		PaginatedResponse.of(page)qqqq
 		val page = bookRepository.search(authorName, title, pageRequest)
 		val books = page.content.map { it -> Book.of(it)}
 		return PaginatedResponse(content = books, pageIndex, pageSize, page.totalElements, page.totalPages)

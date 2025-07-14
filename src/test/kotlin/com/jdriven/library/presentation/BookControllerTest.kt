@@ -68,6 +68,13 @@ class BookControllerTest() {
 	}
 
 	@Test
+	fun search_byTitlePageSize2() {
+		val booksPage = searchAsBooks(null, "DE POP", 200, 0, 2)
+		Assertions.assertEquals(2, booksPage.content.size)
+		booksPage.content.forEach { Assertions.assertTrue(it.authorName!!.startsWith("Jan")) }
+	}
+
+	@Test
 	fun search_byAuthorAndTitle() {
 		val booksPage = searchAsBooks("jan", "de poppenkast", 200)
 		Assertions.assertEquals(2, booksPage.content.size)
@@ -76,8 +83,8 @@ class BookControllerTest() {
 
 	//qqqq pagesize=2
 
-	private fun searchAsBooks(author: String?, title: String?, expectedStatusCode: Int): PaginatedResponse<Book> =
-		searchAsRspOptions(author, title, expectedStatusCode).`as`(object : TypeRef<PaginatedResponse<Book>>() {})
+	private fun searchAsBooks(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<Book> =
+		searchAsRspOptions(author, title, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<Book>>() {})
 
 	private fun searchAsRspOptions(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
 		var url = "http://localhost:${port}/books/search?page=${pageIndex}"

@@ -59,15 +59,4 @@ class BookController(private val service: BookService) {
 			throw RestCallUtils.translateException(ex)
 		}
 	}
-//
-//	@GetMapping("/products/search")
-//	fun searchProducts(
-//		@RequestParam query: String,
-//		@RequestParam(required = false, defaultValue = "all") category: String?
-//	): List<Product> {
-//		println("Zoeken naar '$query' in categorie: $category")
-//		// ... logica om producten te zoeken ...
-//		return listOf(Product(query, "available", category))
-//	}
-	//qqqq find by part of title xor author or both
 }

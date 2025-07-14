@@ -88,21 +88,21 @@ class BookControllerTest() {
 		if (title != null) url += "${separator}title=${title}"
 		return RestCallBuilder(url, expectedStatusCode).username("user101").password("pwuser").get()
 	}
-//
-//	@Test
-//	fun createFindDelete() {
-//		val baseUrl = "http://localhost:${port}/authors"
-//		val name = "Klaas"
-//		run {
-//			RestCallBuilder(baseUrl, 201).body(CreateAuthorRequest(name)).username("admin").password("pwadmin").post()
-//		}
-//		run {
-//			findByName(name, 200)
-//		}
-//		run {
-//			RestCallBuilder("${baseUrl}/${name}", 200).username("admin").password("pwadmin").delete()
-//
-//			findByName(name, 404)
-//		}
-//	}qqqq
+
+	@Test
+	fun createFindDelete() {
+		val baseUrl = "http://localhost:${port}/books"
+		val isbn = "isbn999"
+		run {
+			RestCallBuilder(baseUrl, 201).body(Book(isbn, "an author", "a title", numberOfCopies = 4)).username("admin").password("pwadmin").post()
+		}
+		run {
+			findByIsbn(isbn, 200)
+		}
+		run {
+			RestCallBuilder("${baseUrl}/${isbn}", 200).username("admin").password("pwadmin").delete()
+
+			findByIsbn(isbn, 404)
+		}
+	}
 }

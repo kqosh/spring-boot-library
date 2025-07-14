@@ -64,4 +64,16 @@ class CheckoutController(private val service: CheckoutService) {
 			throw RestCallUtils.translateException(ex)
 		}
 	}
+
+	@PatchMapping("{username}/{isbn}/renew")
+	@PreAuthorize("hasRole('USER')")
+	fun renewBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {//qqqq ut
+		logger.info("renewBook $username, $isbn")
+		validateUser(username, authentication)
+		try {
+			service.renewBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
+		} catch (ex: Exception) {
+			throw RestCallUtils.translateException(ex)
+		}
+	}
 }

@@ -22,6 +22,9 @@ class CheckoutEntity {
     @Column(name = "checkout_at", nullable = false )
     var checkoutAt: LocalDate = LocalDate.now()
 
+    @Column(name = "due_date", nullable = false )
+    var dueDate: LocalDate = LocalDate.now()
+
     @Column(nullable = false )
     var returned: Boolean = false
 

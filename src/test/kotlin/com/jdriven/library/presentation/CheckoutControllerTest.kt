@@ -56,7 +56,7 @@ class CheckoutControllerTest() {
 
 	@Test
 	fun findByUsername_otherUserNotAllowed() {
-		val username = "user101" //qqqq replace all user10 -> user10
+		val username = "user101"
 		assertTrue(get(username, 403, "user102", "pwuser").asString().contains("other user not allowed"))//qqqq add more errorbody asserts
 	}
 

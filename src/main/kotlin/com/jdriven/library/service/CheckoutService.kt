@@ -7,6 +7,7 @@ import com.jdriven.library.access.model.UserRepository
 import com.jdriven.library.service.model.Checkout
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 class CheckoutService(
@@ -27,6 +28,7 @@ class CheckoutService(
 		val entity = CheckoutEntity()
 		entity.user = user
 		entity.book = book
+		entity.dueDate = entity.checkoutAt.plusDays(user.loanPeriodInDays!!.toLong())//qqqq assert in ut
 		checkoutRepository.save(entity)
 		return Checkout.of(entity)
 	}
@@ -45,12 +47,17 @@ class CheckoutService(
 
 	@Transactional
 	fun returnBook(username: String, isbn: String): Checkout? {
-		val user = userRepository.findByUsername(username)
-		if (user == null) {
-			throw IllegalArgumentException("user not found: $username")
-		}
+		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val entity = checkoutRepository.findByUserAndReturned(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		entity.returned = true
+		return Checkout.of(entity)
+	}
+
+	@Transactional
+	fun renewBook(username: String, isbn: String): Checkout? {//qqqq ut
+		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
+		val entity = checkoutRepository.findByUserAndReturned(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
+		entity.dueDate = entity.dueDate.plusDays(user.loanPeriodInDays!!.toLong())
 		return Checkout.of(entity)
 	}
 }

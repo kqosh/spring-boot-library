@@ -81,8 +81,6 @@ class BookControllerTest() {
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
-	//qqqq pagesize=2
-
 	private fun searchAsBooks(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<Book> =
 		searchAsRspOptions(author, title, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<Book>>() {})
 

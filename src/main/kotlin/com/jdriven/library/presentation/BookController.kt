@@ -46,6 +46,28 @@ class BookController(private val service: BookService) {
 		return service.delete(isbn) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/books/${isbn}")
 	}
 
-	//qqqq update, delete book
+	@GetMapping("/search")
+	@PreAuthorize("hasRole('USER')")
+	fun search(
+		@RequestParam(required = false, defaultValue = "") author: String?,
+		@RequestParam(required = false, defaultValue = "") title: String?
+	): List<Book> {
+		logger.info("search $author - $title")
+		try {
+			return service.search(author, title) ?: throw NoResourceFoundException(HttpMethod.GET, "/search/${author}/${title}")
+		} catch (ex: Exception) {
+			throw RestCallUtils.translateException(ex)
+		}
+	}
+//
+//	@GetMapping("/products/search")
+//	fun searchProducts(
+//		@RequestParam query: String,
+//		@RequestParam(required = false, defaultValue = "all") category: String?
+//	): List<Product> {
+//		println("Zoeken naar '$query' in categorie: $category")
+//		// ... logica om producten te zoeken ...
+//		return listOf(Product(query, "available", category))
+//	}
 	//qqqq find by part of title xor author or both
 }

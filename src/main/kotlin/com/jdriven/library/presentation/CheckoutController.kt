@@ -49,7 +49,7 @@ class CheckoutController(private val service: CheckoutService) {
 		try {
 			service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.POST, "/checkouts/${username}/${isbn}")
 		} catch (ex: Exception) {
-			RestCallUtils.handleException(ex)
+			throw RestCallUtils.translateException(ex)
 		}
 	}
 
@@ -61,7 +61,7 @@ class CheckoutController(private val service: CheckoutService) {
 		try {
 			service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
 		} catch (ex: Exception) {
-			RestCallUtils.handleException(ex)
+			throw RestCallUtils.translateException(ex)
 		}
 	}
 }

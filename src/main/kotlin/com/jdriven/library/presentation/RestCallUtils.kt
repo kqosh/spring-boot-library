@@ -6,10 +6,6 @@ import org.springframework.web.server.ResponseStatusException
 
 object RestCallUtils {
 
-    fun handleException(ex: Exception) {
-        throw translateException(ex)
-    }
-
     fun translateException(ex: Exception): ErrorResponseException {
         return when (ex) {
             is ErrorResponseException -> ex

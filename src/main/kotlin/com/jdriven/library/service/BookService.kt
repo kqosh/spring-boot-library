@@ -48,4 +48,10 @@ class BookService(private val bookRepository: BookRepository, private val author
 		bookRepository.delete(entity)
 		return Book.of(entity)
 	}
+
+	@Transactional(readOnly = true)
+	fun search(authorName: String?, title: String?): List<Book> {
+		if (authorName.isNullOrEmpty() && title.isNullOrEmpty()) throw IllegalArgumentException("authorName and title must both be empyt")
+		return bookRepository.search(authorName, title).map { it -> Book.of(it)}
+	}
 }

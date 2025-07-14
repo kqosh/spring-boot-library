@@ -2,12 +2,12 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.BookService
 import com.jdriven.library.service.model.Book
+import com.jdriven.library.service.model.PaginatedResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @RestController
@@ -49,11 +49,13 @@ class BookController(private val service: BookService) {
 	@PreAuthorize("hasRole('USER')")
 	fun search(
 		@RequestParam(required = false, defaultValue = "") author: String?,
-		@RequestParam(required = false, defaultValue = "") title: String?
-	): List<Book> {
-		logger.info("search $author - $title")
+		@RequestParam(required = false, defaultValue = "") title: String?,
+		@RequestParam(required = false, defaultValue = "0") page: String?,
+		@RequestParam(required = false, defaultValue = "20") size: String?
+	): PaginatedResponse<Book> {
+		logger.info("search $author - $title, page=$page, size=$size")
 		try {
-			return service.search(author, title) ?: throw NoResourceFoundException(HttpMethod.GET, "/search/${author}/${title}")
+			return service.search(author, title, page!!.toInt(), size!!.toInt())
 		} catch (ex: Exception) {
 			throw RestCallUtils.translateException(ex)
 		}

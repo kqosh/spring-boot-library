@@ -4,7 +4,11 @@ import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.AuthorRepository
 import com.jdriven.library.access.model.BookRepository
 import com.jdriven.library.service.model.Book
+import com.jdriven.library.service.model.PaginatedResponse
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -50,8 +54,13 @@ class BookService(private val bookRepository: BookRepository, private val author
 	}
 
 	@Transactional(readOnly = true)
-	fun search(authorName: String?, title: String?): List<Book> {
+	fun search(authorName: String?, title: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<Book> {
 		if (authorName.isNullOrEmpty() && title.isNullOrEmpty()) throw IllegalArgumentException("authorName and title must both be empyt")
-		return bookRepository.search(authorName, title).map { it -> Book.of(it)}
+		val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("author.name", "title"))
+//		return PaginatedResponse.of(bookRepository.search(authorName, title, pageRequest))
+//		PaginatedResponse.of(page)qqqq
+		val page = bookRepository.search(authorName, title, pageRequest)
+		val books = page.content.map { it -> Book.of(it)}
+		return PaginatedResponse(content = books, pageIndex, pageSize, page.totalElements, page.totalPages)
 	}
 }

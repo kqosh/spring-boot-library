@@ -4,11 +4,8 @@ import com.jdriven.library.access.model.AuthorityEntity
 import com.jdriven.library.access.model.AuthorityRepository
 import com.jdriven.library.access.model.UserEntity
 import com.jdriven.library.access.model.UserRepository
-import com.jdriven.library.service.model.Author
-import com.jdriven.library.service.model.PaginatedResponse
+import com.jdriven.library.service.model.CreateUserRequest
 import com.jdriven.library.service.model.UserDto
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,16 +16,33 @@ class UserService(private val userRepository: UserRepository, private val author
 	fun find(username: String): UserDto? = userRepository.findByUsername(username)?.let { UserDto.of(it) }//qqqq ut
 
 	@Transactional
-	fun create(user: UserDto): UserDto? {
+	fun create(user: CreateUserRequest): UserDto? {
 		val userEntity = user.toEntity()
 		userRepository.save(userEntity)
+//
+//
+//		val autorityEntities = user.roles.map { it -> createAuthorityEntity(userEntity, it) }
+//		autorityEntities.forEach { authorityRepository.save(it)}
+//
+		return UserDto.of(userEntity)
+	}
 
-		user.roles.forEach { userRepository}
+	@Transactional
+	fun addRole(username: String, role: String) {
+		if (role !in listOf("ROLE_ADMIN", "ROLE_USER")) throw IllegalArgumentException("non existing role $role")
+		val existing = authorityRepository.findByUsernameAndAuthority(username, role)
+		if (existing != null) throw IllegalStateException("authority already exists for $username $role")
+		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user does not exist $username")
 
-		val autorityEntities = user.roles.map { it -> createAuthorityEntity(userEntity, it) }
-		autorityEntities.forEach { authorityRepository.save(it)}
+		val authority = createAuthorityEntity(user, role)
+		authorityRepository.save(authority)
+	}
 
-		return user
+	@Transactional
+	fun deleteRole(username: String, role: String): Boolean {
+		val authority = authorityRepository.findByUsernameAndAuthority(username, role) ?: return false
+		authorityRepository.delete(authority!!)
+		return true
 	}
 
 	private fun createAuthorityEntity(userEntity: UserEntity, role: String): AuthorityEntity {

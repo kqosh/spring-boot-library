@@ -20,9 +20,15 @@ class UserEntity {
     @Column(name = "loan_period_in_days", nullable = false)
     var loanPeriodInDays: Int = 21
 
-    @OneToMany(mappedBy = "user", targetEntity = AuthorityEntity::class)
+    @OneToMany(mappedBy = "user", targetEntity = AuthorityEntity::class, cascade = [CascadeType.ALL], orphanRemoval = true)
     var authorities: List<AuthorityEntity> = emptyList()
 
     @OneToMany(mappedBy = "user", targetEntity = CheckoutEntity::class)
     var checkouts: List<CheckoutEntity> = emptyList()
+
+    fun addAuthority(authority: AuthorityEntity) {
+        if (authorities.isEmpty()) authorities = listOf(authority)
+        else authorities = authorities + authority
+        authority.user = this
+    }
 }

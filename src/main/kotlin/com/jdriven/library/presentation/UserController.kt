@@ -1,6 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.UserService
+import com.jdriven.library.service.model.CreateUserRequest
 import com.jdriven.library.service.model.UserDto
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -26,8 +27,7 @@ class UserController(private val service: UserService) {
     }
 
     private fun validateUser(username: String, authentication: Authentication) {
-        if (authentication.authorities.map { it -> it.authority }
-                .contains("ROLE_ADMIN")) return // admin is allowed to do stuff for other users
+        if (authentication.authorities.map { it -> it.authority }.contains("ROLE_ADMIN")) return // admin is allowed to do stuff for other users
         if (username != authentication.name) {
             logger.warn("username = $username != ${authentication.name} = authentication.name")
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "other user not allowed")
@@ -37,7 +37,7 @@ class UserController(private val service: UserService) {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
-    fun create(@RequestBody user: UserDto) {
+    fun create(@RequestBody user: CreateUserRequest) {
         logger.info("create $user")
         service.create(user)
     }
@@ -49,6 +49,30 @@ class UserController(private val service: UserService) {
         @RequestParam(required = false, defaultValue = "false") enabled: Boolean
     ) {
         logger.info("enable ${username} ${enabled}")
-        service.enable(username, enabled)
+        service.enable(username, enabled) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/users/${username}")
+    }
+
+    @PostMapping("/{username}/roles/{role}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
+    fun addRole(@PathVariable(value = "username") username: String, @PathVariable(value = "role") role: String) {
+        logger.info("addRole $username $role")
+        try {
+            service.addRole(username, role)
+        } catch(ex: Exception) {
+            throw RestCallUtils.translateException(ex)
+        }
+    }
+
+    @DeleteMapping("/{username}/roles/{role}")
+    @PreAuthorize("hasRole('ADMIN')")
+    fun deleteRole(@PathVariable(value = "username") username: String, @PathVariable(value = "role") role: String) {
+        logger.info("deleteRole $username $role")
+        try {
+            val wasDeleted = service.deleteRole(username, role)
+            if (!wasDeleted) throw NoResourceFoundException(HttpMethod.DELETE, "/users/${username}/roles/${role}")
+        } catch(ex: Exception) {
+            throw RestCallUtils.translateException(ex)
+        }
     }
 }

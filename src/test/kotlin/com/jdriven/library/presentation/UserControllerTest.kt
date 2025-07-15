@@ -1,10 +1,10 @@
 package com.jdriven.library.presentation
 
+import com.jdriven.library.service.model.CreateUserRequest
 import com.jdriven.library.service.model.UserDto
 import io.restassured.RestAssured
 import io.restassured.response.ResponseBodyExtractionOptions
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -66,37 +66,70 @@ class UserControllerTest() {
 	}
 
 	@Test
-	fun createFindDisable() {
+	fun createFindAddRoleDisable() {
 		val username = "user801"
-		val user = UserDto(username,"pw801", true, 30, listOf("ROLE_USER"))
+		val pw = "pw801"
+		val createRequest = CreateUserRequest(username,pw, true, 30)//qqqq, listOf("ROLE_USER"))
+		run {
+			// when create
+			RestCallBuilder(baseUrl, 201).body(createRequest).username("admin").password("pwadmin").post()
 
-		// when create
-		RestCallBuilder(baseUrl, 201).body(user).username("admin").password("pwadmin").post()
+			// then
+			val user = findByUsernameAsUserDto(username, 200)
+			assertEquals(0, user.roles.size)
+			assertEquals(createRequest.enabled, user.enabled)
+			assertEquals(createRequest.loanPeriodInDays, user.loanPeriodInDays)
 
-		// then
-		val rspUser = findByUsernameAsUserDto(username, 200)
-		assertEquals(1, rspUser.roles.size)
-		assertEquals(user.roles[0], rspUser.roles[0])
-		assertEquals(user.enabled, rspUser.loanPeriodInDays)
-		assertEquals(user.loanPeriodInDays, rspUser.loanPeriodInDays)
+			findByUsername(username, 401, username, pw) // Because this use has no roles yet!
+		}
+		run {
+			// and add role
+			val role = "ROLE_USER"
+			roleCallBuilder(username, role, 201).post()
 
-		findByUsername(username, 200, "user801", "pw801")
+			// then
+			val user = findByUsernameAsUserDto(username, 200, username, pw)
+			assertEquals(1, user.roles.size)
+			assertEquals(role, user.roles[0])
+		}
+		run {
+			// and disable
+			RestCallBuilder("${baseUrl}/${username}?enabled=false", 200).username("admin").password("pwadmin").patch()
 
-		// and disable
-		RestCallBuilder("${baseUrl}/${username}?enabled=false", 200).username("admin").password("pwadmin").patch()
+			// then
+			findByUsername(username, 401, username, pw)
+			val user = findByUsernameAsUserDto(username, 200)
+			assertFalse(user.enabled)
+		}
+	}
 
-		// then
-		findByUsername(username, 200)
-		findByUsername(username, 404, "user801", "pw801")
+	private fun roleCallBuilder(username: String, role: String, expectedStatusCode: Int): RestCallBuilder =
+		RestCallBuilder("${baseUrl}/${username}/roles/${role}", expectedStatusCode)
+			.username("admin")
+			.password("pwadmin")
+
+	@Test
+	fun addDuplicateRole() {
+		roleCallBuilder("user101", "ROLE_USER", 409).post()
 	}
 
 	@Test
-	fun createWithInvalidRoleNotAllowed() {
-		val username = "user701"
-		val user = UserDto(username,"pw701", true, 30, listOf("ROLE_NON_EXISTEND"))
+	fun addRoleToNonExistingUser() {
+		roleCallBuilder("userNonExisting", "ROLE_USER", 400).post()
+	}
 
-		// when create
-		val rsp = RestCallBuilder(baseUrl, 400).body(user).username("admin").password("pwadmin").post().asString()
-		assertTrue(rsp.contains("qqqq"))
+	@Test
+	fun addNonExistingRole() {
+		roleCallBuilder("user101", "ROLE_DOES_NOT_EXIST", 400).post()
+	}
+
+	@Test
+	fun deleteRoleFromNonExistingUser() {
+		roleCallBuilder("userNonExisting", "ROLE_USER", 404).delete()
+	}
+
+	@Test
+	fun deleteNonExistingRole() {
+		roleCallBuilder("user101", "ROLE_ADMIN", 404).delete()
 	}
 }

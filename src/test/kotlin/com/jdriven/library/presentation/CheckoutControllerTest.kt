@@ -73,8 +73,7 @@ class CheckoutControllerTest() {
 		val baseUrl = "http://localhost:${port}/checkouts/${nr}/${isbn}"
 		run {
 			RestCallBuilder(baseUrl, 201).username("user102").password("pwuser").post()
-		}
-		run {
+
 			val checkouts = findCheckouts(nr, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 		}

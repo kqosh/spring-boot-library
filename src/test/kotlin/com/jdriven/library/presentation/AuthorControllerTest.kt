@@ -64,34 +64,30 @@ class AuthorControllerTest() {
 	fun createFindDelete() {
 		val baseUrl = "http://localhost:${port}/authors"
 		val name = "Klaas"
-		run {
-			RestCallBuilder(baseUrl, 201).body(CreateOrUpdateAuthorRequest(name)).username("admin").password("pwadmin").post()
-		}
-		run {
-			findByName(name, 200)
-		}
-		run {
-			RestCallBuilder("${baseUrl}/${name}", 200).username("admin").password("pwadmin").delete()
+		RestCallBuilder(baseUrl, 201)
+			.body(CreateOrUpdateAuthorRequest(name))
+			.username("admin")
+			.password("pwadmin")
+			.post()
 
-			findByName(name, 404)
-		}
+		findByName(name, 200)
+
+		RestCallBuilder("${baseUrl}/${name}", 200).username("admin").password("pwadmin").delete()
+		findByName(name, 404)
 	}
 
 	@Test
 	fun createNotAllowed() {
-		val baseUrl = "http://localhost:${port}/authors"
-		run {
-			RestCallBuilder(baseUrl, 403).body(CreateOrUpdateAuthorRequest("Henk")).username("user101").password("pwuser").post()
-		}
+		RestCallBuilder("http://localhost:${port}/authors", 403)
+			.body(CreateOrUpdateAuthorRequest("Henk"))
+			.username("user101")
+			.password("pwuser")
+			.post()
 	}
 
 	@Test
 	fun deleteNotAllowed() {
-		val baseUrl = "http://localhost:${port}/authors/Henk"
-		val name = "Henk"
-		run {
-			RestCallBuilder(baseUrl, 403).username("user101").password("pwuser").delete()
-		}
+		RestCallBuilder("http://localhost:${port}/authors/Henk", 403).username("user101").password("pwuser").delete()
 	}
 
 	//qqqq cannot delete als er nog een book is

@@ -102,7 +102,8 @@ class BookControllerTest() {
 		// create book
 		RestCallBuilder(baseUrl, 201).body(book).username("admin").password("pwadmin").post()
 		findByIsbn(isbn, 200)
-		//qqqq find additional author
+		// find newly added author
+		RestCallBuilder("http://localhost:${port}/authors/${book.authorName}", 200).body(book).username("admin").password("pwadmin").get()
 
 		// update author
 		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(authorName = "Rene Goscinny")).username("admin").password("pwadmin").put()

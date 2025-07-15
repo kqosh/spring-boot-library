@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(private val userRepository: UserRepository, private val authorityRepository: AuthorityRepository)  {
 
 	@Transactional(readOnly = true)
-	fun find(username: String): UserDto? = userRepository.findByUsername(username)?.let { UserDto.of(it) }//qqqq ut
+	fun find(username: String): UserDto? = userRepository.findByUsername(username)?.let { UserDto.of(it) }
 
 	@Transactional
 	fun create(user: CreateUserRequest): UserDto? {

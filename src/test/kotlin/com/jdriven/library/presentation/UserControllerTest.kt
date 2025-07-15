@@ -69,7 +69,7 @@ class UserControllerTest() {
 	fun createFindAddRoleDisable() {
 		val username = "user801"
 		val pw = "pw801"
-		val createRequest = CreateUserRequest(username,pw, true, 30)//qqqq, listOf("ROLE_USER"))
+		val createRequest = CreateUserRequest(username,pw, true, 30)
 		run {
 			// when create
 			RestCallBuilder(baseUrl, 201).body(createRequest).username("admin").password("pwadmin").post()

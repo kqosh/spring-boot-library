@@ -110,26 +110,51 @@ class UserControllerTest() {
 
 	@Test
 	fun addDuplicateRole() {
-		roleCallBuilder("user101", "ROLE_USER", 409).post()
+		val username = "user101"
+		val role = "ROLE_USER"
+		assertTrue(
+			roleCallBuilder(username, role, 409).post().asString()
+				.contains("authority already exists for $username $role")
+		)
 	}
 
 	@Test
 	fun addRoleToNonExistingUser() {
-		roleCallBuilder("userNonExisting", "ROLE_USER", 400).post()
+		val username = "userNonExisting"
+		val role = "ROLE_USER"
+		assertTrue(
+			roleCallBuilder(username, role, 400).post().asString()
+				.contains("user does not exist $username")
+		)
 	}
 
 	@Test
 	fun addNonExistingRole() {
-		roleCallBuilder("user101", "ROLE_DOES_NOT_EXIST", 400).post()
+		val username = "user101"
+		val role = "ROLE_DOES_NOT_EXIST"
+		assertTrue(
+			roleCallBuilder(username, role, 400).post().asString()
+				.contains("non existing role $role")
+		)
 	}
 
 	@Test
 	fun deleteRoleFromNonExistingUser() {
-		roleCallBuilder("userNonExisting", "ROLE_USER", 404).delete()
+		val username = "userNonExisting"
+		val role = "ROLE_USER"
+		assertTrue(
+			roleCallBuilder(username, role, 404).delete().asString()
+				.contains("/users/$username/roles/$role")
+		)
 	}
 
 	@Test
 	fun deleteNonExistingRole() {
-		roleCallBuilder("user101", "ROLE_ADMIN", 404).delete()
+		val username = "user101"
+		val role = "ROLE_ADMIN"
+		assertTrue(
+			roleCallBuilder(username, role, 404).delete().asString()
+				.contains("/users/$username/roles/$role")
+		)
 	}
 }

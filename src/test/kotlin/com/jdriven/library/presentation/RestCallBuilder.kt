@@ -25,46 +25,42 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
         return this
     }
 
-    fun get(): ResponseBodyExtractionOptions {
-        return givenWhen().get(url)
+    fun get(): ResponseBodyExtractionOptions =
+        givenWhen().get(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
             .extract().body()
-    }
 
-    fun patch(): ResponseBodyExtractionOptions {
-        return givenWhen().patch(url)
+    fun patch(): ResponseBodyExtractionOptions =
+        givenWhen().patch(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
             .extract().body()
-    }
 
-    fun post(): ResponseBodyExtractionOptions {
-        return givenWhen()
+    fun post(): ResponseBodyExtractionOptions =
+        givenWhen()
             .post(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
             .extract().body()
-    }
 
-    fun put(): ResponseBodyExtractionOptions {
-        return givenWhen()
+    fun put(): ResponseBodyExtractionOptions =
+        givenWhen()
             .put(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
             .extract().body()
-    }
 
-    fun delete() {
+    fun delete(): ResponseBodyExtractionOptions =
         givenWhen().delete(url)
             .then()
             .log().all()
             .statusCode(expectedStatusCode)
-    }
+            .extract().body()
 
     private fun givenWhen(): RequestSpecification {
         val requestSpec = given().log().all()

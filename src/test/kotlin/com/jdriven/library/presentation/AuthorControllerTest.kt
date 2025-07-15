@@ -88,9 +88,14 @@ class AuthorControllerTest() {
 	@Test
 	fun deleteNotAllowed() {
 		RestCallBuilder("http://localhost:${port}/authors/Henk", 403).username("user101").password("pwuser").delete()
+		//qqqq assert body
 	}
 
-	//qqqq cannot delete als er nog een book is
+	@Test
+	fun deleteNotAllowedBecauseThereIsStillABook() {
+		RestCallBuilder("http://localhost:${port}/authors/Jan Klaassen", 409).username("admin").password("pwadmin").delete()
+		//qqqq assert body
+	}
 
 	@Test
 	fun search_byAuthorNotFound() {

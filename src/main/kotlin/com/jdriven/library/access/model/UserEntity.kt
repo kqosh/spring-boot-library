@@ -20,7 +20,7 @@ class UserEntity {
     @Column(name = "loan_period_in_days", nullable = false)
     var loanPeriodInDays: Int = 21
 
-    @OneToMany(mappedBy = "user", targetEntity = AuthorityEntity::class, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "user", targetEntity = AuthorityEntity::class)
     var authorities: List<AuthorityEntity> = emptyList()
 
     @OneToMany(mappedBy = "user", targetEntity = CheckoutEntity::class)

@@ -80,7 +80,7 @@ class UserControllerTest() {
 			assertEquals(createRequest.enabled, user.enabled)
 			assertEquals(createRequest.loanPeriodInDays, user.loanPeriodInDays)
 
-			findByUsername(username, 401, username, pw) // Because this use has no roles yet!
+			findByUsername(username, 401, username, pw) // Because this user has no roles yet!
 		}
 		run {
 			// and add role

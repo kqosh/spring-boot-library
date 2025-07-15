@@ -26,6 +26,7 @@ class AuthorService(private val repository: AuthorRepository)  {
 	@Transactional
 	fun delete(name: String): Author? {
 		val authorEntity = repository.findByName(name) ?: return null
+		if (authorEntity.books.size > 0) throw IllegalStateException("this author still books")
 		repository.deleteById(authorEntity.id!!)
 		return Author.of(authorEntity)
 	}

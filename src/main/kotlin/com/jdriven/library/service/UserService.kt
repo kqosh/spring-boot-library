@@ -19,11 +19,6 @@ class UserService(private val userRepository: UserRepository, private val author
 	fun create(user: CreateUserRequest): UserDto? {
 		val userEntity = user.toEntity()
 		userRepository.save(userEntity)
-//
-//
-//		val autorityEntities = user.roles.map { it -> createAuthorityEntity(userEntity, it) }
-//		autorityEntities.forEach { authorityRepository.save(it)}
-//
 		return UserDto.of(userEntity)
 	}
 
@@ -41,7 +36,7 @@ class UserService(private val userRepository: UserRepository, private val author
 	@Transactional
 	fun deleteRole(username: String, role: String): Boolean {
 		val authority = authorityRepository.findByUsernameAndAuthority(username, role) ?: return false
-		authorityRepository.delete(authority!!)
+		authorityRepository.delete(authority)
 		return true
 	}
 

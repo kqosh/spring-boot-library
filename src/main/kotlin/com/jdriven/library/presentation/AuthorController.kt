@@ -37,7 +37,11 @@ class AuthorController(private val service: AuthorService) {
 	@PreAuthorize("hasRole('ADMIN')")
 	fun delete(@PathVariable(value = "name") name: String) {
 		logger.info("deleteByName $name")
-		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
+		try {
+			service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
+		} catch (ex: Exception) {
+			throw RestCallUtils.translateException(ex)
+		}
 	}
 
 	@GetMapping("/search")

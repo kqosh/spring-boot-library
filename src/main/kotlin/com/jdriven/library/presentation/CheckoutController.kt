@@ -22,11 +22,7 @@ class CheckoutController(private val service: CheckoutService) {
 	fun findByUsername(@PathVariable(value = "username") username: String, authentication: Authentication): List<Checkout> {
 		logger.info("findByUsername $username")
 		validateUser(username, authentication)
-		try {
-			return service.findByUsername(username) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${username}")
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)
-		}
+		return service.findByUsername(username) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${username}")
 	}
 
 	private fun validateUser(username: String, authentication: Authentication) {
@@ -41,11 +37,7 @@ class CheckoutController(private val service: CheckoutService) {
 	@PreAuthorize("hasRole('USER')")
 	fun findByBook(@PathVariable(value = "isbn") isbn: String): List<Checkout> {
 		logger.info("findByBook $isbn")
-		try {
-			return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)//qqqq toch alegement exception handler?
-		}
+		return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
 	}
 
 	@PostMapping("{username}/{isbn}")
@@ -54,11 +46,7 @@ class CheckoutController(private val service: CheckoutService) {
 	fun create(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("create $username, $isbn")
 		validateUser(username, authentication)
-		try {
-			service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.POST, "/checkouts/${username}/${isbn}")
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)
-		}
+		service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.POST, "/checkouts/${username}/${isbn}")
 	}
 
 	@PatchMapping("{username}/{isbn}/return")
@@ -66,11 +54,7 @@ class CheckoutController(private val service: CheckoutService) {
 	fun returnBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("returnBook $username, $isbn")
 		validateUser(username, authentication)
-		try {
-			service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)
-		}
+		service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
 	}
 
 	@PatchMapping("{username}/{isbn}/renew")
@@ -78,10 +62,6 @@ class CheckoutController(private val service: CheckoutService) {
 	fun renewBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {//qqqq ut
 		logger.info("renewBook $username, $isbn")
 		validateUser(username, authentication)
-		try {
-			service.renewBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)
-		}
+		service.renewBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
 	}
 }

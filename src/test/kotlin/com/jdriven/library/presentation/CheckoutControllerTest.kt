@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.boot.test.web.server.LocalServerPort
 import java.time.LocalDate
-import kotlin.text.contains
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class CheckoutControllerTest() {
@@ -38,8 +37,8 @@ class CheckoutControllerTest() {
 		assertEquals(LocalDate.of(2025, 7, 15), checkoutsByIsbn["isbn124"]!!.checkoutAt)
 	}
 
-	private fun findCheckouts(username: String, expectedStatusCode: Int): List<Checkout> {
-		return get(username, expectedStatusCode, username, "pwuser").`as`(object : TypeRef<List<Checkout>>() {})
+	private fun findCheckouts(username: String, expectedStatusCode: Int, loginUsername: String = username, password: String = "pwuser"): List<Checkout> {
+		return get(username, expectedStatusCode, loginUsername, password).`as`(object : TypeRef<List<Checkout>>() {})
 	}
 
 	private fun get(username: String, expectedStatusCode: Int, loginUsername: String, password: String): ResponseBodyExtractionOptions {
@@ -58,13 +57,24 @@ class CheckoutControllerTest() {
 	@Test
 	fun findByUsername_otherUserNotAllowed() {
 		val username = "user101"
-		assertTrue(get(username, 403, "user102", "pwuser").asString().contains("other user not allowed"))//qqqq add more errorbody asserts
+		assertTrue(
+			get(username, 403, "user102", "pwuser").asString().contains("other user not allowed")
+		)
 	}
 
 	@Test
 	fun findByUsername_notFound() {
 		val username = "Doesnt Exist"
-		get(username, 404, "admin", "pwadmin")
+		assertTrue(get(username, 400, "admin", "pwadmin").asString().contains("user not found: $username"))
+	}
+
+	@Test
+	fun findByUsernameAsAdmin() {
+		val username = "user101"
+		val checkouts = findCheckouts(username, 200, "admin", "pwadmin")
+		assertEquals(2, checkouts.size)
+		val expectedIsbns = listOf("isbn123", "isbn124")
+		checkouts.forEach { assertTrue(it.book.isbn in expectedIsbns) }
 	}
 
 	@Test
@@ -124,5 +134,13 @@ class CheckoutControllerTest() {
 		assertTrue(rsp.contains("currently no books available for: isbn125"))
 	}
 
-	//qqqq create, return renew other user not allowed
+	@Test
+	fun create_otherUserNotAllowed() {
+		val username = "user101"
+		val isbn = "isbn123"
+		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 403).post().asString()
+		assertTrue(rsp.contains("other user not allowed"))
+	}
+
+	//qqqq create, return renew other user not allowed, not found
 }

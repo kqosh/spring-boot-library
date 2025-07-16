@@ -35,7 +35,7 @@ class CheckoutService(
 
 	@Transactional(readOnly = true)
 	fun findByUsername(username: String): List<Checkout>? {
-		val user = userRepository.findByUsername(username) ?: return null
+		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		return checkoutRepository.findByUserAndReturned(user).map { it -> Checkout.of(it) }
 	}
 

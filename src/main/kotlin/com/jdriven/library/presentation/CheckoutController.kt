@@ -22,7 +22,11 @@ class CheckoutController(private val service: CheckoutService) {
 	fun findByUsername(@PathVariable(value = "username") username: String, authentication: Authentication): List<Checkout> {
 		logger.info("findByUsername $username")
 		validateUser(username, authentication)
-		return service.findByUsername(username) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${username}")
+		try {
+			return service.findByUsername(username) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${username}")
+		} catch (ex: Exception) {
+			throw RestCallUtils.translateException(ex)
+		}
 	}
 
 	private fun validateUser(username: String, authentication: Authentication) {
@@ -37,7 +41,11 @@ class CheckoutController(private val service: CheckoutService) {
 	@PreAuthorize("hasRole('USER')")
 	fun findByBook(@PathVariable(value = "isbn") isbn: String): List<Checkout> {
 		logger.info("findByBook $isbn")
-		return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
+		try {
+			return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
+		} catch (ex: Exception) {
+			throw RestCallUtils.translateException(ex)//qqqq toch alegement exception handler?
+		}
 	}
 
 	@PostMapping("{username}/{isbn}")

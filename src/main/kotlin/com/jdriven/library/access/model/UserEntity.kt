@@ -20,6 +20,9 @@ class UserEntity {
     @Column(name = "loan_period_in_days", nullable = false)
     var loanPeriodInDays: Int = 21
 
+    @Column(name = "max_renew_count", nullable = false)
+    var maxRenewCount: Int = 2
+
     @OneToMany(mappedBy = "user", targetEntity = AuthorityEntity::class)
     var authorities: List<AuthorityEntity> = emptyList()
 

@@ -25,6 +25,9 @@ class CheckoutEntity {
     @Column(name = "due_date", nullable = false )
     var dueDate: LocalDate = LocalDate.now()
 
+    @Column(name = "renew_count", nullable = false )
+    var renewCount: Int = 0
+
     @Column(nullable = false )
     var returned: Boolean = false
 

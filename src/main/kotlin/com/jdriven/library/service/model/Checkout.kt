@@ -6,10 +6,12 @@ import java.time.LocalDate
 data class Checkout(
     val checkoutAt: LocalDate,
     val returned: Boolean,
+    val renewCount: Int,
     val book: Book
 ) {
 
     companion object {
-        fun of(entity: CheckoutEntity): Checkout = Checkout(entity.checkoutAt, returned = entity.returned, Book.of(entity.book))
+        fun of(entity: CheckoutEntity): Checkout =
+            Checkout(entity.checkoutAt, returned = entity.returned, entity.renewCount, Book.of(entity.book))
     }
 }

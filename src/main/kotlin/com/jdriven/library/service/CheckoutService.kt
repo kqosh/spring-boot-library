@@ -17,18 +17,18 @@ class CheckoutService(
 
 	@Transactional
 	fun create(username: String, isbn: String): Checkout? {
-		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")//qqqq eigen ut
-		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")//qqqq eigen ut
+		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
+		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")
 
 		val currentCheckouts = checkoutRepository.findByBookAndReturned(book, returned = true)
 		if (currentCheckouts.size >= book.numberOfCopies) {
-			throw IllegalStateException("no books available for: $isbn")//qqqq eigen ut
+			throw IllegalStateException("currently no books available for: $isbn")
 		}
 
 		val entity = CheckoutEntity()
 		entity.user = user
 		entity.book = book
-		entity.dueDate = entity.checkoutAt.plusDays(user.loanPeriodInDays!!.toLong())//qqqq assert in ut
+		entity.dueDate = entity.checkoutAt.plusDays(user.loanPeriodInDays.toLong())//qqqq assert in ut
 		checkoutRepository.save(entity)
 		return Checkout.of(entity)
 	}
@@ -57,8 +57,8 @@ class CheckoutService(
 	fun renewBook(username: String, isbn: String): Checkout? {//qqqq ut
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val entity = checkoutRepository.findByUserAndReturned(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
-		if (entity.renewCount >= user.maxRenewCount) throw IllegalArgumentException("max renew count (${user.maxRenewCount} exceeded")
-		entity.dueDate = entity.dueDate.plusDays(user.loanPeriodInDays!!.toLong())
+		if (entity.renewCount >= user.maxRenewCount) throw IllegalArgumentException("max renew count (${user.maxRenewCount}) exceeded")
+		entity.dueDate = entity.dueDate.plusDays(user.loanPeriodInDays.toLong())
 		entity.renewCount++
 		return Checkout.of(entity)
 	}

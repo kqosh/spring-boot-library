@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.boot.test.web.server.LocalServerPort
 import java.time.LocalDate
-import kotlin.test.assertContains
+import kotlin.text.contains
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class CheckoutControllerTest() {
@@ -73,55 +73,55 @@ class CheckoutControllerTest() {
 		val isbn = "isbn444"
 		val baseUrl = "http://localhost:${port}/checkouts/${username}/${isbn}"
 		run {
-			builder(baseUrl, username, isbn, 201).post()
+			builder(baseUrl, 201).post()
 
 			val checkouts = findCheckouts(username, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 			assertEquals(0, checkouts[0].renewCount, checkouts[0].toString())
 		}
 		run {
-			builder("${baseUrl}/renew", username, isbn, 200).patch()
+			builder("${baseUrl}/renew", 200).patch()
 
 			val checkouts = findCheckouts(username, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 			assertEquals(1, checkouts[0].renewCount, checkouts[0].toString())
 
-			val rsp = builder("${baseUrl}/renew", username, isbn, 400).patch().asString()
-			assertTrue(rsp.contains("exceeded"))
+			val rsp = builder("${baseUrl}/renew", 400).patch().asString()
+			assertTrue(rsp.contains("max renew count (1) exceeded"))
 		}
 		run {
-			builder("${baseUrl}/return", username, isbn, 200).patch()
+			builder("${baseUrl}/return", 200).patch()
 
 			val checkouts = findCheckouts(username, 200)
 			assertEquals(0, checkouts.size, checkouts.toString())
 		}
 	}
 
-	private fun builder(url: String, username: String, isbn: String, expectedStatusCode: Int, loginUserName: String = username): RestCallBuilder =
-		RestCallBuilder(url, expectedStatusCode).username(loginUserName).password("pwuser")
+	private fun builder(url: String, expectedStatusCode: Int, loginUserName: String = "user102", password: String = "pwuser"): RestCallBuilder =
+		RestCallBuilder(url, expectedStatusCode).username(loginUserName).password(password)
 
 	@Test
 	fun create_userNotFound() {
-		val nr = "user102"
-		val isbn = "isbn444"
-		val baseUrl = "http://localhost:${port}/checkouts/${nr}/${isbn}"
-		RestCallBuilder(baseUrl, 201).username("user102").password("pwuser").post()
+		val username = "user123"
+		val isbn = "isbn101"
+		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 400, "admin", "pwadmin").post().asString()
+		assertTrue(rsp.contains("user not found: $username"))
 	}
 
 	@Test
 	fun create_bookNotFound() {
-		val nr = "user102"
-		val isbn = "isbn444"
-		val baseUrl = "http://localhost:${port}/checkouts/${nr}/${isbn}"
-		RestCallBuilder(baseUrl, 201).username("user102").password("pwuser").post()
+		val username = "user102"
+		val isbn = "isnotthere"
+		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 400).post().asString()
+		assertTrue(rsp.contains("book not found: $isbn"))
 	}
 
 	@Test
 	fun create_bookNotAvailable() {
-		val nr = "user102"
-		val isbn = "isbn444"
-		val baseUrl = "http://localhost:${port}/checkouts/${nr}/${isbn}"
-		RestCallBuilder(baseUrl, 201).username("user102").password("pwuser").post()
+		val username = "user102"
+		val isbn = "isbn125"
+		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 409).post().asString()
+		assertTrue(rsp.contains("currently no books available for: isbn125"))
 	}
 
 	//qqqq create, return renew other user not allowed

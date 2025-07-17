@@ -1,7 +1,7 @@
 package com.jdriven.library.access.model
 
 import jakarta.persistence.*
-import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Entity(name = "Checkout")
 @Table(
@@ -13,17 +13,13 @@ import java.time.LocalDate
         )
     ]
 )
-class CheckoutEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null
+class CheckoutEntity() : AbstractBaseEntity() {
 
     @Column(name = "checkout_at", nullable = false )
-    var checkoutAt: LocalDate = LocalDate.now()
+    var checkoutAt: ZonedDateTime = ZonedDateTime.now()
 
     @Column(name = "due_date", nullable = false )
-    var dueDate: LocalDate = LocalDate.now()
+    var dueDate: ZonedDateTime = ZonedDateTime.now()
 
     @Column(name = "renew_count", nullable = false )
     var renewCount: Int = 0

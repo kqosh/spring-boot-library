@@ -12,11 +12,7 @@ import jakarta.persistence.*
         )
     ]
 )
-class AuthorityEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null
+class AuthorityEntity(): AbstractBaseEntity() {
 
     @Column(nullable = false, length = 50)
     lateinit var authority: String

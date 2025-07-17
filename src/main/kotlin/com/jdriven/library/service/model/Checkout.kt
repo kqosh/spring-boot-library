@@ -1,10 +1,11 @@
 package com.jdriven.library.service.model
 
 import com.jdriven.library.access.model.CheckoutEntity
-import java.time.LocalDate
+import java.time.ZonedDateTime
 
-data class Checkout(
-    val checkoutAt: LocalDate,
+data class Checkout(//qqqq rename *Dto
+    val checkoutAt: ZonedDateTime,
+    val dueDate: ZonedDateTime,
     val returned: Boolean,
     val renewCount: Int,
     val book: Book
@@ -12,6 +13,6 @@ data class Checkout(
 
     companion object {
         fun of(entity: CheckoutEntity): Checkout =
-            Checkout(entity.checkoutAt, returned = entity.returned, entity.renewCount, Book.of(entity.book))
+            Checkout(entity.checkoutAt, entity.dueDate, entity.returned, entity.renewCount, Book.of(entity.book))
     }
 }

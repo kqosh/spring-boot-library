@@ -12,11 +12,7 @@ import jakarta.persistence.*
         Index(name = "idx_book_title", columnList = "title")
     ]
 )
-class BookEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null
+class BookEntity() : AbstractBaseEntity() {
 
     @Column(unique = true, nullable = false)
     var isbn: String? = null

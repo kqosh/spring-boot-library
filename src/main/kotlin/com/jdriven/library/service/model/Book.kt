@@ -3,7 +3,7 @@ package com.jdriven.library.service.model
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.BookEntity
 
-data class Book(
+data class Book(//qqqq rename *Dto
     val isbn: String,
     var authorName: String? = null,
     var title: String? = null,

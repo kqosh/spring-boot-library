@@ -9,11 +9,7 @@ import jakarta.persistence.*
         Index(name = "idx_author_name", columnList = "name")
     ]
 )
-class AuthorEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null
+class AuthorEntity() : AbstractBaseEntity() {
 
     @Column(nullable = false, unique = true)
     lateinit var name: String

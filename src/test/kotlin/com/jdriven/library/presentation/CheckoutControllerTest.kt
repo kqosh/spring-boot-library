@@ -33,8 +33,9 @@ class CheckoutControllerTest() {
 		assertEquals(2, checkouts.size)
 
 		val checkoutsByIsbn: Map<String, Checkout> = checkouts.associateBy { it.book.isbn }
-		assertEquals(LocalDate.of(2025, 7, 8), checkoutsByIsbn["isbn123"]!!.checkoutAt)
-		assertEquals(LocalDate.of(2025, 7, 15), checkoutsByIsbn["isbn124"]!!.checkoutAt)
+		assertEquals(LocalDate.of(2025, 7, 8), checkoutsByIsbn["isbn123"]!!.checkoutAt.toLocalDate())
+		assertEquals(LocalDate.of(2025, 7, 15), checkoutsByIsbn["isbn124"]!!.checkoutAt.toLocalDate())
+		//qqqq due dates
 	}
 
 	private fun findCheckouts(username: String, expectedStatusCode: Int, loginUsername: String = username, password: String = "pwuser"): List<Checkout> {

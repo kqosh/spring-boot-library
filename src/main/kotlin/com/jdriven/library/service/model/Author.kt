@@ -3,7 +3,7 @@ package com.jdriven.library.service.model
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.BookEntity
 
-data class Author(
+data class Author(//qqqq rename *Dto
     val name: String,
     val books: List<Book> = emptyList()
 ) {

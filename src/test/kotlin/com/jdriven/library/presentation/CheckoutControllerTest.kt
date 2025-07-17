@@ -1,6 +1,6 @@
 package com.jdriven.library.presentation
 
-import com.jdriven.library.service.model.Checkout
+import com.jdriven.library.service.model.CheckoutDto
 import io.restassured.RestAssured
 import io.restassured.common.mapper.TypeRef
 import io.restassured.response.ResponseBodyExtractionOptions
@@ -28,18 +28,18 @@ class CheckoutControllerTest() {
 	fun findByUsername() {
 		val username = "user101"
 
-		val checkouts: List<Checkout> = findCheckouts(username, 200)
+		val checkouts: List<CheckoutDto> = findCheckouts(username, 200)
 
 		assertEquals(2, checkouts.size)
 
-		val checkoutsByIsbn: Map<String, Checkout> = checkouts.associateBy { it.book.isbn }
+		val checkoutsByIsbn: Map<String, CheckoutDto> = checkouts.associateBy { it.book.isbn }
 		assertEquals(LocalDate.of(2025, 7, 8), checkoutsByIsbn["isbn123"]!!.checkoutAt.toLocalDate())
 		assertEquals(LocalDate.of(2025, 7, 15), checkoutsByIsbn["isbn124"]!!.checkoutAt.toLocalDate())
 		//qqqq due dates
 	}
 
-	private fun findCheckouts(username: String, expectedStatusCode: Int, loginUsername: String = username, password: String = "pwuser"): List<Checkout> {
-		return get(username, expectedStatusCode, loginUsername, password).`as`(object : TypeRef<List<Checkout>>() {})
+	private fun findCheckouts(username: String, expectedStatusCode: Int, loginUsername: String = username, password: String = "pwuser"): List<CheckoutDto> {
+		return get(username, expectedStatusCode, loginUsername, password).`as`(object : TypeRef<List<CheckoutDto>>() {})
 	}
 
 	private fun get(username: String, expectedStatusCode: Int, loginUsername: String, password: String): ResponseBodyExtractionOptions {

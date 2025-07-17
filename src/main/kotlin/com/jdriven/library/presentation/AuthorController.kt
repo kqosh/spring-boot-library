@@ -1,7 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.AuthorService
-import com.jdriven.library.service.model.Author
+import com.jdriven.library.service.model.AuthorDto
 import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import com.jdriven.library.service.model.PaginatedResponse
 import org.slf4j.LoggerFactory
@@ -19,7 +19,7 @@ class AuthorController(private val service: AuthorService) {
 
 	@GetMapping("/{name}")
 	@PreAuthorize("hasRole('USER')")
-	fun findByName(@PathVariable(value = "name") name: String): Author {
+	fun findByName(@PathVariable(value = "name") name: String): AuthorDto {
 		logger.info("findByName $name")
 		return service.find(name) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${name}")
 	}
@@ -45,7 +45,7 @@ class AuthorController(private val service: AuthorService) {
 		@RequestParam(required = false, defaultValue = "") name: String?,
 		@RequestParam(required = false, defaultValue = "0") page: String?,
 		@RequestParam(required = false, defaultValue = "20") size: String?
-	): PaginatedResponse<Author> {
+	): PaginatedResponse<AuthorDto> {
 		logger.info("search $name, page=$page, size=$size")
 		return service.search(name, page!!.toInt(), size!!.toInt())
 	}

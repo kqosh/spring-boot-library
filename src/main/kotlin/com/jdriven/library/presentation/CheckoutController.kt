@@ -1,7 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.CheckoutService
-import com.jdriven.library.service.model.Checkout
+import com.jdriven.library.service.model.CheckoutDto
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -19,7 +19,7 @@ class CheckoutController(private val service: CheckoutService) {
 
 	@GetMapping("/{username}")
 	@PreAuthorize("hasRole('USER')")
-	fun findByUsername(@PathVariable(value = "username") username: String, authentication: Authentication): List<Checkout> {
+	fun findByUsername(@PathVariable(value = "username") username: String, authentication: Authentication): List<CheckoutDto> {
 		logger.info("findByUsername $username")
 		validateUser(username, authentication)
 		return service.findByUsername(username) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/${username}")
@@ -35,7 +35,7 @@ class CheckoutController(private val service: CheckoutService) {
 
 	@GetMapping("/book/{isbn}")
 	@PreAuthorize("hasRole('USER')")
-	fun findByBook(@PathVariable(value = "isbn") isbn: String): List<Checkout> {
+	fun findByBook(@PathVariable(value = "isbn") isbn: String): List<CheckoutDto> {
 		logger.info("findByBook $isbn")
 		return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
 	}

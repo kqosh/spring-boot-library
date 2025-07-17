@@ -2,7 +2,7 @@ package com.jdriven.library.service
 
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.AuthorRepository
-import com.jdriven.library.service.model.Author
+import com.jdriven.library.service.model.AuthorDto
 import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import com.jdriven.library.service.model.PaginatedResponse
 import org.springframework.data.domain.PageRequest
@@ -14,29 +14,29 @@ import org.springframework.transaction.annotation.Transactional
 class AuthorService(private val repository: AuthorRepository)  {
 
 	@Transactional(readOnly = true)
-	fun find(name: String): Author? = repository.findByName(name)?.let { Author.of(it) }
+	fun find(name: String): AuthorDto? = repository.findByName(name)?.let { AuthorDto.of(it) }
 
 	@Transactional
-	fun create(request: CreateOrUpdateAuthorRequest): Author? {
+	fun create(request: CreateOrUpdateAuthorRequest): AuthorDto? {
 		val entity = AuthorEntity()
 		entity.name = request.name
-		return Author.of(repository.save(entity))
+		return AuthorDto.of(repository.save(entity))
 	}
 
 	@Transactional
-	fun delete(name: String): Author? {
+	fun delete(name: String): AuthorDto? {
 		val authorEntity = repository.findByName(name) ?: return null
 		if (authorEntity.books.size > 0) throw IllegalStateException("this author still books")
 		repository.deleteById(authorEntity.id!!)
-		return Author.of(authorEntity)
+		return AuthorDto.of(authorEntity)
 	}
 
 	@Transactional(readOnly = true)
-	fun search(authorName: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<Author> {
+	fun search(authorName: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<AuthorDto> {
 		if (authorName.isNullOrEmpty()) throw IllegalArgumentException("authorName must not be empty")
 		val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("name"))
 		val page = repository.search(authorName, pageRequest)
-		val authors = page.content.map { it -> Author.of(it)}
+		val authors = page.content.map { it -> AuthorDto.of(it)}
 		return PaginatedResponse(content = authors, pageIndex, pageSize, page.totalElements, page.totalPages)
 	}
 }

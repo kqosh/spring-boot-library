@@ -1,6 +1,6 @@
 package com.jdriven.library.presentation
 
-import com.jdriven.library.service.model.Author
+import com.jdriven.library.service.model.AuthorDto
 import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import com.jdriven.library.service.model.PaginatedResponse
 import io.restassured.RestAssured
@@ -32,7 +32,7 @@ class AuthorControllerTest() {
 	@Test
 	fun findByName_found() {
 		val name = "Jan Klaassen"
-		val author = findByName(name, 200).`as`(Author::class.java)!!
+		val author = findByName(name, 200).`as`(AuthorDto::class.java)!!
 
 		assertEquals(name, author.name)
 		assertEquals(2, author.books.size)
@@ -110,8 +110,8 @@ class AuthorControllerTest() {
 		page.content.forEach { assertTrue(it.name!!.startsWith("K")) }
 	}
 
-	private fun searchAsAuthors(author: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<Author> =
-		searchAsRspOptions(author, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<Author>>() {})
+	private fun searchAsAuthors(author: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<AuthorDto> =
+		searchAsRspOptions(author, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<AuthorDto>>() {})
 
 	private fun searchAsRspOptions(name: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
 		var url = "http://localhost:${port}/authors/search?page=${pageIndex}"

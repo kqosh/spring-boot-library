@@ -3,7 +3,7 @@ package com.jdriven.library.service.model
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.BookEntity
 
-data class Book(//qqqq rename *Dto
+data class BookDto(
     val isbn: String,
     var authorName: String? = null,
     var title: String? = null,
@@ -23,6 +23,6 @@ data class Book(//qqqq rename *Dto
     }
 
     companion object {
-        fun of(entity: BookEntity): Book = Book(entity.isbn!!, entity.author?.name, entity.title, entity.publisher, entity.numberOfCopies)
+        fun of(entity: BookEntity): BookDto = BookDto(entity.isbn!!, entity.author?.name, entity.title, entity.publisher, entity.numberOfCopies)
     }
 }

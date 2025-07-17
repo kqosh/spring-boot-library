@@ -1,6 +1,6 @@
 package com.jdriven.library.presentation
 
-import com.jdriven.library.service.model.Book
+import com.jdriven.library.service.model.BookDto
 import com.jdriven.library.service.model.PaginatedResponse
 import io.restassured.RestAssured
 import io.restassured.common.mapper.TypeRef
@@ -30,7 +30,7 @@ class BookControllerTest() {
 	@Test
 	fun findIsbn_found() {
 		val isbn = "isbn123"
-		val book = findByIsbn(isbn, 200).`as`(Book::class.java)!!
+		val book = findByIsbn(isbn, 200).`as`(BookDto::class.java)!!
 		assertEquals(isbn, book.isbn)
 		assertEquals("Jan Klaassen", book.authorName)
 	}
@@ -81,8 +81,8 @@ class BookControllerTest() {
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
-	private fun searchAsBooks(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<Book> =
-		searchAsRspOptions(author, title, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<Book>>() {})
+	private fun searchAsBooks(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<BookDto> =
+		searchAsRspOptions(author, title, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<BookDto>>() {})
 
 	private fun searchAsRspOptions(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
 		var url = "http://localhost:${port}/books/search?page=${pageIndex}"
@@ -97,7 +97,7 @@ class BookControllerTest() {
 		val baseUrl = "http://localhost:${port}/books"
 		val isbn = "isbn998"
 		val isbnNew = "isbn999"
-		val book = Book(isbn, "an author", "a title", numberOfCopies = 4)
+		val book = BookDto(isbn, "an author", "a title", numberOfCopies = 4)
 
 		// create book
 		RestCallBuilder(baseUrl, 201).body(book).username("admin").password("pwadmin").post()
@@ -107,7 +107,7 @@ class BookControllerTest() {
 
 		// update author
 		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(authorName = "Rene Goscinny")).username("admin").password("pwadmin").put()
-		val bookAfterUpdate = findByIsbn(isbn, 200).`as`(Book::class.java)!!
+		val bookAfterUpdate = findByIsbn(isbn, 200).`as`(BookDto::class.java)!!
 		assertEquals("Rene Goscinny", bookAfterUpdate.authorName)
 
 		// update isbn

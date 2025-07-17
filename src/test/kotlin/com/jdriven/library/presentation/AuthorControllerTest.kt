@@ -86,15 +86,19 @@ class AuthorControllerTest() {
 	}
 
 	@Test
-	fun deleteNotAllowed() {
-		RestCallBuilder("http://localhost:${port}/authors/Henk", 403).username("user101").password("pwuser").delete()
-		//qqqq assert body
+	fun delete_notAllowedByUser() {
+		assertTrue(
+			RestCallBuilder("http://localhost:${port}/authors/Henk", 403).username("user101").password("pwuser")
+				.delete().asString().contains("/authors/Henk")
+		)
 	}
 
 	@Test
-	fun deleteNotAllowedBecauseThereIsStillABook() {
-		RestCallBuilder("http://localhost:${port}/authors/Jan Klaassen", 409).username("admin").password("pwadmin").delete()
-		//qqqq assert body
+	fun delete_notAllowedBecauseThereIsStillABook() {
+		assertTrue(
+			RestCallBuilder("http://localhost:${port}/authors/Jan Klaassen", 409).username("admin").password("pwadmin")
+				.delete().asString().contains("this author still has books")
+		)
 	}
 
 	@Test
@@ -107,7 +111,7 @@ class AuthorControllerTest() {
 	fun search_byName() {
 		val page = searchAsAuthors("k", 200)
 		assertEquals(2, page.content.size)
-		page.content.forEach { assertTrue(it.name!!.startsWith("K")) }
+		page.content.forEach { assertTrue(it.name.startsWith("K")) }
 	}
 
 	private fun searchAsAuthors(author: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<AuthorDto> =

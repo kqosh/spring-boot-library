@@ -57,22 +57,14 @@ class UserController(private val service: UserService) {
     @PreAuthorize("hasRole('ADMIN')")
     fun addRole(@PathVariable(value = "username") username: String, @PathVariable(value = "role") role: String) {
         logger.info("addRole $username $role")
-        try {
-            service.addRole(username, role)
-        } catch(ex: Exception) {
-            throw RestCallUtils.translateException(ex)
-        }
+        service.addRole(username, role)
     }
 
     @DeleteMapping("/{username}/roles/{role}")
     @PreAuthorize("hasRole('ADMIN')")
     fun deleteRole(@PathVariable(value = "username") username: String, @PathVariable(value = "role") role: String) {
         logger.info("deleteRole $username $role")
-        try {
-            val wasDeleted = service.deleteRole(username, role)
-            if (!wasDeleted) throw NoResourceFoundException(HttpMethod.DELETE, "/users/${username}/roles/${role}")
-        } catch(ex: Exception) {
-            throw RestCallUtils.translateException(ex)
-        }
+        val wasDeleted = service.deleteRole(username, role)
+        if (!wasDeleted) throw NoResourceFoundException(HttpMethod.DELETE, "/users/${username}/roles/${role}")
     }
 }

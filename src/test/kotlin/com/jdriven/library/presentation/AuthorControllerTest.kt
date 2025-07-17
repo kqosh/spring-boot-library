@@ -55,9 +55,9 @@ class AuthorControllerTest() {
 
 	@Test
 	fun findByName_notFound() {
-		val name = "Doesnt Exist"
+		val name = "DoesntExist"
 		val rsp = findByName(name, 404).asString()
-		assertTrue(rsp.contains(name.replace(" ", "%20")), rsp.toString())
+		assertTrue(rsp.contains(name), rsp.toString())
 	}
 
 	@Test

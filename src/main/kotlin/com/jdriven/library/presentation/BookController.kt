@@ -54,10 +54,6 @@ class BookController(private val service: BookService) {
 		@RequestParam(required = false, defaultValue = "20") size: String?
 	): PaginatedResponse<Book> {
 		logger.info("search $author - $title, page=$page, size=$size")
-		try {
-			return service.search(author, title, page!!.toInt(), size!!.toInt())
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)
-		}
+		return service.search(author, title, page!!.toInt(), size!!.toInt())
 	}
 }

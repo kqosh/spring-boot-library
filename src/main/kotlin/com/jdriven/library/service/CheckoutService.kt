@@ -7,7 +7,6 @@ import com.jdriven.library.access.model.UserRepository
 import com.jdriven.library.service.model.Checkout
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 
 @Service
 class CheckoutService(
@@ -54,7 +53,7 @@ class CheckoutService(
 	}
 
 	@Transactional
-	fun renewBook(username: String, isbn: String): Checkout? {//qqqq ut
+	fun renewBook(username: String, isbn: String): Checkout? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val entity = checkoutRepository.findByUserAndReturned(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		if (entity.renewCount >= user.maxRenewCount) throw IllegalArgumentException("max renew count (${user.maxRenewCount}) exceeded")

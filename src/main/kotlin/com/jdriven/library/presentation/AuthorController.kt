@@ -2,7 +2,6 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.AuthorService
 import com.jdriven.library.service.model.Author
-import com.jdriven.library.service.model.Book
 import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import com.jdriven.library.service.model.PaginatedResponse
 import org.slf4j.LoggerFactory
@@ -37,11 +36,7 @@ class AuthorController(private val service: AuthorService) {
 	@PreAuthorize("hasRole('ADMIN')")
 	fun delete(@PathVariable(value = "name") name: String) {
 		logger.info("deleteByName $name")
-		try {
-			service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)
-		}
+		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
 	}
 
 	@GetMapping("/search")
@@ -52,10 +47,6 @@ class AuthorController(private val service: AuthorService) {
 		@RequestParam(required = false, defaultValue = "20") size: String?
 	): PaginatedResponse<Author> {
 		logger.info("search $name, page=$page, size=$size")
-		try {
-			return service.search(name, page!!.toInt(), size!!.toInt())
-		} catch (ex: Exception) {
-			throw RestCallUtils.translateException(ex)
-		}
+		return service.search(name, page!!.toInt(), size!!.toInt())
 	}
 }

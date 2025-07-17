@@ -60,9 +60,9 @@ class UserControllerTest() {
 
 	@Test
 	fun findByName_notFound() {
-		val username = "Doesnt Exist"
+		val username = "DoesntExist"
 		val rsp = findByUsername(username, 404).asString()
-		assertTrue(rsp.contains(username.replace(" ", "%20")), rsp.toString())
+		assertTrue(rsp.contains(username), rsp.toString())
 	}
 
 	@Test

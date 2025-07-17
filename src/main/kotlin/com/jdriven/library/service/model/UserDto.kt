@@ -2,7 +2,7 @@ package com.jdriven.library.service.model
 
 import com.jdriven.library.access.model.UserEntity
 
-data class UserDto(//qqqq rename to User?
+data class UserDto(
     val username: String,
     val password: String,
     val enabled: Boolean,

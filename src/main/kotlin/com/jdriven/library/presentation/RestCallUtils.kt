@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.ErrorResponse
 import org.springframework.web.server.ResponseStatusException
 
-object RestCallUtils {
+object RestCallUtils {//qqqq drop
 
     fun translateException(ex: Exception): Exception {
         return when (ex) {

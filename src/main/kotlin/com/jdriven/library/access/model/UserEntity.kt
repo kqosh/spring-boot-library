@@ -2,7 +2,6 @@ package com.jdriven.library.access.model
 
 import jakarta.persistence.*
 
-//qqqq Nx non-nullebale db field are represented by nullable kotlin fields so faulty data ca be read from the database as well
 @Entity(name = "User")
 @Table(name = "users")
 class UserEntity {

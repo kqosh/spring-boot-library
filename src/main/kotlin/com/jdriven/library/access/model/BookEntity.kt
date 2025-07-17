@@ -15,9 +15,9 @@ import jakarta.persistence.*
 class BookEntity() : AbstractBaseEntity() {
 
     @Column(unique = true, nullable = false)
-    var isbn: String? = null
+    lateinit var isbn: String
 
-    @Column(nullable = false)
+    @Column
     var title: String? = null
 
     var publisher: String? = null

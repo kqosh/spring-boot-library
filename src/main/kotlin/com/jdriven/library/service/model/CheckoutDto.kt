@@ -8,11 +8,19 @@ data class CheckoutDto(
     val dueDate: ZonedDateTime,
     val returned: Boolean,
     val renewCount: Int,
-    val book: BookDto
+    val book: BookDto,
+    val user: UserDto
 ) {
 
     companion object {
         fun of(entity: CheckoutEntity): CheckoutDto =
-            CheckoutDto(entity.checkoutAt, entity.dueDate, entity.returned, entity.renewCount, BookDto.of(entity.book))
+            CheckoutDto(
+                entity.checkoutAt,
+                entity.dueDate,
+                entity.returned,
+                entity.renewCount,
+                BookDto.of(entity.book),
+                UserDto.of(entity.user)
+            )
     }
 }

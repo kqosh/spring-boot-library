@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.boot.test.web.server.LocalServerPort
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class CheckoutControllerTest() {
@@ -28,7 +29,7 @@ class CheckoutControllerTest() {
 	fun findByUsername() {
 		val username = "user101"
 
-		val checkouts: List<CheckoutDto> = findCheckouts(username, 200)
+		val checkouts: List<CheckoutDto> = findByUsername(username, 200)
 
 		assertEquals(2, checkouts.size)
 
@@ -38,12 +39,22 @@ class CheckoutControllerTest() {
 		//qqqq due dates
 	}
 
-	private fun findCheckouts(username: String, expectedStatusCode: Int, loginUsername: String = username, password: String = "pwuser"): List<CheckoutDto> {
-		return get(username, expectedStatusCode, loginUsername, password).`as`(object : TypeRef<List<CheckoutDto>>() {})
+	private fun findByUsername(username: String, expectedStatusCode: Int, loginUsername: String = username, password: String = "pwuser"): List<CheckoutDto> {
+		return getByUsername(username, expectedStatusCode, loginUsername, password).`as`(object : TypeRef<List<CheckoutDto>>() {})
 	}
 
-	private fun get(username: String, expectedStatusCode: Int, loginUsername: String, password: String): ResponseBodyExtractionOptions {
-		return RestCallBuilder("http://localhost:${port}/checkouts/${username}", expectedStatusCode)
+	private fun getByUsername(username: String, expectedStatusCode: Int, loginUsername: String, password: String): ResponseBodyExtractionOptions =
+		get("http://localhost:${port}/checkouts/${username}", expectedStatusCode, loginUsername, password)
+
+	private fun findByBook(isbn: String, expectedStatusCode: Int, loginUsername: String, password: String = "pwuser"): List<CheckoutDto> {
+		return getByBook(isbn, expectedStatusCode, loginUsername, password).`as`(object : TypeRef<List<CheckoutDto>>() {})
+	}
+
+	private fun getByBook(isbn: String, expectedStatusCode: Int, loginUsername: String, password: String): ResponseBodyExtractionOptions =
+		get("http://localhost:${port}/checkouts/book/${isbn}", expectedStatusCode, loginUsername, password)
+
+	private fun get(url: String, expectedStatusCode: Int, loginUsername: String, password: String): ResponseBodyExtractionOptions {
+		return RestCallBuilder(url, expectedStatusCode)
 			.username(loginUsername)
 			.password(password)
 			.get()
@@ -51,31 +62,54 @@ class CheckoutControllerTest() {
 
 	@Test
 	fun findByUsername_noAccess() {
-		val username = "Doesnt Exist"
-		get(username, 401, username, "pwuser")
+		val username = "DoesntExist"
+		getByUsername(username, 401, username, "pwuser")
 	}
 
 	@Test
 	fun findByUsername_otherUserNotAllowed() {
 		val username = "user101"
 		assertTrue(
-			get(username, 403, "user102", "pwuser").asString().contains("other user not allowed")
+			getByUsername(username, 403, "user102", "pwuser").asString().contains("other user not allowed")
 		)
 	}
 
 	@Test
 	fun findByUsername_notFound() {
 		val username = "Doesnt Exist"
-		assertTrue(get(username, 400, "admin", "pwadmin").asString().contains("user not found: $username"))
+		assertTrue(getByUsername(username, 400, "admin", "pwadmin").asString().contains("user not found: $username"))
 	}
 
 	@Test
 	fun findByUsernameAsAdmin() {
 		val username = "user101"
-		val checkouts = findCheckouts(username, 200, "admin", "pwadmin")
+		val checkouts = findByUsername(username, 200, "admin", "pwadmin")
 		assertEquals(2, checkouts.size)
 		val expectedIsbns = listOf("isbn123", "isbn124")
 		checkouts.forEach { assertTrue(it.book.isbn in expectedIsbns) }
+	}
+
+	@Test
+	fun findByBook_byUserNotAllowed() {
+		assertTrue(
+			getByBook("isbn123", 403, "user101", "pwuser").asString().contains("/checkouts/book/isbn123")
+		)
+	}
+
+	@Test
+	fun findByBook_byAdminFound() {
+		val checkouts = findByBook("isbn123", 200, "admin", "pwadmin")
+		assertEquals(1, checkouts.size)
+		assertEquals("isbn123", checkouts[0].book.isbn)
+		assertEquals("user101", checkouts[0].user.username)
+	}
+
+	@Test
+	fun findByBook_byAdminNotFound() {
+		val isbn = "isbn777"
+		assertTrue(
+			getByBook(isbn, 400, "admin", "pwadmin").asString().contains("book not found: $isbn")
+		)
 	}
 
 	@Test
@@ -83,19 +117,22 @@ class CheckoutControllerTest() {
 		val username = "user102"
 		val isbn = "isbn444"
 		val baseUrl = "http://localhost:${port}/checkouts/${username}/${isbn}"
+		var originalDueDate: ZonedDateTime? = null
 		run {
 			builder(baseUrl, 201).post()
 
-			val checkouts = findCheckouts(username, 200)
+			val checkouts = findByUsername(username, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 			assertEquals(0, checkouts[0].renewCount, checkouts[0].toString())
+			originalDueDate = checkouts[0].dueDate
 		}
 		run {
 			builder("${baseUrl}/renew", 200).patch()
 
-			val checkouts = findCheckouts(username, 200)
+			val checkouts = findByUsername(username, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 			assertEquals(1, checkouts[0].renewCount, checkouts[0].toString())
+			assertTrue(checkouts[0].dueDate.isAfter(originalDueDate), checkouts[0].toString())
 
 			val rsp = builder("${baseUrl}/renew", 400).patch().asString()
 			assertTrue(rsp.contains("max renew count (1) exceeded"))
@@ -103,7 +140,7 @@ class CheckoutControllerTest() {
 		run {
 			builder("${baseUrl}/return", 200).patch()
 
-			val checkouts = findCheckouts(username, 200)
+			val checkouts = findByUsername(username, 200)
 			assertEquals(0, checkouts.size, checkouts.toString())
 		}
 	}

@@ -63,10 +63,10 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
             .extract().body()
 
     private fun givenWhen(): RequestSpecification {
-        val requestSpec = given().log().all()
-        if (_username != null) requestSpec.auth().basic(_username, _password)
+        val requestSpec = given()
+        if (_username != null) requestSpec.auth().preemptive().basic(_username, _password)
         requestSpec.contentType(ContentType.JSON)
         if (_body != null) requestSpec.body(_body)
-        return requestSpec.`when`()
+        return requestSpec.log().all().`when`()
     }
 }

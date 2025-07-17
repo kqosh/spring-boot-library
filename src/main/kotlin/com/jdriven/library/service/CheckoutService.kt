@@ -27,7 +27,7 @@ class CheckoutService(
 		val entity = CheckoutEntity()
 		entity.user = user
 		entity.book = book
-		entity.dueDate = entity.checkoutAt.plusDays(user.loanPeriodInDays.toLong())//qqqq assert in ut
+		entity.dueDate = entity.checkoutAt.plusDays(user.loanPeriodInDays.toLong())
 		checkoutRepository.save(entity)
 		return CheckoutDto.of(entity)
 	}
@@ -40,8 +40,8 @@ class CheckoutService(
 
 	@Transactional(readOnly = true)
 	fun findByIsbn(isbn: String): List<CheckoutDto>? {
-		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")//qqqq eigen ut
-		return checkoutRepository.findByBookAndReturned(book).map { it -> CheckoutDto.of(it) }//qqqq ut
+		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")
+		return checkoutRepository.findByBookAndReturned(book).map { it -> CheckoutDto.of(it) }
 	}
 
 	@Transactional

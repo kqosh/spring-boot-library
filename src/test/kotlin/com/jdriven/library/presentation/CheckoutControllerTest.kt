@@ -117,7 +117,7 @@ class CheckoutControllerTest() {
 	fun createFindRenewReturn() {
 		val username = "user102"
 		val isbn = "isbn444"
-		val baseUrl = "http://localhost:${port}/checkouts/${username}/${isbn}"
+		val baseUrl = createBaseUrl(username, isbn)
 		var originalDueDate: ZonedDateTime? = null
 		run {
 			builder(baseUrl, 201).post()
@@ -149,11 +149,13 @@ class CheckoutControllerTest() {
 	private fun builder(url: String, expectedStatusCode: Int, loginUserName: String = "user102", password: String = "pwuser"): RestCallBuilder =
 		RestCallBuilder(url, expectedStatusCode).username(loginUserName).password(password)
 
+	private fun createBaseUrl(username: String, isbn: String): String ="http://localhost:${port}/checkouts/${username}/${isbn}"
+
 	@Test
 	fun create_userNotFound() {
 		val username = "user123"
 		val isbn = "isbn101"
-		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 400, "admin", "pwadmin").post().asString()
+		val rsp = builder(createBaseUrl(username, isbn), 400, "admin", "pwadmin").post().asString()
 		assertTrue(rsp.contains("user not found: $username"))
 	}
 
@@ -161,7 +163,7 @@ class CheckoutControllerTest() {
 	fun create_bookNotFound() {
 		val username = "user102"
 		val isbn = "isnotthere"
-		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 400).post().asString()
+		val rsp = builder(createBaseUrl(username, isbn), 400).post().asString()
 		assertTrue(rsp.contains("book not found: $isbn"))
 	}
 
@@ -169,17 +171,47 @@ class CheckoutControllerTest() {
 	fun create_bookNotAvailable() {
 		val username = "user102"
 		val isbn = "isbn125"
-		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 409).post().asString()
+		val rsp = builder(createBaseUrl(username, isbn), 409).post().asString()
 		assertTrue(rsp.contains("currently no books available for: isbn125"))
 	}
 
 	@Test
-	fun create_otherUserNotAllowed() {
+	fun create_otherUserNotAllowed() {//qqqq wel by admin
 		val username = "user101"
 		val isbn = "isbn123"
-		val rsp = builder("http://localhost:${port}/checkouts/${username}/${isbn}", 403).post().asString()
+		val rsp = builder(createBaseUrl(username, isbn), 403).post().asString()
 		assertTrue(rsp.contains("other user not allowed"))
 	}
 
-	//qqqq create, return renew other user not allowed, not found
+	@Test
+	fun return_notFound() {
+		val username = "user102"
+		val isbn = "isbn777"
+		val rsp = builder("${createBaseUrl(username, isbn)}/return", 404).patch().asString()
+		assertTrue(rsp.contains("/checkouts/${username}/${isbn}"))
+	}
+
+	@Test
+	fun return_otherUserNotAllowed() {//qqqq mag wel by admin
+		val username = "user101"
+		val isbn = "isbn123"
+		val rsp = builder("${createBaseUrl(username, isbn)}/return", 403).patch().asString()
+		assertTrue(rsp.contains("other user not allowed"))
+	}
+
+	@Test
+	fun renew_notFound() {
+		val username = "user102"
+		val isbn = "isbn777"
+		val rsp = builder("${createBaseUrl(username, isbn)}/renew", 404).patch().asString()
+		assertTrue(rsp.contains("/checkouts/${username}/${isbn}"))
+	}
+
+	@Test
+	fun renew_otherUserNotAllowed() {
+		val username = "user101"
+		val isbn = "isbn123"
+		val rsp = builder("${createBaseUrl(username, isbn)}/renew", 403).patch().asString()
+		assertTrue(rsp.contains("other user not allowed"))
+	}
 }

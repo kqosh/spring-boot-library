@@ -68,7 +68,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun findByUsername_otherUserNotAllowed() {
+	fun findByUsername_forOtherUserNotAllowed() {
 		val username = "user101"
 		assertTrue(
 			getByUsername(username, 403, "user102", "pwuser").asString().contains("other user not allowed")
@@ -98,7 +98,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun findByBook_byAdminFound() {
+	fun findByBook_asAdminFound() {
 		val checkouts = findByBook("isbn123", 200, "admin", "pwadmin")
 		assertEquals(1, checkouts.size)
 		assertEquals("isbn123", checkouts[0].book.isbn)
@@ -106,7 +106,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun findByBook_byAdminNotFound() {
+	fun findByBook_asAdminNotFound() {
 		val isbn = "isbn777"
 		assertTrue(
 			getByBook(isbn, 400, "admin", "pwadmin").asString().contains("book not found: $isbn")
@@ -114,32 +114,44 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun createFindRenewReturn() {
+	fun createFindRenewReturnByUser() {
+		createFindRenewReturn("user102", "pwuser")
+	}
+
+	@Test
+	fun createFindRenewReturnAsAdminForUser() {
+		createFindRenewReturn("admin", "pwadmin")
+	}
+
+	private fun createFindRenewReturn(loginUsername: String, password: String) {
 		val username = "user102"
 		val isbn = "isbn444"
 		val baseUrl = createBaseUrl(username, isbn)
 		var originalDueDate: ZonedDateTime? = null
 		run {
-			builder(baseUrl, 201).post()
+			builder(baseUrl, 201, loginUsername, password).post()
 
 			val checkouts = findByUsername(username, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 			assertEquals(0, checkouts[0].renewCount, checkouts[0].toString())
 			originalDueDate = checkouts[0].dueDate
+
+			val rsp = builder(baseUrl, 400, loginUsername, password).post().asString()
+			assertTrue(rsp.contains("max one copy can be borrowed: $username $isbn"))
 		}
 		run {
-			builder("${baseUrl}/renew", 200).patch()
+			builder("${baseUrl}/renew", 200, loginUsername, password).patch()
 
 			val checkouts = findByUsername(username, 200)
 			assertEquals(1, checkouts.size, checkouts.toString())
 			assertEquals(1, checkouts[0].renewCount, checkouts[0].toString())
 			assertTrue(checkouts[0].dueDate.isAfter(originalDueDate), checkouts[0].toString())
 
-			val rsp = builder("${baseUrl}/renew", 400).patch().asString()
+			val rsp = builder("${baseUrl}/renew", 400, loginUsername, password).patch().asString()
 			assertTrue(rsp.contains("max renew count (1) exceeded"))
 		}
 		run {
-			builder("${baseUrl}/return", 200).patch()
+			builder("${baseUrl}/return", 200, loginUsername, password).patch()
 
 			val checkouts = findByUsername(username, 200)
 			assertEquals(0, checkouts.size, checkouts.toString())
@@ -176,12 +188,20 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun create_otherUserNotAllowed() {//qqqq wel by admin
+	fun create_forOtherUserNotAllowed() {
 		val username = "user101"
 		val isbn = "isbn123"
 		val rsp = builder(createBaseUrl(username, isbn), 403).post().asString()
 		assertTrue(rsp.contains("other user not allowed"))
 	}
+//
+//	@Test
+//	fun create_forOtherUserAsAdmin() {
+//		val username = "user101"
+//		val isbn = "isbn123"
+//		val rsp = builder(createBaseUrl(username, isbn), 201, "admin", "pwadmin").post().asString()
+//		findByUsername(username, 200).
+//	}qqqq
 
 	@Test
 	fun return_notFound() {
@@ -192,7 +212,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun return_otherUserNotAllowed() {//qqqq mag wel by admin
+	fun return_forOtherUserNotAllowed() {//qqqq mag wel by admin
 		val username = "user101"
 		val isbn = "isbn123"
 		val rsp = builder("${createBaseUrl(username, isbn)}/return", 403).patch().asString()
@@ -208,7 +228,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun renew_otherUserNotAllowed() {
+	fun renew_forOtherUserNotAllowed() {//qqqq mag wel by admin
 		val username = "user101"
 		val isbn = "isbn123"
 		val rsp = builder("${createBaseUrl(username, isbn)}/renew", 403).patch().asString()

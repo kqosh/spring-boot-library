@@ -19,9 +19,14 @@ class CheckoutService(
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")
 
-		val currentCheckouts = checkoutRepository.findByBookAndReturned(book, returned = true)
-		if (currentCheckouts.size >= book.numberOfCopies) {
+		val currentCheckoutsForBook = checkoutRepository.findByBookAndReturned(book, returned = true)
+		if (currentCheckoutsForBook.size >= book.numberOfCopies) {
 			throw IllegalStateException("currently no books available for: $isbn")
+		}
+
+		val currentCheckoutsFoUser = checkoutRepository.findByUserAndReturned(user, false)
+		if (currentCheckoutsFoUser.count { it -> it.user.username == username } >= 1) {
+			throw IllegalArgumentException("max one copy can be borrowed: $username $isbn")
 		}
 
 		val entity = CheckoutEntity()
@@ -35,19 +40,19 @@ class CheckoutService(
 	@Transactional(readOnly = true)
 	fun findByUsername(username: String): List<CheckoutDto>? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
-		return checkoutRepository.findByUserAndReturned(user).map { it -> CheckoutDto.of(it) }
+		return checkoutRepository.findByUserAndReturned(user, false).map { it -> CheckoutDto.of(it) }
 	}
 
 	@Transactional(readOnly = true)
 	fun findByIsbn(isbn: String): List<CheckoutDto>? {
 		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")
-		return checkoutRepository.findByBookAndReturned(book).map { it -> CheckoutDto.of(it) }
+		return checkoutRepository.findByBookAndReturned(book, false).map { it -> CheckoutDto.of(it) }
 	}
 
 	@Transactional
 	fun returnBook(username: String, isbn: String): CheckoutDto? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
-		val entity = checkoutRepository.findByUserAndReturned(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
+		val entity = checkoutRepository.findByUserAndReturned(user, false).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		entity.returned = true
 		return CheckoutDto.of(entity)
 	}
@@ -55,7 +60,7 @@ class CheckoutService(
 	@Transactional
 	fun renewBook(username: String, isbn: String): CheckoutDto? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
-		val entity = checkoutRepository.findByUserAndReturned(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
+		val entity = checkoutRepository.findByUserAndReturned(user, false).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		if (entity.renewCount >= user.maxRenewCount) throw IllegalArgumentException("max renew count (${user.maxRenewCount}) exceeded")
 		entity.dueDate = entity.dueDate.plusDays(user.loanPeriodInDays.toLong())
 		entity.renewCount++

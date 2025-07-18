@@ -110,8 +110,25 @@ class AuthorControllerTest() {
 	@Test
 	fun search_byName() {
 		val page = searchAsAuthors("k", 200)
-		assertEquals(2, page.content.size)
+		assertEquals(3, page.content.size)
 		page.content.forEach { assertTrue(it.name.startsWith("K")) }
+	}
+
+	@Test
+	fun search_byNamePage1Size2() {
+		val page = searchAsAuthors("k", 200, pageIndex = 1, pageSize = 2)
+		assertEquals(1, page.content.size)
+		page.content.forEach { assertTrue(it.name.startsWith("Klaas")) }
+	}
+
+	@Test
+	fun search_byNameEmpty() {
+		assertTrue(searchAsRspOptions("", 400).asString().contains("authorName must not be empty"))
+	}
+
+	@Test
+	fun search_byNameNull() {
+		assertTrue(searchAsRspOptions(null, 400).asString().contains("authorName must not be empty"))
 	}
 
 	private fun searchAsAuthors(author: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<AuthorDto> =

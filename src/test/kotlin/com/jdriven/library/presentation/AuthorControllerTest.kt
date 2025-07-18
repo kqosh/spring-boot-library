@@ -77,7 +77,7 @@ class AuthorControllerTest() {
 	}
 
 	@Test
-	fun createNotAllowed() {
+	fun create_notAllowed() {
 		RestCallBuilder("http://localhost:${port}/authors", 403)
 			.body(CreateOrUpdateAuthorRequest("Henk"))
 			.username("user101")

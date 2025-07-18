@@ -82,7 +82,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun findByUsernameAsAdmin() {
+	fun findByUsername_asAdmin() {
 		val username = "user101"
 		val checkouts = findByUsername(username, 200, "admin", "pwadmin")
 		assertEquals(2, checkouts.size)
@@ -91,7 +91,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun findByBook_byUserNotAllowed() {
+	fun findByBook_asUserNotAllowed() {
 		assertTrue(
 			getByBook("isbn123", 403, "user101", "pwuser").asString().contains("/checkouts/book/isbn123")
 		)
@@ -114,12 +114,12 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun createFindRenewReturnByUser() {
+	fun createFindRenewReturn_asUser() {
 		createFindRenewReturn("user102", "pwuser")
 	}
 
 	@Test
-	fun createFindRenewReturnAsAdminForUser() {
+	fun createFindRenewReturn_asAdminForUser() {
 		createFindRenewReturn("admin", "pwadmin")
 	}
 
@@ -194,14 +194,6 @@ class CheckoutControllerTest() {
 		val rsp = builder(createBaseUrl(username, isbn), 403).post().asString()
 		assertTrue(rsp.contains("other user not allowed"))
 	}
-//
-//	@Test
-//	fun create_forOtherUserAsAdmin() {
-//		val username = "user101"
-//		val isbn = "isbn123"
-//		val rsp = builder(createBaseUrl(username, isbn), 201, "admin", "pwadmin").post().asString()
-//		findByUsername(username, 200).
-//	}qqqq
 
 	@Test
 	fun return_notFound() {
@@ -212,7 +204,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun return_forOtherUserNotAllowed() {//qqqq mag wel by admin
+	fun return_forOtherUserNotAllowed() {
 		val username = "user101"
 		val isbn = "isbn123"
 		val rsp = builder("${createBaseUrl(username, isbn)}/return", 403).patch().asString()
@@ -228,7 +220,7 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun renew_forOtherUserNotAllowed() {//qqqq mag wel by admin
+	fun renew_forOtherUserNotAllowed() {
 		val username = "user101"
 		val isbn = "isbn123"
 		val rsp = builder("${createBaseUrl(username, isbn)}/renew", 403).patch().asString()

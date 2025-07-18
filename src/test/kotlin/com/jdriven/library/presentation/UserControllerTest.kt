@@ -109,7 +109,7 @@ class UserControllerTest() {
 			.password("pwadmin")
 
 	@Test
-	fun addDuplicateRole() {
+	fun addRole_duplicateRole() {
 		val username = "user101"
 		val role = "ROLE_USER"
 		assertTrue(
@@ -119,7 +119,7 @@ class UserControllerTest() {
 	}
 
 	@Test
-	fun addRoleToNonExistingUser() {
+	fun addRole_toNonExistingUser() {
 		val username = "userNonExisting"
 		val role = "ROLE_USER"
 		assertTrue(
@@ -129,7 +129,7 @@ class UserControllerTest() {
 	}
 
 	@Test
-	fun addNonExistingRole() {
+	fun addRole_nonExistingRole() {
 		val username = "user101"
 		val role = "ROLE_DOES_NOT_EXIST"
 		assertTrue(
@@ -139,7 +139,7 @@ class UserControllerTest() {
 	}
 
 	@Test
-	fun deleteRoleFromNonExistingUser() {
+	fun deleteRole_fromNonExistingUser() {
 		val username = "userNonExisting"
 		val role = "ROLE_USER"
 		assertTrue(
@@ -149,7 +149,7 @@ class UserControllerTest() {
 	}
 
 	@Test
-	fun deleteNonExistingRole() {
+	fun deleteRole_nonExistingRole() {
 		val username = "user101"
 		val role = "ROLE_ADMIN"
 		assertTrue(

@@ -25,9 +25,9 @@ class UserControllerTest() {
 		baseUrl = "http://localhost:${port}/users"
 	}
 
-	private fun findByUsername(username: String, expectedStatusCode: Int, userId: String = "admin", password: String = "pwadmin"): ResponseBodyExtractionOptions {
+	private fun findByUsername(username: String, expectedStatusCode: Int, loginUsername: String = "admin", password: String = "pwadmin"): ResponseBodyExtractionOptions {
 		try {
-			return RestCallBuilder("${baseUrl}/${username}", expectedStatusCode).username(userId).password(password).get()
+			return RestCallBuilder("${baseUrl}/${username}", expectedStatusCode).username(loginUsername).password(password).get()
 		} catch(ex: Exception) {
 			ex.printStackTrace()
 			throw ex
@@ -39,13 +39,29 @@ class UserControllerTest() {
 	}
 
 	@Test
-	fun findByName_found() {
+	fun findByName_foundAsAdmin() {
+		findByName_found("user101", "admin", "pwadmin")
+	}
+
+	@Test
+	fun findByName_foundAsUser() {
 		val username = "user101"
-		val user = findByUsernameAsUserDto(username, 200)
+		findByName_found(username, username, "pwuser")
+	}
+
+	private fun findByName_found(username: String, loginUsername: String, password: String) {
+		val user = findByUsernameAsUserDto(username, 200, loginUsername, password)
 
 		assertEquals(username, user.username)
 		assertEquals(1, user.roles.size)
 		assertEquals("ROLE_USER", user.roles[0])
+	}
+
+	@Test
+	fun findByName_forOtherUserNotAllowed() {
+		val username = "user101"
+		val rsp = findByUsername(username, 403, "user102", "pwuser").asString()
+		assertTrue(rsp.contains("other user not allowed"), rsp.toString())
 	}
 
 	@Test

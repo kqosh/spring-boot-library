@@ -64,7 +64,29 @@
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-stdlib</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.5</version><!--qqqq common nr-->
+			<scope>runtime</scope>
+		</dependency>
 
+		<!--		dependencies {qqqq-->
+<!--		implementation("")-->
+<!--		runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")-->
+<!--		runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")-->
+<!--		}-->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

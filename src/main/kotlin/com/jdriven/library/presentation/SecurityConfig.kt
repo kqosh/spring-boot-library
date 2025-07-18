@@ -1,4 +1,4 @@
-package com.jdriven.library.presentation
+package com.jdriven.library.presentation//qqqq mv to security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,8 +12,8 @@ import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import javax.sql.DataSource
 
-@Configuration
-@EnableMethodSecurity // Enables @PreAuthorize
+//@Configuration
+//@EnableMethodSecurity // Enables @PreAuthorizeqqqq
 class SecurityConfig {
 
 // Following bean can be useful for testing. NB '.roles(...)' automatically adds a "ROLE_" prefix.

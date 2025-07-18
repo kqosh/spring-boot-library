@@ -1,6 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.UserService
+import com.jdriven.library.service.model.CreateJwtRequest
 import com.jdriven.library.service.model.CreateUserRequest
 import com.jdriven.library.service.model.UserDto
 import org.slf4j.LoggerFactory
@@ -17,6 +18,12 @@ import org.springframework.web.servlet.resource.NoResourceFoundException
 class UserController(private val service: UserService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
+
+    @PostMapping("/jwts")
+    fun create(@RequestBody request: CreateJwtRequest): String {
+        logger.info("jwts $request")
+        return service.createJwt(request) ?: throw NoResourceFoundException(HttpMethod.POST, "/jwts")
+    }
 
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('USER')")

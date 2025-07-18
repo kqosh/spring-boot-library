@@ -8,6 +8,7 @@ import io.restassured.specification.RequestSpecification
 class RestCallBuilder(private val url: String, private val expectedStatusCode: Int) {
     private var _username: String? = null
     private var _password: String? = null
+    private var _jwt: String? = null
     private var _body: Any? = null
 
     fun username(username: String): RestCallBuilder {
@@ -17,6 +18,11 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
 
     fun password(password: String): RestCallBuilder {
         _password = password
+        return this
+    }
+
+    fun jwt(jwt: String): RestCallBuilder {
+        _jwt = jwt
         return this
     }
 
@@ -65,6 +71,8 @@ class RestCallBuilder(private val url: String, private val expectedStatusCode: I
     private fun givenWhen(): RequestSpecification {
         val requestSpec = given()
         if (_username != null) requestSpec.auth().preemptive().basic(_username, _password)
+        if (_jwt != null) requestSpec.auth().preemptive().oauth2(_jwt)
+//        if (_jwt != null) requestSpec.header("Authorization", "Bearer $_jwt")
         requestSpec.contentType(ContentType.JSON)
         if (_body != null) requestSpec.body(_body)
         return requestSpec.log().all().`when`()

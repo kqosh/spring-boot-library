@@ -4,16 +4,32 @@ import com.jdriven.library.access.model.AuthorityEntity
 import com.jdriven.library.access.model.AuthorityRepository
 import com.jdriven.library.access.model.UserEntity
 import com.jdriven.library.access.model.UserRepository
+import com.jdriven.library.security.TokenService
+import com.jdriven.library.service.model.CreateJwtRequest
 import com.jdriven.library.service.model.CreateUserRequest
 import com.jdriven.library.service.model.UserDto
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.DisabledException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserService(private val userRepository: UserRepository, private val authorityRepository: AuthorityRepository)  {
+class UserService(
+	private val tokenService: TokenService,
+	private val userRepository: UserRepository,
+	private val authorityRepository: AuthorityRepository
+) {
 
 	@Transactional(readOnly = true)
 	fun find(username: String): UserDto? = userRepository.findByUsername(username)?.let { UserDto.of(it) }
+
+	@Transactional
+	fun createJwt(request: CreateJwtRequest): String? {
+		val user = userRepository.findByUsername(request.username) ?: return null
+		if (!user.enabled) throw DisabledException("")
+		if (user.password != request.password) throw BadCredentialsException("")
+		return tokenService.createToken(user.username, user.authorities.map { it.authority })
+	}
 
 	@Transactional
 	fun create(user: CreateUserRequest): UserDto? {

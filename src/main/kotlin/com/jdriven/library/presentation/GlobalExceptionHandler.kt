@@ -3,6 +3,8 @@ package com.jdriven.library.presentation
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authorization.AuthorizationResult
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -21,6 +23,9 @@ class GlobalExceptionHandler {
     fun getHttpStatus(ex: Exception): HttpStatus =
         when (ex) {
             is org.springframework.web.ErrorResponse -> HttpStatus.valueOf(ex.statusCode.value())
+            is BadCredentialsException -> HttpStatus.UNAUTHORIZED
+            is DisabledException -> HttpStatus.UNAUTHORIZED
+            is AccessDeniedException -> HttpStatus.FORBIDDEN
             is IllegalArgumentException -> HttpStatus.BAD_REQUEST
             is IllegalStateException -> HttpStatus.CONFLICT
             is AuthorizationResult -> throw ex // use the default exception handler for these

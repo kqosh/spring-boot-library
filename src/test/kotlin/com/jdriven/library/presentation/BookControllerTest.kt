@@ -19,13 +19,18 @@ class BookControllerTest() {
 	@LocalServerPort
 	private var port: Int? = null
 
+	lateinit var adminJwt: String
+	lateinit var userJwt: String
+
 	@BeforeEach
 	fun setup() {
 		RestAssured.port = port!!
+		adminJwt = UserControllerTest.createJwt(port!!, "admin", "pwadmin", 200)
+		userJwt = UserControllerTest.createJwt(port!!, "user101", "pwuser", 200)
 	}
 
 	private fun findByIsbn(isbn: String, expectedStatusCode: Int): ResponseBodyExtractionOptions =
-		RestCallBuilder("http://localhost:${port}/books/${isbn}", expectedStatusCode).username("user101").password("pwuser").get()
+		RestCallBuilder("http://localhost:${port}/books/${isbn}", expectedStatusCode).jwt(userJwt).get()
 
 	@Test
 	fun findIsbn_found() {
@@ -97,7 +102,7 @@ class BookControllerTest() {
 		if (pageSize != null) url += "&size=${pageSize}"
 		if (author != null) url += "&author=${author}"
 		if (title != null) url += "&title=${title}"
-		return RestCallBuilder(url, expectedStatusCode).username("user101").password("pwuser").get()
+		return RestCallBuilder(url, expectedStatusCode).jwt(userJwt).get()
 	}
 
 	@Test
@@ -108,27 +113,27 @@ class BookControllerTest() {
 		val book = BookDto(isbn, "an author", "a title", numberOfCopies = 4)
 
 		// create book
-		RestCallBuilder(baseUrl, 201).body(book).username("admin").password("pwadmin").post()
+		RestCallBuilder(baseUrl, 201).body(book).jwt(adminJwt).post()
 		findByIsbn(isbn, 200)
 		// find newly added author
-		RestCallBuilder("http://localhost:${port}/authors/${book.authorName}", 200).body(book).username("admin").password("pwadmin").get()
+		RestCallBuilder("http://localhost:${port}/authors/${book.authorName}", 200).body(book).jwt(adminJwt).get()
 
 		// update author
-		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(authorName = "Rene Goscinny")).username("admin").password("pwadmin").put()
+		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(authorName = "Rene Goscinny")).jwt(adminJwt).put()
 		val bookAfterUpdate = findByIsbn(isbn, 200).`as`(BookDto::class.java)!!
 		assertEquals("Rene Goscinny", bookAfterUpdate.authorName)
 
 		// update isbn
-		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(isbn = isbnNew)).username("admin").password("pwadmin").put()
+		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(isbn = isbnNew)).jwt(adminJwt).put()
 		findByIsbn(isbn, 404)
 		findByIsbn(isbnNew, 200)
 
 		// update non existing book
 		val isbnNonExisting = "DoesNotExist"
-		RestCallBuilder("${baseUrl}/${isbnNonExisting}", 404).body(book.copy(isbnNonExisting)).username("admin").password("pwadmin").put()
+		RestCallBuilder("${baseUrl}/${isbnNonExisting}", 404).body(book.copy(isbnNonExisting)).jwt(adminJwt).put()
 
-		RestCallBuilder("${baseUrl}/${isbnNew}", 200).username("admin").password("pwadmin").delete()
+		RestCallBuilder("${baseUrl}/${isbnNew}", 200).jwt(adminJwt).delete()
 		findByIsbn(isbn, 404)
-		RestCallBuilder("${baseUrl}/${isbnNew}", 404).username("admin").password("pwadmin").delete()
+		RestCallBuilder("${baseUrl}/${isbnNew}", 404).jwt(adminJwt).delete()
 	}
 }

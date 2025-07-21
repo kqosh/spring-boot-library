@@ -45,18 +45,6 @@ class AuthorControllerTest() {
 		assertTrue(isbns.contains("isbn123"))
 		assertTrue(isbns.contains("isbn124"))
 	}
-//
-//	@Test
-//	fun findByName_loginUsernameDoesNotExist() {
-//		val name = "Jan Klaassen"
-//		findByName(name, 401, "nr013", "pwuser").asString()
-//	}qqqq
-//
-//	@Test
-//	fun findByName_wrongPassword() {
-//		val name = "Jan Klaassen"
-//		findByName(name, 401, "user101", "wrong-pw").asString()
-//	}
 
 	@Test
 	fun findByName_notFound() {
@@ -84,8 +72,7 @@ class AuthorControllerTest() {
 	fun create_notAllowed() {
 		RestCallBuilder("http://localhost:${port}/authors", 403)
 			.body(CreateOrUpdateAuthorRequest("Henk"))
-			.username("user101")
-			.password("pwuser")
+			.jwt(userJwt)
 			.post()
 	}
 

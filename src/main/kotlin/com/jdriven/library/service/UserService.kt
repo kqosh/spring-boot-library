@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.concurrent.CopyOnWriteArraySet
 
 @Service
 class UserService(
@@ -20,7 +21,7 @@ class UserService(
 	private val authorityRepository: AuthorityRepository
 ) {
 
-	//qqqq revokation list Set<username>
+	val revokationList = CopyOnWriteArraySet<String>()
 
 	@Transactional(readOnly = true)
 	fun find(username: String): UserDto? = userRepository.findByUsername(username)?.let { UserDto.of(it) }
@@ -30,6 +31,7 @@ class UserService(
 		val user = userRepository.findByUsername(request.username) ?: return null
 		if (!user.enabled) throw DisabledException("")
 		if (user.password != request.password) throw BadCredentialsException("")
+		revokationList.remove(user.username)
 		return tokenService.createToken(user.username, user.authorities.map { it.authority })
 	}
 
@@ -48,12 +50,14 @@ class UserService(
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user does not exist $username")
 
 		val authority = createAuthorityEntity(user, role)
+		revokationList.add(username)
 		authorityRepository.save(authority)
 	}
 
 	@Transactional
 	fun deleteRole(username: String, role: String): Boolean {
 		val authority = authorityRepository.findByUsernameAndAuthority(username, role) ?: return false
+		revokationList.add(username)
 		authorityRepository.delete(authority)
 		return true
 	}
@@ -68,6 +72,7 @@ class UserService(
 	@Transactional
 	fun enable(username: String, enabled: Boolean): UserDto? {
 		val user = userRepository.findByUsername(username) ?: return null
+		revokationList.add(username)
 		user.enabled = enabled
 		return UserDto.of(user)
 	}

@@ -110,11 +110,12 @@ class UserControllerTest() {
     fun createFindAddRoleDisable() {
         val username = "user801"
         val pw = "pw801"
-        val createRequest = CreateUserRequest(username, pw, true, 30)
-        val adminJwt = adminJwt
+        val role = "ROLE_USER"
         lateinit var userJwt: String
+
         run {
             // when create
+            val createRequest = CreateUserRequest(username, pw, true, 30)
             RestCallBuilder(baseUrl, 201).body(createRequest).jwt(adminJwt).post()
 
             // then
@@ -128,23 +129,45 @@ class UserControllerTest() {
         }
         run {
             // and add role
-            val role = "ROLE_USER"
             roleCallBuilder(username, role, 201).post()
-            // and refresh userJwt
-            userJwt = createJwt(username, pw)
 
             // then
+            findByUsername(username, 403, userJwt) // outdated jwt still has no access
+
+            // and refresh userJwt succeeds
+            userJwt = createJwt(username, pw)
+
+            // and
             val user = findByUsernameAsUserDto(username, 200, userJwt)
             assertEquals(1, user.roles.size)
             assertEquals(role, user.roles[0])
         }
         run {
-            // and disable
-            RestCallBuilder("${baseUrl}/${username}?enabled=false", 200).jwt(adminJwt).patch()
-            // and refresh userJwt
-            createJwt(username, pw, 401)
+            // and delete role
+            roleCallBuilder(username, role, 200).delete()
 
             // then
+            findByUsername(username, 403, userJwt) // spring security uses this instead of 401
+
+            // and
+            val user = findByUsernameAsUserDto(username, 200, adminJwt)
+            assertEquals(0, user.roles.size)
+        }
+        run {
+            // and readd role and refresh token
+            roleCallBuilder(username, role, 201).post()
+            userJwt = createJwt(username, pw)
+
+            // and disable
+            RestCallBuilder("${baseUrl}/${username}?enabled=false", 200).jwt(adminJwt).patch()
+
+            // then
+            findByUsername(username, 403, userJwt) // coz token has been revoked
+
+            // and refresh userJwt fails
+            createJwt(username, pw, 401)
+
+            // and
             val user = findByUsernameAsUserDto(username, 200, adminJwt)
             assertFalse(user.enabled)
         }

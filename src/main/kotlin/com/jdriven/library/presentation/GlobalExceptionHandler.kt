@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authorization.AuthorizationResult
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -26,6 +27,7 @@ class GlobalExceptionHandler {
             is BadCredentialsException -> HttpStatus.UNAUTHORIZED
             is DisabledException -> HttpStatus.UNAUTHORIZED
             is AccessDeniedException -> HttpStatus.FORBIDDEN
+            is CredentialsExpiredException -> HttpStatus.UNAUTHORIZED
             is IllegalArgumentException -> HttpStatus.BAD_REQUEST
             is IllegalStateException -> HttpStatus.CONFLICT
             is AuthorizationResult -> throw ex // use the default exception handler for these

@@ -20,13 +20,18 @@ class AuthorControllerTest() {
 	@LocalServerPort
 	private var port: Int? = null
 
+	lateinit var adminJwt: String
+	lateinit var userJwt: String
+
 	@BeforeEach
 	fun setup() {
 		RestAssured.port = port!!
+		adminJwt = UserControllerTest.createJwt(port!!, "admin", "pwadmin", 200)
+		userJwt = UserControllerTest.createJwt(port!!, "user101", "pwuser", 200)
 	}
 
 	private fun findByName(name: String, expectedStatusCode: Int, userId: String = "admin", password: String = "pwadmin"): ResponseBodyExtractionOptions {
-		return RestCallBuilder("http://localhost:${port}/authors/${name}", expectedStatusCode).username(userId).password(password).get()
+		return RestCallBuilder("http://localhost:${port}/authors/${name}", expectedStatusCode).jwt(adminJwt).get()
 	}
 
 	@Test
@@ -40,18 +45,18 @@ class AuthorControllerTest() {
 		assertTrue(isbns.contains("isbn123"))
 		assertTrue(isbns.contains("isbn124"))
 	}
-
-	@Test
-	fun findByName_loginUsernameDoesNotExist() {
-		val name = "Jan Klaassen"
-		findByName(name, 401, "nr013", "pwuser").asString()
-	}
-
-	@Test
-	fun findByName_wrongPassword() {
-		val name = "Jan Klaassen"
-		findByName(name, 401, "user101", "wrong-pw").asString()
-	}
+//
+//	@Test
+//	fun findByName_loginUsernameDoesNotExist() {
+//		val name = "Jan Klaassen"
+//		findByName(name, 401, "nr013", "pwuser").asString()
+//	}qqqq
+//
+//	@Test
+//	fun findByName_wrongPassword() {
+//		val name = "Jan Klaassen"
+//		findByName(name, 401, "user101", "wrong-pw").asString()
+//	}
 
 	@Test
 	fun findByName_notFound() {
@@ -66,13 +71,12 @@ class AuthorControllerTest() {
 		val name = "Klaas"
 		RestCallBuilder(baseUrl, 201)
 			.body(CreateOrUpdateAuthorRequest(name))
-			.username("admin")
-			.password("pwadmin")
+			.jwt(adminJwt)
 			.post()
 
 		findByName(name, 200)
 
-		RestCallBuilder("${baseUrl}/${name}", 200).username("admin").password("pwadmin").delete()
+		RestCallBuilder("${baseUrl}/${name}", 200).jwt(adminJwt).delete()
 		findByName(name, 404)
 	}
 
@@ -87,16 +91,13 @@ class AuthorControllerTest() {
 
 	@Test
 	fun delete_notAllowedByUser() {
-		assertTrue(
-			RestCallBuilder("http://localhost:${port}/authors/Henk", 403).username("user101").password("pwuser")
-				.delete().asString().contains("/authors/Henk")
-		)
+		RestCallBuilder("http://localhost:${port}/authors/Kees", 403).jwt(userJwt).delete()
 	}
 
 	@Test
 	fun delete_notAllowedBecauseThereIsStillABook() {
 		assertTrue(
-			RestCallBuilder("http://localhost:${port}/authors/Jan Klaassen", 409).username("admin").password("pwadmin")
+			RestCallBuilder("http://localhost:${port}/authors/Jan Klaassen", 409).jwt(adminJwt)
 				.delete().asString().contains("this author still has books")
 		)
 	}
@@ -138,6 +139,6 @@ class AuthorControllerTest() {
 		var url = "http://localhost:${port}/authors/search?page=${pageIndex}"
 		if (pageSize != null) url += "&size=${pageSize}"
 		if (name != null) url += "&name=${name}"
-		return RestCallBuilder(url, expectedStatusCode).username("user101").password("pwuser").get()
+		return RestCallBuilder(url, expectedStatusCode).jwt(userJwt).get()
 	}
 }

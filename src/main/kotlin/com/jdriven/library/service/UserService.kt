@@ -20,6 +20,8 @@ class UserService(
 	private val authorityRepository: AuthorityRepository
 ) {
 
+	//qqqq revokation list Set<username>
+
 	@Transactional(readOnly = true)
 	fun find(username: String): UserDto? = userRepository.findByUsername(username)?.let { UserDto.of(it) }
 

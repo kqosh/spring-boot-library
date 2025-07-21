@@ -15,22 +15,20 @@ class JwtAuthFilter(private val authenticationManager: AuthenticationManager) : 
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        // Haal de "Authorization" header op qqqq
         val authHeader = request.getHeader("Authorization")
 
-        // Controleer of het een Bearer token is
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            val token = authHeader.substring(7) // Verwijder "Bearer "
+            val token = authHeader.substring(7) // Remove "Bearer "
             
-            // Maak een (nog) niet-geauthenticeerd token aan met de JWT-string als credential
+            // Create a not yet authenticated token.
             val authRequest = UsernamePasswordAuthenticationToken(null, token)
             
             try {
-                // Laat de AuthenticationManager de juiste provider (onze JwtAuthenticationProvider) vinden
+                // Let the AuthenticationManager find the correct provider (our JwtAuthenticationProvider).
                 val authentication = authenticationManager.authenticate(authRequest)
                 SecurityContextHolder.getContext().authentication = authentication
             } catch (e: Exception) {
-                // Authenticatie mislukt, maak de security context leeg
+                // Authentication failed, clear security context.
                 SecurityContextHolder.clearContext()
             }
         }

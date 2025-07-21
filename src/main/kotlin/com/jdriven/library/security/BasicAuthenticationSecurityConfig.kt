@@ -1,8 +1,6 @@
-package com.jdriven.library.presentation//qqqq mv to security
+package com.jdriven.library.security
 
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.password.NoOpPasswordEncoder
@@ -13,8 +11,8 @@ import org.springframework.security.web.SecurityFilterChain
 import javax.sql.DataSource
 
 //@Configuration
-//@EnableMethodSecurity // Enables @PreAuthorizeqqqq
-class SecurityConfig {
+//@EnableMethodSecurity // Enables @PreAuthorize
+class BasicAuthenticationSecurityConfig {
 
 // Following bean can be useful for testing. NB '.roles(...)' automatically adds a "ROLE_" prefix.
 //    @Bean
@@ -43,7 +41,8 @@ class SecurityConfig {
     }
 
     @Bean
-    fun userDetailsManager(dataSource: DataSource, passwordEncoder: PasswordEncoder): UserDetailsManager = JdbcUserDetailsManager(dataSource)
+    fun userDetailsManager(dataSource: DataSource, passwordEncoder: PasswordEncoder): UserDetailsManager =
+        JdbcUserDetailsManager(dataSource)
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {

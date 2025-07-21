@@ -62,7 +62,14 @@ class BookControllerTest() {
 
 	@Test
 	fun search_noArgs() {
-		val rsp = searchAsRspOptions("", null, 400).asString()
+		search_noArgs(null, null)
+		search_noArgs(null, "")
+		search_noArgs("", null)
+		search_noArgs("", "")
+	}
+
+	fun search_noArgs(author: String?, title: String?) {
+		val rsp = searchAsRspOptions(author, title, 400).asString()
 		assertTrue(rsp.contains("authorName and title must not be both empty"))
 	}
 

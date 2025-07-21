@@ -90,6 +90,14 @@ class AuthorControllerTest() {
 	}
 
 	@Test
+	fun delete_notFound() {
+		assertTrue(
+			RestCallBuilder("http://localhost:${port}/authors/Unknown", 404).jwt(adminJwt)
+				.delete().asString().contains("/authors/Unknown")
+		)
+	}
+
+	@Test
 	fun search_byAuthorNotFound() {
 		val page = searchAsAuthors("Q", 200)
 		assertEquals(0, page.content.size)

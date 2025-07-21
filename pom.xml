@@ -29,6 +29,8 @@
 	<properties>
 		<java.version>21</java.version>
 		<kotlin.version>1.9.25</kotlin.version>
+
+		<jjwt.version>0.12.5</jjwt.version>
 		<restassured.version>5.5.5</restassured.version>
 	</properties>
 	<dependencies>
@@ -67,26 +69,21 @@
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
-			<version>0.12.5</version>
+			<version>${jjwt.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
-			<version>0.12.5</version>
+			<version>${jjwt.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
-			<version>0.12.5</version><!--qqqq common nr-->
+			<version>${jjwt.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 
-		<!--		dependencies {qqqq-->
-<!--		implementation("")-->
-<!--		runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")-->
-<!--		runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")-->
-<!--		}-->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

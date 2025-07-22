@@ -33,7 +33,7 @@ class AuthorService(private val repository: AuthorRepository)  {
 
 	@Transactional(readOnly = true)
 	fun search(authorName: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<AuthorDto> {
-		if (authorName.isNullOrEmpty()) throw IllegalArgumentException("authorName must not be empty")
+		if (authorName.isNullOrBlank()) throw IllegalArgumentException("authorName must not be empty")
 		val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("name"))
 		val page = repository.search(authorName, pageRequest)
 		val authors = page.content.map { it -> AuthorDto.of(it)}

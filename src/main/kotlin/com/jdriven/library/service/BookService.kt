@@ -63,7 +63,10 @@ class BookService(
     fun qqqqsearch(authorName: String?, title: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<BookDto> {
         if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")//qqqq all orblank
         val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("author.name", "title"))
-        val page = bookRepository.search(authorName, title, pageRequest)
+        val page = bookRepository.search(
+            if (authorName.isNullOrBlank()) null else authorName,
+            if (title.isNullOrBlank()) null else title, pageRequest
+        )
         val books = page.content.map { it -> BookDto.of(it) }
         return PaginatedResponse(content = books, pageIndex, pageSize, page.totalElements, page.totalPages)
     }

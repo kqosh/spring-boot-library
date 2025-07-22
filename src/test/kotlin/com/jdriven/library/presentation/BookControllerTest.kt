@@ -49,7 +49,7 @@ class BookControllerTest() {
 
 	@Test
 	fun search_byAuthor() {
-		val page = searchAsBooks("RENE", null, 200)
+		val page = searchAsBooks("RENE", "", 200)
 		assertEquals(1, page.content.size)
 		assertEquals("Rene Goscinny", page.content[0].authorName)
 	}
@@ -108,8 +108,8 @@ class BookControllerTest() {
 	private fun searchAsRspOptions(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
 		var url = "http://localhost:${port}/books/search?page=${pageIndex}"
 		if (pageSize != null) url += "&size=${pageSize}"
-		if (author != null) url += "&author=${author}"
-		if (title != null) url += "&title=${title}"
+		if (!author.isNullOrBlank()) url += "&author=${author}"
+		if (!title.isNullOrBlank()) url += "&title=${title}"
 		return RestCallBuilder(url, expectedStatusCode).jwt(userJwt).get()
 	}
 

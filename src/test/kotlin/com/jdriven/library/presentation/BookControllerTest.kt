@@ -75,7 +75,8 @@ class BookControllerTest() {
 
 	@Test
 	fun search_byTitle() {
-		val page = searchAsBooks(null, "DE POP", 200)
+		val page = searchAsBooks(null, "de poppenkast", 200)
+//		val page = searchAsBooks(null, "DE POP", 200)qqqq
 		assertEquals(3, page.content.size)
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}

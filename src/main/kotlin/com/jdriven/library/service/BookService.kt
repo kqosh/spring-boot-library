@@ -2,19 +2,45 @@ package com.jdriven.library.service
 
 import com.jdriven.library.access.model.AuthorEntity
 import com.jdriven.library.access.model.AuthorRepository
+import com.jdriven.library.access.model.BookEntity
 import com.jdriven.library.access.model.BookRepository
 import com.jdriven.library.service.model.BookDto
 import com.jdriven.library.service.model.PaginatedResponse
+import jakarta.persistence.EntityManager
+import org.hibernate.search.mapper.orm.Search
+import org.hibernate.search.mapper.orm.massindexing.MassIndexer
+import org.hibernate.search.mapper.orm.session.SearchSession
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.concurrent.atomic.AtomicBoolean
 
 @Service
-class BookService(private val bookRepository: BookRepository, private val authorRepository: AuthorRepository) {
+class BookService(
+    private val bookRepository: BookRepository,
+    private val authorRepository: AuthorRepository,
+    private val entityManager: EntityManager,
+    @Value("\${init.index}") val initIndex: Boolean,
+) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
+    private val initializeIndexDone = AtomicBoolean(false)
+//
+//    @PostConstruct
+//    fun init() {
+//        logger.info("qqqq0 $initIndex")
+//    }
+
+    fun initializeIndex() {
+        logger.info("initializeIndex start")
+        val searchSession: SearchSession = Search.session(entityManager)
+        val indexer: MassIndexer = searchSession.massIndexer(BookEntity::class.java).threadsToLoadObjects(7);
+        indexer.startAndWait();
+        logger.info("initializeIndex done")
+    }
 
     @Transactional(readOnly = true)
     fun find(isbn: String): BookDto? {
@@ -53,8 +79,13 @@ class BookService(private val bookRepository: BookRepository, private val author
     }
 
     @Transactional(readOnly = true)
-    fun search(authorName: String?, title: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<BookDto> {
-        if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")
+    fun qqqqsearch(
+        authorName: String?,
+        title: String?,
+        pageIndex: Int,
+        pageSize: Int = 20
+    ): PaginatedResponse<BookDto> {
+        if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")//qqqq all orblank
         val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("author.name", "title"))
         val page = bookRepository.search(
             if (authorName.isNullOrBlank()) null else authorName,
@@ -62,5 +93,63 @@ class BookService(private val bookRepository: BookRepository, private val author
         )
         val books = page.content.map { it -> BookDto.of(it) }
         return PaginatedResponse(content = books, pageIndex, pageSize, page.totalElements, page.totalPages)
+    }
+
+    @Transactional(readOnly = true)
+    fun search(
+        authorTerm: String?,
+        titleTerm: String?,
+        pageIndex: Int,
+        pageSize: Int = 20
+    ): PaginatedResponse<BookDto> {//qqqq mv to access.BookSearcher @Service/@Component
+        if (initIndex && !initializeIndexDone.get()) {
+            initializeIndex()
+        }
+//        initLatch.await(10, TimeUnit.SECONDS)qqqq
+
+        val searchSession: SearchSession = Search.session(entityManager)
+
+        val offset = pageIndex * pageSize
+
+        val result = searchSession.search(BookEntity::class.java)
+            .where { f -> // 'f' is the search factory
+                //val bool = f.bool() // Both 'must'-clauses must matchen (AND)
+                f.bool { b ->
+                    if (!titleTerm.isNullOrBlank()) {
+                        b.must(
+                            f.match()
+                                .field("title")
+                                .matching(titleTerm)
+                        )
+                    }
+                    if (!authorTerm.isNullOrBlank()) {
+                        b.must(
+                            f.match()
+                                .field("author.name")
+                                .matching(authorTerm)
+                        )
+                    }
+                }
+            }
+            .sort { f ->
+                f.composite(
+                    f.field("author.name_sort").asc(),
+                    f.field("title_sort").asc()
+                )
+            }
+            .fetch(offset, pageSize)
+
+        val totalHits = result.total().hitCount()
+        val totalPages = totalHits / pageSize + 1
+        val hits: List<BookEntity> = result.hits() as List<BookEntity>
+        val qqqq = hits.map { BookDto.of(it) }.sortedWith(compareBy({ it.authorName }, { it.title }))
+
+        return PaginatedResponse(
+            content = hits.map { BookDto.of(it) }.sortedWith(compareBy({ it.authorName }, { it.title })),
+            currentPage = pageIndex,
+            pageSize = pageSize,
+            totalElements = totalHits,
+            totalPages = totalPages.toInt(),
+        )
     }
 }

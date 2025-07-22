@@ -1,6 +1,8 @@
 package com.jdriven.library.access.model
 
 import jakarta.persistence.*
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed
 
 /**
  * When the last book with this ISBN is decommissioned do not delete tit, instead set its numberOfCopies to 0.
@@ -12,11 +14,13 @@ import jakarta.persistence.*
         Index(name = "idx_book_title", columnList = "title")
     ]
 )
+@Indexed
 class BookEntity() : AbstractBaseEntity() {
 
     @Column(unique = true, nullable = false)
     lateinit var isbn: String
 
+    @FullTextField//qqqq(analyzer = "autocomplete_indexing", searchAnalyzer = "autocomplete_search")
     @Column
     var title: String? = null
 

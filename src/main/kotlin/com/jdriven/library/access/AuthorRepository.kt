@@ -15,7 +15,7 @@ interface AuthorRepository: CrudRepository<AuthorEntity, Long> {
     @Query(
         """
         SELECT a FROM Author a 
-        WHERE (:name IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT(:name, '%')))
+        WHERE LOWER(a.name) LIKE LOWER(CONCAT(:name, '%'))
     """
     )
     fun search(name: String, pageable: Pageable): Page<AuthorEntity>

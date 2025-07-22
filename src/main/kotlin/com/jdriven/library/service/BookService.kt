@@ -7,6 +7,7 @@ import com.jdriven.library.access.model.BookRepository
 import com.jdriven.library.service.model.BookDto
 import com.jdriven.library.service.model.PaginatedResponse
 import jakarta.persistence.EntityManager
+import org.hibernate.search.mapper.orm.Search
 import org.hibernate.search.mapper.orm.session.SearchSession
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
@@ -60,7 +61,12 @@ class BookService(
     }
 
     @Transactional(readOnly = true)
-    fun qqqqsearch(authorName: String?, title: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<BookDto> {
+    fun qqqqsearch(
+        authorName: String?,
+        title: String?,
+        pageIndex: Int,
+        pageSize: Int = 20
+    ): PaginatedResponse<BookDto> {
         if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")//qqqq all orblank
         val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("author.name", "title"))
         val page = bookRepository.search(
@@ -73,8 +79,13 @@ class BookService(
 
 
     @Transactional(readOnly = true)
-    fun search(authorTerm: String?, titleTerm: String?, pageIndex: Int, pageSize: Int = 20): PaginatedResponse<BookDto> {//qqqq mv to access.BookSearcher @Service/@Component
-        val searchSession: SearchSession = org.hibernate.search.mapper.orm.Search.session(entityManager)
+    fun search(
+        authorTerm: String?,
+        titleTerm: String?,
+        pageIndex: Int,
+        pageSize: Int = 20
+    ): PaginatedResponse<BookDto> {//qqqq mv to access.BookSearcher @Service/@Component
+        val searchSession: SearchSession = Search.session(entityManager)
 
         val offset = pageIndex * pageSize
 
@@ -83,17 +94,16 @@ class BookService(
                 val bool = f.bool() // Both 'must'-clauses must matchen (AND)
                 if (!titleTerm.isNullOrBlank()) {
                     bool.must(
-                        f.wildcard()
+                        f.match()
                             .field("title")
-//                            .matching(titleTerm)qqqq
-                            .matching("${titleTerm.lowercase()}*")
+                            .matching(titleTerm)
                     )
                 }
                 if (!authorTerm.isNullOrBlank()) {
                     bool.must(
                         f.match()
                             .field("author.name")
-                            .matching(authorTerm.lowercase())
+                            .matching(authorTerm)
                     )
                 }
                 bool

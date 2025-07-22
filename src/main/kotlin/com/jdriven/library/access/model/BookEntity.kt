@@ -3,6 +3,7 @@ package com.jdriven.library.access.model
 import jakarta.persistence.*
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded
 
 /**
  * When the last book with this ISBN is decommissioned do not delete tit, instead set its numberOfCopies to 0.
@@ -29,6 +30,7 @@ class BookEntity() : AbstractBaseEntity() {
     @Column(name = "number_of_copies")
     var numberOfCopies: Int = 10
 
+    @IndexedEmbedded
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_book_author"))
     var author: AuthorEntity? = null

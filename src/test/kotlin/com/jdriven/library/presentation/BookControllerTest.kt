@@ -49,20 +49,27 @@ class BookControllerTest() {
 
 	@Test
 	fun search_byAuthor() {
-		val page = searchAsBooks("RENE", "", 200)
+		search_byAuthor("RENE", true)
+//		search_byAuthor("goscinny", true) //qqqq no result
+		search_byAuthor("RENE", false)
+		search_byAuthor("goscinny", false)
+	}
+
+	private fun search_byAuthor(author: String, startsWith: Boolean) {
+		val page = searchAsBooks(author, "", startsWith, 200)
 		assertEquals(1, page.content.size)
 		assertEquals("Rene Goscinny", page.content[0].authorName)
 	}
 
 	@Test
 	fun search_byAuthorTooManyHits() {
-		val rsp = searchAsRspOptions("kees", "", 400).asString()
+		val rsp = searchAsRspOptions("kees", "", false, 400).asString()
 		assertTrue(rsp.contains("too many hits"))
 	}
 
 	@Test
 	fun search_byAuthorNotFound() {
-		val page = searchAsBooks("HARRY", null, 200)
+		val page = searchAsBooks("HARRY", null, false, 200)
 		assertEquals(0, page.content.size)
 	}
 
@@ -75,43 +82,43 @@ class BookControllerTest() {
 	}
 
 	fun search_noArgs(author: String?, title: String?) {
-		val rsp = searchAsRspOptions(author, title, 400).asString()
+		val rsp = searchAsRspOptions(author, title, false, 400).asString()
 		assertTrue(rsp.contains("authorName and title must not be both empty"))
 	}
 
 	@Test
 	fun search_byTitle() {
-		val page = searchAsBooks(null, "poppenkast", 200)
+		val page = searchAsBooks(null, "poppenkast", false, 200)
 		assertEquals(3, page.content.size)
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
 	@Test
 	fun search_byTitlePage0Size2() {
-		val page = searchAsBooks(null, "DEEL", 200, 0, 2)
+		val page = searchAsBooks(null, "DEEL", false, 200, 0, 2)
 		assertEquals(2, page.content.size)
 		page.content.forEach { assertTrue(it.authorName!!.startsWith("Jan")) }
 	}
 
 	@Test
 	fun search_byTitlePage1Size2() {
-		val page = searchAsBooks(null, "DEEL", 200, 1, 2)
+		val page = searchAsBooks(null, "DEEL", false, 200, 1, 2)
 		assertEquals(1, page.content.size)
 		page.content.forEach { assertTrue(it.authorName!!.startsWith("Katrijn")) }
 	}
 
 	@Test
 	fun search_byAuthorAndTitle() {
-		val page = searchAsBooks("jan", "de poppenkast", 200)
+		val page = searchAsBooks("jan", "de poppenkast", false, 200)
 		assertEquals(2, page.content.size)
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
-	private fun searchAsBooks(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<BookDto> =
-		searchAsRspOptions(author, title, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<BookDto>>() {})
+	private fun searchAsBooks(author: String?, title: String?, startsWith: Boolean, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<BookDto> =
+		searchAsRspOptions(author, title, startsWith, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<BookDto>>() {})
 
-	private fun searchAsRspOptions(author: String?, title: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
-		var url = "http://localhost:${port}/books/search?page=${pageIndex}"
+	private fun searchAsRspOptions(author: String?, title: String?, startsWith: Boolean, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
+		var url = "http://localhost:${port}/books/search${if (startsWith) "-starts-with" else ""}?page=${pageIndex}"
 		if (pageSize != null) url += "&size=${pageSize}"
 		if (!author.isNullOrBlank()) url += "&author=${author}"
 		if (!title.isNullOrBlank()) url += "&title=${title}"

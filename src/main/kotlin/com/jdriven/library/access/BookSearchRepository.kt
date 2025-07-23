@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * See [Getting started with Hibernate Search in Hibernate ORM](https://docs.jboss.org/hibernate/stable/search/getting-started/orm/en-US/html_single/#getting-started-mapping)
+ */
 @Repository
 class BookSearchRepository(
     private val entityManager: EntityManager,

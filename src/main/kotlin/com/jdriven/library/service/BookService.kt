@@ -65,17 +65,18 @@ class BookService(
         authorName: String?,
         title: String?,
         pageIndex: Int,
-        pageSize: Int = 20
+        pageSize: Int = 20,
+        startsWith: Boolean,
     ): PaginatedResponse<BookDto> {
         if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")
         val authorNameLength = authorName?.trim()?.length ?: 0
         val titleLength = title?.trim()?.length ?: 0
         if ((authorNameLength + titleLength) < 2) throw IllegalArgumentException("search criteria must contain at least 2 characters")
 
-        return searchRepository.search(authorName, title, pageIndex, pageSize)
+        return if (startsWith) searchStartsWith(authorName, title, pageIndex, pageSize) else searchRepository.search(authorName, title, pageIndex, pageSize)
     }
 
-    private fun searchWithJpql(//qqqq ook ontsluiten
+    private fun searchStartsWith(
         authorName: String?,
         title: String?,
         pageIndex: Int,

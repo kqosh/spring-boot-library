@@ -23,7 +23,8 @@ class BookService(
     private val bookRepository: BookRepository,
     private val authorRepository: AuthorRepository,
     private val entityManager: EntityManager,
-    @Value("\${init.index}") val initIndex: Boolean,
+    @Value("\${init.index}") val initIndex: Boolean,//qqqq private 2x
+    @Value("\${search.limit}") val searchLimit: Int,
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -116,7 +117,6 @@ class BookService(
 
         val searchSession: SearchSession = Search.session(entityManager)
 
-        val limit = 200
         val offset = pageIndex * pageSize
 
         val result = searchSession.search(BookEntity::class.java)
@@ -138,7 +138,7 @@ class BookService(
                 }
                 bool
             }
-            .fetch(limit)
+            .fetch(searchLimit)
 
 // TODO This code does not work
 //        val result = searchSession.search(BookEntity::class.java)
@@ -170,7 +170,7 @@ class BookService(
 //            .fetch(offset, pageSize)
 
         val totalHits = result.total().hitCount()
-        if (totalHits > limit) throw IllegalArgumentException("too many hits") //qqqq ut
+        if (totalHits > searchLimit) throw IllegalArgumentException("too many hits")
 
         val totalPages = totalHits / pageSize + 1
         val hits: List<BookEntity> = result.hits() as List<BookEntity>

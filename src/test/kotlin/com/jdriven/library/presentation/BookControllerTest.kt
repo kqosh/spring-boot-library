@@ -55,6 +55,12 @@ class BookControllerTest() {
 	}
 
 	@Test
+	fun search_byAuthorTooManyHits() {
+		val rsp = searchAsRspOptions("kees", "", 400).asString()
+		assertTrue(rsp.contains("too many hits"))
+	}
+
+	@Test
 	fun search_byAuthorNotFound() {
 		val page = searchAsBooks("HARRY", null, 200)
 		assertEquals(0, page.content.size)

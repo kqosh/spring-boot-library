@@ -2,6 +2,7 @@ package com.jdriven.library.presentation
 
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
+import org.springframework.dao.InvalidDataAccessApiUsageException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
@@ -38,6 +39,7 @@ class GlobalExceptionHandler {
             is AccessDeniedException -> HttpStatus.FORBIDDEN
             is CredentialsExpiredException -> HttpStatus.UNAUTHORIZED
             is IllegalArgumentException -> HttpStatus.BAD_REQUEST
+            is InvalidDataAccessApiUsageException -> HttpStatus.BAD_REQUEST
             is IllegalStateException -> HttpStatus.CONFLICT
             is AuthorizationResult -> throw ex // use the default exception handler for these
             else -> HttpStatus.INTERNAL_SERVER_ERROR

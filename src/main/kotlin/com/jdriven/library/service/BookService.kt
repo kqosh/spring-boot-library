@@ -28,11 +28,6 @@ class BookService(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
     private val initializeIndexDone = AtomicBoolean(false)
-//
-//    @PostConstruct
-//    fun init() {
-//        logger.info("qqqq0 $initIndex")
-//    }
 
     fun initializeIndex() {
         logger.info("initializeIndex start")
@@ -79,13 +74,23 @@ class BookService(
     }
 
     @Transactional(readOnly = true)
-    fun qqqqsearch(
+    fun search(
         authorName: String?,
         title: String?,
         pageIndex: Int,
         pageSize: Int = 20
     ): PaginatedResponse<BookDto> {
-        if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")//qqqq all orblank
+        if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")
+        //qqqq at least 2 chars?!
+        return searchWithHibernateSearch(authorName, title, pageIndex, pageSize)
+    }
+
+    private fun searchWithJpql(
+        authorName: String?,
+        title: String?,
+        pageIndex: Int,
+        pageSize: Int = 20
+    ): PaginatedResponse<BookDto> {
         val pageRequest = PageRequest.of(pageIndex, pageSize, Sort.by("author.name", "title"))
         val page = bookRepository.search(
             if (authorName.isNullOrBlank()) null else authorName,
@@ -95,8 +100,7 @@ class BookService(
         return PaginatedResponse(content = books, pageIndex, pageSize, page.totalElements, page.totalPages)
     }
 
-    @Transactional(readOnly = true)
-    fun search(
+    private fun searchWithHibernateSearch(
         authorTerm: String?,
         titleTerm: String?,
         pageIndex: Int,
@@ -105,47 +109,71 @@ class BookService(
         if (initIndex && !initializeIndexDone.get()) {
             initializeIndex()
         }
-//        initLatch.await(10, TimeUnit.SECONDS)qqqq
 
         val searchSession: SearchSession = Search.session(entityManager)
 
+        val limit = 200
         val offset = pageIndex * pageSize
 
         val result = searchSession.search(BookEntity::class.java)
             .where { f -> // 'f' is the search factory
-                //val bool = f.bool() // Both 'must'-clauses must matchen (AND)
-                f.bool { b ->
-                    if (!titleTerm.isNullOrBlank()) {
-                        b.must(
-                            f.match()
-                                .field("title")
-                                .matching(titleTerm)
-                        )
-                    }
-                    if (!authorTerm.isNullOrBlank()) {
-                        b.must(
-                            f.match()
-                                .field("author.name")
-                                .matching(authorTerm)
-                        )
-                    }
+                val bool = f.bool() // Both 'must'-clauses must matchen (AND)
+                if (!titleTerm.isNullOrBlank()) {
+                    bool.must(
+                        f.match()
+                            .field("title")
+                            .matching(titleTerm)
+                    )
                 }
+                if (!authorTerm.isNullOrBlank()) {
+                    bool.must(
+                        f.match()
+                            .field("author.name")
+                            .matching(authorTerm)
+                    )
+                }
+                bool
             }
+            .fetch(limit)
+
+// TODO This code does not work
+//        val result = searchSession.search(BookEntity::class.java)
+//            .where { f -> // 'f' is the search factory
+//                //val bool = f.bool() // Both 'must'-clauses must matchen (AND)
+//                f.bool { b ->
+//                    if (!titleTerm.isNullOrBlank()) {
+//                        b.must(
+//                            f.match()
+//                                .field("title")
+//                                .matching(titleTerm)
+//                        )
+//                    }
+//                    if (!authorTerm.isNullOrBlank()) {
+//                        b.must(
+//                            f.match()
+//                                .field("author.name")
+//                                .matching(authorTerm)
+//                        )
+//                    }
+//                }
+//            }
 //            .sort { f ->
 //                f.composite(
 //                    f.field("author.name_sort").asc(),
 //                    f.field("title_sort").asc()
 //                )
-//            }qqqq
-            .fetch(offset, pageSize)
+//            }
+//            .fetch(offset, pageSize)
 
         val totalHits = result.total().hitCount()
+        if (totalHits > limit) throw IllegalArgumentException("too many hits") //qqqq ut
+
         val totalPages = totalHits / pageSize + 1
         val hits: List<BookEntity> = result.hits() as List<BookEntity>
-        val qqqq = hits.map { BookDto.of(it) }.sortedWith(compareBy({ it.authorName }, { it.title }))
+        val books = hits.map { BookDto.of(it) }.sortedWith(compareBy({ it.authorName }, { it.title }))
 
         return PaginatedResponse(
-            content = hits.map { BookDto.of(it) }.sortedWith(compareBy({ it.authorName }, { it.title })),
+            content = books.subList(offset, Math.min(books.size, offset + pageSize)),
             currentPage = pageIndex,
             pageSize = pageSize,
             totalElements = totalHits,

@@ -23,8 +23,8 @@ class BookEntity() : AbstractBaseEntity() {
     @Column(unique = true, nullable = false)
     lateinit var isbn: String
 
-    @FullTextField//qqqq(analyzer = "autocomplete_indexing", searchAnalyzer = "autocomplete_search")
-//    @KeywordField(name = "title_sort", normalizer = "lowercase", sortable = Sortable.YES)
+    @FullTextField
+//TODO does notwork    @KeywordField(name = "title_sort", normalizer = "lowercase", sortable = Sortable.YES)
     @Column
     var title: String? = null
 

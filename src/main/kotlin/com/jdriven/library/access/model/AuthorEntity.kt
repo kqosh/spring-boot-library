@@ -15,7 +15,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 class AuthorEntity() : AbstractBaseEntity() {
 
     @FullTextField
-//    @KeywordField(name = "name_sort", normalizer = "lowercase", sortable = Sortable.YES)
+//TODO does notwork    @KeywordField(name = "name_sort", normalizer = "lowercase", sortable = Sortable.YES)
     @Column(nullable = false, unique = true)
     lateinit var name: String
 

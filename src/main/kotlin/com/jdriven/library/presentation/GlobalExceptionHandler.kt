@@ -31,7 +31,7 @@ class GlobalExceptionHandler {
             is IllegalArgumentException -> HttpStatus.BAD_REQUEST
             is IllegalStateException -> HttpStatus.CONFLICT
             is AuthorizationResult -> throw ex // use the default exception handler for these
-            else -> HttpStatus.INTERNAL_SERVER_ERROR
+            else -> HttpStatus.INTERNAL_SERVER_ERROR //qqqq log stacktrace
         }
 }
 

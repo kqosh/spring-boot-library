@@ -23,8 +23,8 @@ class BookService(
     private val bookRepository: BookRepository,
     private val authorRepository: AuthorRepository,
     private val entityManager: EntityManager,
-    @Value("\${init.index}") val initIndex: Boolean,//qqqq private 2x
-    @Value("\${search.limit}") val searchLimit: Int,
+    @Value("\${init.index}") private val initIndex: Boolean,
+    @Value("\${search.limit}") private val searchLimit: Int,
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)

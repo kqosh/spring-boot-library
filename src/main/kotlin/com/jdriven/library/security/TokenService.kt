@@ -9,7 +9,7 @@ import java.util.*
 import javax.crypto.SecretKey
 
 @Service
-class TokenService(@Value("\${jwt.secret}") val jwtSecret: String) {//qqqq private val
+class TokenService(@Value("\${jwt.secret}") private val jwtSecret: String) {
 
     private val key: SecretKey = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
 

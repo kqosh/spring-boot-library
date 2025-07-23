@@ -1,6 +1,7 @@
 package com.jdriven.library.presentation
 
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
@@ -14,9 +15,17 @@ import java.time.ZonedDateTime
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     @ExceptionHandler(Exception::class)
     fun handleGenericException(ex: Exception, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
         val httpStatus = getHttpStatus(ex)
+        if (httpStatus.is4xxClientError) {
+            logger.warn("Client Error, $httpStatus")
+        }
+        if (httpStatus.is5xxServerError) {
+            logger.error("Server Error, $httpStatus, cause:", ex)
+        }
         val errorResponse = ErrorResponse.of(httpStatus, ex.message, request.requestURI)
         return ResponseEntity(errorResponse, httpStatus)
     }

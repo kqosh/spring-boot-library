@@ -27,6 +27,7 @@ class BookService(
 ) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
+
     private val initializeIndexDone = AtomicBoolean(false)
 
     fun initializeIndex() {
@@ -81,7 +82,10 @@ class BookService(
         pageSize: Int = 20
     ): PaginatedResponse<BookDto> {
         if (authorName.isNullOrBlank() && title.isNullOrBlank()) throw IllegalArgumentException("authorName and title must not be both empty")
-        //qqqq at least 2 chars?!
+        val authorNameLength = authorName?.trim()?.length ?: 0
+        val titleLength = title?.trim()?.length ?: 0
+        if ((authorNameLength + titleLength) < 2) throw IllegalArgumentException("search criteria must contain at least 2 characters")
+
         return searchWithHibernateSearch(authorName, title, pageIndex, pageSize)
     }
 

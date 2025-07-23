@@ -62,3 +62,20 @@ data class ErrorResponse(
         )
     }
 }
+
+/*qqqq
+@RestControllerAdvice
+class GlobalExceptionHandler : ResponseEntityExceptionHandler() { // <-- Extenden!
+
+    // Deze handler is voor ONZE EIGEN custom exception
+    @ExceptionHandler(ResourceNotFoundException::class)
+    fun handleNotFound(ex: ResourceNotFoundException): ResponseEntity<Any> {
+        val errorBody = mapOf("error" to "Niet Gevonden", "message" to ex.message)
+        return ResponseEntity(errorBody, HttpStatus.NOT_FOUND)
+    }
+
+    // Je hoeft nu GEEN handler te schrijven voor @Valid-fouten.
+    // De ResponseEntityExceptionHandler-basisklasse handelt MethodArgumentNotValidException
+    // al af en geeft een nette 400 Bad Request terug.
+}
+ */

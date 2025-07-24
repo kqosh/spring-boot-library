@@ -28,6 +28,9 @@ class SecurityConfig(private val jwtProvider: JwtAuthenticationProvider) {
             authorizeHttpRequests {
                 authorize("/version", permitAll)
                 authorize("/users/jwts", permitAll)
+                authorize("/swagger-ui/**", permitAll)
+                authorize("/v3/api-docs/**", permitAll)
+                authorize("/v3/api-docs*", permitAll)
                 authorize(anyRequest, authenticated)
             }
             addFilterBefore<UsernamePasswordAuthenticationFilter>(JwtAuthFilter(authenticationManager()))

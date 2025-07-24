@@ -2,6 +2,7 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.CheckoutService
 import com.jdriven.library.service.model.CheckoutDto
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -19,6 +20,8 @@ class CheckoutController(private val service: CheckoutService) {
 
 	@GetMapping("/{username}")
 	@PreAuthorize("hasRole('USER')")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiStandardErrors
 	fun findByUsername(@PathVariable(value = "username") username: String, authentication: Authentication): List<CheckoutDto> {
 		logger.info("findByUsername $username")
 		validateUser(username, authentication)
@@ -35,6 +38,8 @@ class CheckoutController(private val service: CheckoutService) {
 
 	@GetMapping("/book/{isbn}")
 	@PreAuthorize("hasRole('ADMIN')")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiStandardErrors
 	fun findByBook(@PathVariable(value = "isbn") isbn: String): List<CheckoutDto> {
 		logger.info("findByBook $isbn")
 		return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
@@ -43,6 +48,8 @@ class CheckoutController(private val service: CheckoutService) {
 	@PostMapping("{username}/{isbn}")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('USER')")
+	@ApiResponse(responseCode = "201", description = "Created")
+	@ApiStandardErrors
 	fun create(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("create $username, $isbn")
 		validateUser(username, authentication)
@@ -51,6 +58,8 @@ class CheckoutController(private val service: CheckoutService) {
 
 	@PatchMapping("{username}/{isbn}/return")
 	@PreAuthorize("hasRole('USER')")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiStandardErrors
 	fun returnBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("returnBook $username, $isbn")
 		validateUser(username, authentication)
@@ -59,6 +68,8 @@ class CheckoutController(private val service: CheckoutService) {
 
 	@PatchMapping("{username}/{isbn}/renew")
 	@PreAuthorize("hasRole('USER')")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiStandardErrors
 	fun renewBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("renewBook $username, $isbn")
 		validateUser(username, authentication)

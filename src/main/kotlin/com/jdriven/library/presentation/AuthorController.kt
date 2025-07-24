@@ -4,6 +4,7 @@ import com.jdriven.library.service.AuthorService
 import com.jdriven.library.service.model.AuthorDto
 import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import com.jdriven.library.service.model.PaginatedResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -19,6 +20,8 @@ class AuthorController(private val service: AuthorService) {
 
 	@GetMapping("/{name}")
 	@PreAuthorize("hasRole('USER')")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiStandardErrors
 	fun findByName(@PathVariable(value = "name") name: String): AuthorDto {
 		logger.info("findByName $name")
 		return service.find(name) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${name}")
@@ -27,6 +30,8 @@ class AuthorController(private val service: AuthorService) {
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('ADMIN')")
+	@ApiResponse(responseCode = "201", description = "Created")
+	@ApiStandardErrors
 	fun create(@RequestBody request: CreateOrUpdateAuthorRequest) {
 		logger.info("create $request")
 		service.create(request)
@@ -34,6 +39,8 @@ class AuthorController(private val service: AuthorService) {
 
 	@DeleteMapping("/{name}")
 	@PreAuthorize("hasRole('ADMIN')")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiStandardErrors
 	fun delete(@PathVariable(value = "name") name: String) {
 		logger.info("deleteByName $name")
 		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
@@ -41,6 +48,8 @@ class AuthorController(private val service: AuthorService) {
 
 	@GetMapping("/search-starts-with")
 	@PreAuthorize("hasRole('USER')")
+	@ApiResponse(responseCode = "200", description = "OK")
+	@ApiStandardErrors
 	fun search(
 		@RequestParam(required = false, defaultValue = "") name: String?,
 		@RequestParam(required = false, defaultValue = "0") page: String?,

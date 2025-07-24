@@ -4,6 +4,7 @@ import com.jdriven.library.service.UserService
 import com.jdriven.library.service.model.CreateJwtRequest
 import com.jdriven.library.service.model.CreateUserRequest
 import com.jdriven.library.service.model.UserDto
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -20,6 +21,8 @@ class UserController(private val service: UserService) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @PostMapping("/jwts")
+    @ApiResponse(responseCode = "201", description = "Created")
+    @ApiStandardErrors
     fun create(@RequestBody request: CreateJwtRequest): String {
         logger.info("jwts $request")
         return service.createJwt(request) ?: throw NoResourceFoundException(HttpMethod.POST, "/jwts")
@@ -27,6 +30,8 @@ class UserController(private val service: UserService) {
 
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('USER')")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiStandardErrors
     fun findByName(@PathVariable(value = "username") username: String, authentication: Authentication): UserDto {
         logger.info("findByName ${username}")
         validateUser(username, authentication)
@@ -44,6 +49,8 @@ class UserController(private val service: UserService) {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponse(responseCode = "201", description = "Created")
+    @ApiStandardErrors
     fun create(@RequestBody user: CreateUserRequest) {
         logger.info("create $user")
         service.create(user)
@@ -51,6 +58,8 @@ class UserController(private val service: UserService) {
 
     @PatchMapping("/{username}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiStandardErrors
     fun enable(
         @PathVariable(value = "username") username: String,
         @RequestParam(required = false, defaultValue = "false") enabled: Boolean
@@ -62,6 +71,8 @@ class UserController(private val service: UserService) {
     @PostMapping("/{username}/roles/{role}")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponse(responseCode = "201", description = "Created")
+    @ApiStandardErrors
     fun addRole(@PathVariable(value = "username") username: String, @PathVariable(value = "role") role: String) {
         logger.info("addRole $username $role")
         service.addRole(username, role)
@@ -69,6 +80,8 @@ class UserController(private val service: UserService) {
 
     @DeleteMapping("/{username}/roles/{role}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiStandardErrors
     fun deleteRole(@PathVariable(value = "username") username: String, @PathVariable(value = "role") role: String) {
         logger.info("deleteRole $username $role")
         val wasDeleted = service.deleteRole(username, role)

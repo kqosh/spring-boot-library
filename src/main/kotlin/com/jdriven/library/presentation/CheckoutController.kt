@@ -57,6 +57,7 @@ class CheckoutController(private val service: CheckoutService) {
 	fun create(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("create $username, $isbn")
 		validateUser(username, authentication)
+		//qqqq if user.requiredPayment throw AccessDeniedExc("payment required")
 		service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.POST, "/checkouts/${username}/${isbn}")
 	}
 

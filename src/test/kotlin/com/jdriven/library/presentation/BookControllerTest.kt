@@ -142,8 +142,6 @@ class BookControllerTest() {
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
-	//qqqq add nuw book and assert it is also found with search by lucene, en then delete it and it is not found anymore
-
 	private fun searchAsBooks(author: String?, title: String?, startsWith: Boolean, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<BookDto> =
 		searchAsRspOptions(author, title, startsWith, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<BookDto>>() {})
 
@@ -160,7 +158,7 @@ class BookControllerTest() {
 		val baseUrl = "http://localhost:${port}/books"
 		val isbn = "isbn998"
 		val isbnNew = "isbn999"
-		val book = BookDto(isbn, "an author", "a title", numberOfCopies = 4)
+		val book = BookDto(isbn, "some author", "some title", numberOfCopies = 4)
 
 		// create book
 		RestCallBuilder(baseUrl, 201).body(book).jwt(adminJwt).post()
@@ -168,10 +166,17 @@ class BookControllerTest() {
 		// find newly added author
 		RestCallBuilder("http://localhost:${port}/authors/${book.authorName}", 200).body(book).jwt(adminJwt).get()
 
+		// search by author and title
+		assertEquals(1, searchAsBooks("author", "title", false, 200).content.size)
+
 		// update author
 		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(authorName = "Rene Goscinny")).jwt(adminJwt).put()
 		val bookAfterUpdate = findByIsbn(isbn, 200).`as`(BookDto::class.java)!!
 		assertEquals("Rene Goscinny", bookAfterUpdate.authorName)
+
+		// search by author and title
+		assertEquals(0, searchAsBooks("author", "title", false, 200).content.size)
+		assertEquals(1, searchAsBooks("goscinny", "title", false, 200).content.size)
 
 		// update isbn
 		RestCallBuilder("${baseUrl}/${isbn}", 200).body(book.copy(isbn = isbnNew)).jwt(adminJwt).put()
@@ -185,5 +190,8 @@ class BookControllerTest() {
 		RestCallBuilder("${baseUrl}/${isbnNew}", 200).jwt(adminJwt).delete()
 		findByIsbn(isbn, 404)
 		RestCallBuilder("${baseUrl}/${isbnNew}", 404).jwt(adminJwt).delete()
+
+		// search by author and title
+		assertEquals(0, searchAsBooks("goscinny", "title", false, 200).content.size)
 	}
 }

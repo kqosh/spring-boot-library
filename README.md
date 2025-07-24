@@ -14,7 +14,7 @@ Spring Boot base Library App
 
 NB To stop, start, and restart the database use `docker start`, `docker stop`, and `docker restart`.
 
-### Create a directory for th eLucene index
+### Create a directory for the Lucene index
 
 1. `cd /var/lib`
 1. `sudo mkdir -p /var/lib/lucene/index`
@@ -26,4 +26,17 @@ NB To stop, start, and restart the database use `docker start`, `docker stop`, a
 
 ### API specs
 
-qqqq generate swagger?
+- [Swagger](http://localhost:8080/swagger-ui/index.html)
+- [OpenAPI spec in JSON](http://localhost:8080/v3/api-docs)
+- [OpenAPI spec in YAML](http://localhost:8080/v3/api-docs.yaml)
+
+### Smoke Test qqqq
+
+- generate create tables scipt met ut
+- load data.sql
+
+use swagger or curl (NB swagger also generates the curl commands):
+- get version
+- get token as user
+- find book
+

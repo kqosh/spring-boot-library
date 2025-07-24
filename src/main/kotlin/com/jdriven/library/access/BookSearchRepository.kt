@@ -31,6 +31,7 @@ class BookSearchRepository(
         val searchSession: SearchSession = Search.session(entityManager)
         val indexer: MassIndexer = searchSession.massIndexer(BookEntity::class.java).threadsToLoadObjects(7);
         indexer.startAndWait();
+        initializeIndexDone.set(true)
         logger.info("initializeIndex done")
     }
 

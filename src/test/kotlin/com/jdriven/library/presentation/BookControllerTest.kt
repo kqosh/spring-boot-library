@@ -142,6 +142,8 @@ class BookControllerTest() {
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
+	//qqqq add nuw book and assert it is also found with search by lucene, en then delete it and it is not found anymore
+
 	private fun searchAsBooks(author: String?, title: String?, startsWith: Boolean, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): PaginatedResponse<BookDto> =
 		searchAsRspOptions(author, title, startsWith, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<BookDto>>() {})
 

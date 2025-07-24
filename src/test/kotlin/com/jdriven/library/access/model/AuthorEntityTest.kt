@@ -3,6 +3,8 @@ package com.jdriven.library.access.model
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.temporal.JulianFields
 import kotlin.test.assertEquals
 
 
@@ -39,5 +41,23 @@ class AuthorEntityTest {
 
         a2.id = 2
         assertFalse(a1.equals(a2))
+    }
+
+    @Test
+    fun qqqq() {
+        val now = qqqq(LocalDate.now())
+        qqqq(LocalDate.of(1858, 11, 17))
+        qqqq(LocalDate.of(1800, 1, 1))
+
+        val t0 = qqqq(LocalDate.of(1969, 8, 30))
+        val t1 = qqqq(LocalDate.of(2025, 8, 30))
+        println("t1 - t0 = ${t1 - t0}, % 7 = ${(t1 - t0) % 7}")
+        println("t1 - now = ${t1 - now}, % 7 = ${(t1 - now) % 7}")
+    }
+
+    fun qqqq(date: LocalDate): Long {
+        val mjd = date.getLong(JulianFields.MODIFIED_JULIAN_DAY)
+        println("date=$date, mjd=$mjd")
+        return mjd
     }
 }

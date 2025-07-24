@@ -131,7 +131,7 @@ class AuthorControllerTest() {
 		searchAsRspOptions(author, expectedStatusCode, pageIndex, pageSize).`as`(object : TypeRef<PaginatedResponse<AuthorDto>>() {})
 
 	private fun searchAsRspOptions(name: String?, expectedStatusCode: Int, pageIndex: Int = 0, pageSize: Int? = null): ResponseBodyExtractionOptions {
-		var url = "http://localhost:${port}/authors/search?page=${pageIndex}"
+		var url = "http://localhost:${port}/authors/search-starts-with?page=${pageIndex}"
 		if (pageSize != null) url += "&size=${pageSize}"
 		if (name != null) url += "&name=${name}"
 		return RestCallBuilder(url, expectedStatusCode).jwt(userJwt).get()

@@ -69,11 +69,14 @@ class BookControllerTest() {
 
 	@Test
 	fun search_byAuthorNotFound() {
-		var page = searchAsBooks("HARRY", null, false, 200)
-		assertEquals(0, page.content.size)
-
-		page = searchAsBooks("HARRY", null, true, 200)
-		assertEquals(0, page.content.size)
+		run {
+			val page = searchAsBooks("HARRY", null, false, 200)
+			assertEquals(0, page.content.size)
+		}
+		run {
+			val page = searchAsBooks("HARRY", null, true, 200)
+			assertEquals(0, page.content.size)
+		}
 	}
 
 	@Test

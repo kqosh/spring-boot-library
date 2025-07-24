@@ -66,6 +66,6 @@ class BookController(private val service: BookService) {
 		@RequestParam(required = false, defaultValue = "20") size: String?
 	): PaginatedResponse<BookDto> {
 		logger.info("search $author - $title, page=$page, size=$size")
-		return service.search(author, title, page!!.toInt(), size!!.toInt(), true)//qqqq verdubbel alle search tests
+		return service.search(author, title, page!!.toInt(), size!!.toInt(), true)
 	}
 }

@@ -39,7 +39,7 @@ class AuthorController(private val service: AuthorService) {
 		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
 	}
 
-	@GetMapping("/search")
+	@GetMapping("/search-starts-with")
 	@PreAuthorize("hasRole('USER')")
 	fun search(
 		@RequestParam(required = false, defaultValue = "") name: String?,

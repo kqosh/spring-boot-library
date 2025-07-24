@@ -9,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authorization.AuthorizationResult
+import org.springframework.web.ErrorResponse
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import java.time.ZonedDateTime
@@ -19,7 +20,7 @@ class GlobalExceptionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @ExceptionHandler(Exception::class)
-    fun handleGenericException(ex: Exception, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+    fun handleGenericException(ex: Exception, request: HttpServletRequest): ResponseEntity<ErrorResponseMessage> {
         val httpStatus = getHttpStatus(ex)
         if (httpStatus.is4xxClientError) {
             logger.warn("Client Error, $httpStatus")
@@ -27,13 +28,13 @@ class GlobalExceptionHandler {
         if (httpStatus.is5xxServerError) {
             logger.error("Server Error, $httpStatus, cause:", ex)
         }
-        val errorResponse = ErrorResponse.of(httpStatus, ex.message, request.requestURI)
+        val errorResponse = ErrorResponseMessage.of(httpStatus, ex.message, request.requestURI)
         return ResponseEntity(errorResponse, httpStatus)
     }
 
     fun getHttpStatus(ex: Exception): HttpStatus =
         when (ex) {
-            is org.springframework.web.ErrorResponse -> HttpStatus.valueOf(ex.statusCode.value())
+            is ErrorResponse -> HttpStatus.valueOf(ex.statusCode.value())
             is BadCredentialsException -> HttpStatus.UNAUTHORIZED
             is DisabledException -> HttpStatus.UNAUTHORIZED
             is AccessDeniedException -> HttpStatus.FORBIDDEN
@@ -46,7 +47,7 @@ class GlobalExceptionHandler {
         }
 }
 
-data class ErrorResponse(
+data class ErrorResponseMessage(
     val timestamp: ZonedDateTime = ZonedDateTime.now(),
     val status: Int,
     val error: String,
@@ -54,7 +55,7 @@ data class ErrorResponse(
     val path: String?
 ) {
     companion object {
-        fun of(httpStatus: HttpStatus, message: String? = null, path: String? = null) = ErrorResponse(
+        fun of(httpStatus: HttpStatus, message: String? = null, path: String? = null) = ErrorResponseMessage(
             status = httpStatus.value(),
             error = httpStatus.reasonPhrase,
             message = message,
@@ -62,20 +63,3 @@ data class ErrorResponse(
         )
     }
 }
-
-/*qqqq
-@RestControllerAdvice
-class GlobalExceptionHandler : ResponseEntityExceptionHandler() { // <-- Extenden!
-
-    // Deze handler is voor ONZE EIGEN custom exception
-    @ExceptionHandler(ResourceNotFoundException::class)
-    fun handleNotFound(ex: ResourceNotFoundException): ResponseEntity<Any> {
-        val errorBody = mapOf("error" to "Niet Gevonden", "message" to ex.message)
-        return ResponseEntity(errorBody, HttpStatus.NOT_FOUND)
-    }
-
-    // Je hoeft nu GEEN handler te schrijven voor @Valid-fouten.
-    // De ResponseEntityExceptionHandler-basisklasse handelt MethodArgumentNotValidException
-    // al af en geeft een nette 400 Bad Request terug.
-}
- */

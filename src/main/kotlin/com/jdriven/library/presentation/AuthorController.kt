@@ -4,6 +4,7 @@ import com.jdriven.library.service.AuthorService
 import com.jdriven.library.service.model.AuthorDto
 import com.jdriven.library.service.model.CreateOrUpdateAuthorRequest
 import com.jdriven.library.service.model.PaginatedResponse
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -18,6 +19,7 @@ class AuthorController(private val service: AuthorService) {
 
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
+	@Operation(summary = "Find an author by name.")
 	@GetMapping("/{name}")
 	@PreAuthorize("hasRole('USER')")
 	@ApiResponse(responseCode = "200", description = "OK")
@@ -27,6 +29,7 @@ class AuthorController(private val service: AuthorService) {
 		return service.find(name) ?: throw NoResourceFoundException(HttpMethod.GET, "/authors/${name}")
 	}
 
+	@Operation(summary = "Create a new author.")
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('ADMIN')")
@@ -37,6 +40,7 @@ class AuthorController(private val service: AuthorService) {
 		service.create(request)
 	}
 
+	@Operation(summary = "Delete an author by name.")
 	@DeleteMapping("/{name}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@ApiResponse(responseCode = "200", description = "OK")
@@ -46,6 +50,7 @@ class AuthorController(private val service: AuthorService) {
 		service.delete(name) ?: throw NoResourceFoundException(HttpMethod.DELETE, "/authors/${name}")
 	}
 
+	@Operation(summary = "Search case insensitively for authors with a name that starts with the specified search term.")
 	@GetMapping("/search-starts-with")
 	@PreAuthorize("hasRole('USER')")
 	@ApiResponse(responseCode = "200", description = "OK")

@@ -2,6 +2,7 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.CheckoutService
 import com.jdriven.library.service.model.CheckoutDto
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -18,6 +19,7 @@ class CheckoutController(private val service: CheckoutService) {
 
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
+	@Operation(summary = "Find all checkouts for given username.")
 	@GetMapping("/{username}")
 	@PreAuthorize("hasRole('USER')")
 	@ApiResponse(responseCode = "200", description = "OK")
@@ -36,6 +38,7 @@ class CheckoutController(private val service: CheckoutService) {
 		}
 	}
 
+	@Operation(summary = "Find all checkouts for given ISBN.")
 	@GetMapping("/book/{isbn}")
 	@PreAuthorize("hasRole('ADMIN')")
 	@ApiResponse(responseCode = "200", description = "OK")
@@ -45,6 +48,7 @@ class CheckoutController(private val service: CheckoutService) {
 		return service.findByIsbn(isbn) ?: throw NoResourceFoundException(HttpMethod.GET, "/checkouts/book/${isbn}")
 	}
 
+	@Operation(summary = "Checkout a book for given username and ISBN.")
 	@PostMapping("{username}/{isbn}")
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasRole('USER')")
@@ -56,6 +60,7 @@ class CheckoutController(private val service: CheckoutService) {
 		service.create(username, isbn) ?: throw NoResourceFoundException(HttpMethod.POST, "/checkouts/${username}/${isbn}")
 	}
 
+	@Operation(summary = "Return a book for given username and ISBN.")
 	@PatchMapping("{username}/{isbn}/return")
 	@PreAuthorize("hasRole('USER')")
 	@ApiResponse(responseCode = "200", description = "OK")
@@ -66,6 +71,7 @@ class CheckoutController(private val service: CheckoutService) {
 		service.returnBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
 	}
 
+	@Operation(summary = "Renew a book for given username and ISBN.")
 	@PatchMapping("{username}/{isbn}/renew")
 	@PreAuthorize("hasRole('USER')")
 	@ApiResponse(responseCode = "200", description = "OK")

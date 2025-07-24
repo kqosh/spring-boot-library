@@ -76,7 +76,7 @@ class BookController(private val service: BookService) {
 		return service.search(author, title, page!!.toInt(), size!!.toInt(), false)
 	}
 
-	@Operation(summary = "Search case insensitively for books whose author name and/or title begins with the specified search term(s).")
+	@Operation(summary = "Search case insensitively for books whose author name and/or title starts with the specified search term(s).")
 	@GetMapping("/search-starts-with")
 	@PreAuthorize("hasRole('USER')")
 	@ApiResponse(responseCode = "200", description = "OK")

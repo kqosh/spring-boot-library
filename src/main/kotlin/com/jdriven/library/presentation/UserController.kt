@@ -4,6 +4,7 @@ import com.jdriven.library.service.UserService
 import com.jdriven.library.service.model.CreateJwtRequest
 import com.jdriven.library.service.model.CreateUserRequest
 import com.jdriven.library.service.model.UserDto
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
@@ -20,6 +21,7 @@ class UserController(private val service: UserService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    @Operation(summary = "Create a JWT for a user.")
     @PostMapping("/jwts")
     @ApiResponse(responseCode = "201", description = "Created")
     @ApiStandardErrors
@@ -28,6 +30,7 @@ class UserController(private val service: UserService) {
         return service.createJwt(request) ?: throw NoResourceFoundException(HttpMethod.POST, "/jwts")
     }
 
+    @Operation(summary = "Find a user for a given username.")
     @GetMapping("/{username}")
     @PreAuthorize("hasRole('USER')")
     @ApiResponse(responseCode = "200", description = "OK")
@@ -46,6 +49,7 @@ class UserController(private val service: UserService) {
         }
     }
 
+    @Operation(summary = "Create a new user.")
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
@@ -56,6 +60,7 @@ class UserController(private val service: UserService) {
         service.create(user)
     }
 
+    @Operation(summary = "Enable/Disable an existing user.")
     @PatchMapping("/{username}")
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponse(responseCode = "200", description = "OK")
@@ -68,6 +73,9 @@ class UserController(private val service: UserService) {
         service.enable(username, enabled) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/users/${username}")
     }
 
+    //qqqq get roles
+
+    @Operation(summary = "Add an existing role to an existing user.")
     @PostMapping("/{username}/roles/{role}")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
@@ -78,6 +86,7 @@ class UserController(private val service: UserService) {
         service.addRole(username, role)
     }
 
+    @Operation(summary = "Revoke a role from an existing user.")
     @DeleteMapping("/{username}/roles/{role}")
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponse(responseCode = "200", description = "OK")

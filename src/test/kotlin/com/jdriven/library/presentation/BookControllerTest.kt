@@ -50,15 +50,15 @@ class BookControllerTest() {
 	@Test
 	fun search_byAuthor() {
 		search_byAuthor("RENE", true)
-//		search_byAuthor("goscinny", true) //qqqq no result
+		search_byAuthor("goscinny", true, 0)
 		search_byAuthor("RENE", false)
 		search_byAuthor("goscinny", false)
 	}
 
-	private fun search_byAuthor(author: String, startsWith: Boolean) {
+	private fun search_byAuthor(author: String, startsWith: Boolean, exptectedHits: Int = 1) {
 		val page = searchAsBooks(author, "", startsWith, 200)
-		assertEquals(1, page.content.size)
-		assertEquals("Rene Goscinny", page.content[0].authorName)
+		assertEquals(exptectedHits, page.content.size)
+		if (exptectedHits > 0) assertEquals("Rene Goscinny", page.content[0].authorName)
 	}
 
 	@Test
@@ -69,7 +69,10 @@ class BookControllerTest() {
 
 	@Test
 	fun search_byAuthorNotFound() {
-		val page = searchAsBooks("HARRY", null, false, 200)
+		var page = searchAsBooks("HARRY", null, false, 200)
+		assertEquals(0, page.content.size)
+
+		page = searchAsBooks("HARRY", null, true, 200)
 		assertEquals(0, page.content.size)
 	}
 
@@ -88,28 +91,50 @@ class BookControllerTest() {
 
 	@Test
 	fun search_byTitle() {
-		val page = searchAsBooks(null, "poppenkast", false, 200)
-		assertEquals(3, page.content.size)
-		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
+		search_byTitle(false, "poppenkast")
+		search_byTitle(false, "de poppenkast")
+		search_byTitle(true, "de poppenkast")
+		search_byTitle(true, "poppenkast", 0)
+	}
+
+	private fun search_byTitle(startsWith: Boolean, titleTerm: String, expectedHits: Int = 3) {
+		val page = searchAsBooks(null, titleTerm, startsWith, 200)
+		assertEquals(expectedHits, page.content.size)
+		if (expectedHits > 0) page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}
 
 	@Test
 	fun search_byTitlePage0Size2() {
-		val page = searchAsBooks(null, "DEEL", false, 200, 0, 2)
+		search_byTitlePage0Size2(false)
+		search_byTitlePage0Size2(true)
+	}
+
+	private fun search_byTitlePage0Size2(startsWith: Boolean) {
+		val page = searchAsBooks(null, "de poppenkast", startsWith, 200, 0, 2)
 		assertEquals(2, page.content.size)
 		page.content.forEach { assertTrue(it.authorName!!.startsWith("Jan")) }
 	}
 
 	@Test
 	fun search_byTitlePage1Size2() {
-		val page = searchAsBooks(null, "DEEL", false, 200, 1, 2)
+		search_byTitlePage1Size2(false)
+		search_byTitlePage1Size2(true)
+	}
+
+	fun search_byTitlePage1Size2(startsWith: Boolean) {
+		val page = searchAsBooks(null, "de poppenkast", startsWith, 200, 1, 2)
 		assertEquals(1, page.content.size)
 		page.content.forEach { assertTrue(it.authorName!!.startsWith("Katrijn")) }
 	}
 
 	@Test
 	fun search_byAuthorAndTitle() {
-		val page = searchAsBooks("jan", "de poppenkast", false, 200)
+		search_byAuthorAndTitle(false)
+		search_byAuthorAndTitle(true)
+	}
+
+	private fun search_byAuthorAndTitle(startsWith: Boolean) {
+		val page = searchAsBooks("jan", "de poppenkast", startsWith, 200)
 		assertEquals(2, page.content.size)
 		page.content.forEach { assertTrue(it.title!!.startsWith("De poppenkast")) }
 	}

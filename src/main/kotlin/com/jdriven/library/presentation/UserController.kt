@@ -21,7 +21,7 @@ class UserController(private val service: UserService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    @Operation(summary = "Create a JWT for a user.", security = [])
+    @Operation(summary = "Create a JWT for a user. Does NOT require an authorization header.", security = [])
     @PostMapping("/jwts")
     @ApiResponse(responseCode = "201", description = "Created")
     @ApiStandardErrors
@@ -72,8 +72,6 @@ class UserController(private val service: UserService) {
         logger.info("enable ${username} ${enabled}")
         service.enable(username, enabled) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/users/${username}")
     }
-
-    //qqqq get roles
 
     @Operation(summary = "Add an existing role to an existing user.")
     @PostMapping("/{username}/roles/{role}")

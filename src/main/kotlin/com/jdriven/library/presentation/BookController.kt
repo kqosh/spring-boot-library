@@ -20,7 +20,7 @@ class BookController(private val service: BookService) {
 
 	private val logger = LoggerFactory.getLogger(this::class.java)
 
-	@Operation(summary = "Find book by ISBN.") //qqqq Nx
+	@Operation(summary = "Find book by ISBN.")
 	@GetMapping("/{isbn}")
 	@PreAuthorize("hasRole('USER')")
 	@ApiResponse(responseCode = "200", description = "OK")

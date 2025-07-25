@@ -76,4 +76,7 @@ class UserService(
 		user.enabled = enabled
 		return UserDto.of(user)
 	}
+
+	@Transactional
+	fun findAllRoles(): List<String> = authorityRepository.findAllRoles()
 }

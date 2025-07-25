@@ -15,4 +15,7 @@ interface AuthorityRepository: CrudRepository<AuthorityEntity, Long> {
     """
     )
     fun findByUsernameAndAuthority(username: String, authority: String): AuthorityEntity?
+
+    @Query("SELECT DISTINCT authority FROM Authority")
+    fun findAllRoles(): List<String>
 }

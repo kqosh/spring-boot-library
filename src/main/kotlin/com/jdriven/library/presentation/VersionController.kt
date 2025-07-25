@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/version")
 class VersionController(@Value("\${app.version}") private val appVersion: String) {
 
-	@Operation(security = [])
+	@Operation(summary = "Does NOT require an authorization header.", security = [])
 	@GetMapping
 	fun version(): String = appVersion
 }

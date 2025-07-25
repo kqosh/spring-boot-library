@@ -70,13 +70,6 @@ class CheckoutService(
 		entity.returned = true
 		return CheckoutDto.of(entity)
 	}
-//
-//	private fun overdueFine(checkout: CheckoutEntity): Int {
-//		val diff: Int = mjd(LocalDate.now()) - mjd(checkout.dueDate.toLocalDate())
-//		return if (diff <= 0) 0 else Math.min(diff * finePerDayInCent, checkout.book.priceInCent)
-//	}
-//
-//	private fun mjd(date: LocalDate): Int = date.getLong(JulianFields.MODIFIED_JULIAN_DAY).toInt()
 
 	@Transactional
 	fun renewBook(username: String, isbn: String): CheckoutDto? {

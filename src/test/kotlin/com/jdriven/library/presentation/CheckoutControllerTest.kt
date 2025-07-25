@@ -242,9 +242,18 @@ class CheckoutControllerTest() {
 	@Test
 	fun checkoutBook_outstandingBalance() {
 		val username = "user103"
-		val isbn = "isbn111"
+		val isbn = "isbn116"
 		val baseUrl = createBaseUrl(username, isbn)
 		val jwt =  UserControllerTest.createJwt(port!!, username, "pwuser", 200)
 		assertTrue(builder(baseUrl, 400, jwt).post().asString().contains("outstanding balance must be payed first"))
+	}
+
+	@Test
+	fun checkoutBook_loanLimitReached() {
+		val username = "user104"
+		val isbn = "isbn114"
+		val baseUrl = createBaseUrl(username, isbn)
+		val jwt =  UserControllerTest.createJwt(port!!, username, "pwuser", 200)
+		assertTrue(builder(baseUrl, 400, jwt).post().asString().contains("max number of loans reached: user104 2"))
 	}
 }

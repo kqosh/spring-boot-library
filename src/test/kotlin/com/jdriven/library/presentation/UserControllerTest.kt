@@ -112,7 +112,7 @@ class UserControllerTest() {
         val pw = "pw801"
         val role = "ROLE_USER"
         lateinit var userJwt: String
-        val createRequest = CreateOrUpdateUserRequest(username, pw, true, 30, 2, 70)
+        val createRequest = CreateOrUpdateUserRequest(username, pw, true, 30, 2, 10, 70)
 
         run {
             // when create

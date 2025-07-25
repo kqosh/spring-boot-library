@@ -230,15 +230,9 @@ class CheckoutControllerTest() {
 	}
 
 	@Test
-	fun checkoutBook_overdue() {
-		//qqqq
-	}
-
-	@Test
 	fun renewBook_overdue() {
 		//qqqq
 	}
-
 
 	@Test
 	fun returnBook_overdue() {
@@ -247,16 +241,10 @@ class CheckoutControllerTest() {
 
 	@Test
 	fun checkoutBook_outstandingBalance() {
-		//qqqq
+		val username = "user103"
+		val isbn = "isbn111"
+		val baseUrl = createBaseUrl(username, isbn)
+		val jwt =  UserControllerTest.createJwt(port!!, username, "pwuser", 200)
+		assertTrue(builder(baseUrl, 400, jwt).post().asString().contains("outstanding balance must be payed first"))
 	}
-//
-//	@Test
-//	fun renewBook_outstandingBalance() {
-//		//qqqq
-//	}
-//
-//	@Test
-//	fun returnBook_outstandingBalance() {
-//		//qqqq
-//	}
 }

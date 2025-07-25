@@ -8,6 +8,7 @@ data class CreateOrUpdateUserRequest(
     val enabled: Boolean,
     val loanPeriodInDays: Int,
     val maxRenewCount: Int,
+    val maxLoanCount: Int,
     val outstandingBalanceInCent: Int,
 ) {
 
@@ -19,6 +20,7 @@ data class CreateOrUpdateUserRequest(
         entity.enabled = enabled
         entity.loanPeriodInDays = loanPeriodInDays
         entity.maxRenewCount = maxRenewCount
+        entity.maxLoanCount = maxLoanCount
         entity.outstandingBalanceInCent = outstandingBalanceInCent
         return entity
     }

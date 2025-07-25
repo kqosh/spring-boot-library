@@ -30,12 +30,15 @@ class CheckoutService(
 		}
 
 		val currentCheckoutsFoUser = checkoutRepository.findByUserAndReturned(user, false)
-		if (currentCheckoutsFoUser.count { it -> it.user.username == username } >= 1) {
+		if (currentCheckoutsFoUser.size >= user.maxLoanCount) {
+			throw IllegalArgumentException("max number of loans reached: $username ${user.maxLoanCount}")
+		}
+		if (currentCheckoutsFoUser.count { it -> it.book.isbn == isbn } >= 1) {
 			throw IllegalArgumentException("max one copy can be borrowed: $username $isbn")
 		}
 
 		if (user.outstandingBalanceInCent > 0) {
-			throw IllegalArgumentException("outstandingBalance must be payed first")
+			throw IllegalArgumentException("outstanding balance must be payed first")
 		}
 
 		val entity = CheckoutEntity()

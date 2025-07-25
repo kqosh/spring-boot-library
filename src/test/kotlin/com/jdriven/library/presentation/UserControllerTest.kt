@@ -235,12 +235,4 @@ class UserControllerTest() {
             roleCallBuilder(username, role, 404).delete().asString().contains("/users/$username/roles/$role")
         )
     }
-//
-//    @Test
-//    fun updateUser() {
-//        val username = "user103"
-//        val username = "user103"
-//        val updateRequest = CreateOrUpdateUserRequest(username, pw, true, 30, 2, 0)
-//        //qqqq update outstandingBalance
-//    }
 }

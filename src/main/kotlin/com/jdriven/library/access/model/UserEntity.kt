@@ -25,6 +25,8 @@ class UserEntity {
     @Column(name = "outstanding_balance_in_cent", nullable = false)
     var outstandingBalanceInCent: Int = 0
 
+    //qqqq email, phoneNumber
+
     @OneToMany(mappedBy = "user", targetEntity = AuthorityEntity::class)
     var authorities: List<AuthorityEntity> = emptyList()
 

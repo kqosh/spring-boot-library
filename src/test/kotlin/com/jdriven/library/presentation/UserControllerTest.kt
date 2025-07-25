@@ -107,15 +107,15 @@ class UserControllerTest() {
     }
 
     @Test
-    fun createFindAddRoleDisable() {
+    fun createUpdateFindAddRoleDisable() {
         val username = "user801"
         val pw = "pw801"
         val role = "ROLE_USER"
         lateinit var userJwt: String
+        val createRequest = CreateOrUpdateUserRequest(username, pw, true, 30, 2, 70)
 
         run {
             // when create
-            val createRequest = CreateOrUpdateUserRequest(username, pw, true, 30, 2, 0)
             RestCallBuilder(baseUrl, 201).body(createRequest).jwt(adminJwt).post()
 
             // then
@@ -124,8 +124,22 @@ class UserControllerTest() {
             assertEquals(0, user.roles.size)
             assertEquals(createRequest.enabled, user.enabled)
             assertEquals(createRequest.loanPeriodInDays, user.loanPeriodInDays)
+            assertEquals(createRequest.maxRenewCount, user.maxRenewCount)
+            assertEquals(createRequest.outstandingBalanceInCent, user.outstandingBalanceInCent)
 
             findByUsername(username, 403, userJwt) // Because this user has no roles yet!
+        }
+        run {
+            // and update
+            val updateRequest = createRequest.copy(outstandingBalanceInCent = 0)
+            val user = RestCallBuilder("${baseUrl}/${username}", 200).body(updateRequest).jwt(adminJwt).put().`as`(UserDto::class.java)!!
+
+            // then
+            assertEquals(0, user.outstandingBalanceInCent)
+
+            // and
+            val userFound = findByUsernameAsUserDto(username, 200, adminJwt)
+            assertEquals(0, userFound.outstandingBalanceInCent)
         }
         run {
             // and add role
@@ -221,9 +235,12 @@ class UserControllerTest() {
             roleCallBuilder(username, role, 404).delete().asString().contains("/users/$username/roles/$role")
         )
     }
-
-    @Test
-    fun updateUser() {
-        //qqqq update outstandingBalance
-    }
+//
+//    @Test
+//    fun updateUser() {
+//        val username = "user103"
+//        val username = "user103"
+//        val updateRequest = CreateOrUpdateUserRequest(username, pw, true, 30, 2, 0)
+//        //qqqq update outstandingBalance
+//    }
 }

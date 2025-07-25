@@ -94,4 +94,14 @@ class UserController(private val service: UserService) {
         val wasDeleted = service.deleteRole(username, role)
         if (!wasDeleted) throw NoResourceFoundException(HttpMethod.DELETE, "/users/${username}/roles/${role}")
     }
+
+    @Operation(summary = "Update existing user.")
+    @PutMapping("/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiStandardErrors
+    fun update(@PathVariable(value = "username") username: String, @RequestBody user: CreateOrUpdateUserRequest): UserDto {
+        logger.info("update $username")
+        return service.update(user) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/users/${username}")
+    }
 }

@@ -21,7 +21,7 @@ class UserController(private val service: UserService) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    @Operation(summary = "Create a JWT for a user.")
+    @Operation(summary = "Create a JWT for a user.", security = [])
     @PostMapping("/jwts")
     @ApiResponse(responseCode = "201", description = "Created")
     @ApiStandardErrors

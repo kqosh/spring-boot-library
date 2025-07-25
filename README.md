@@ -11,6 +11,7 @@ Spring Boot base Library App
 1. `sudo chown -R 999:999 mariadb`
 1. `docker run -d --name mariadb -p 3306:3306 -e MARIADB_ROOT_PASSWORD=root -v /var/lib/mariadb/data:/var/lib/mysql mariadb:11.4`
 1. create the schema with [mariadb-create-schema.sql](src/main/resources/mariadb-create-schema.sql)
+1. create the tables with [mariadb-create-tables.sql](src/main/resources/mariadb-create-tables.sql)
 
 NB To stop, start, and restart the database use `docker start`, `docker stop`, and `docker restart`.
 
@@ -30,13 +31,12 @@ NB To stop, start, and restart the database use `docker start`, `docker stop`, a
 - [OpenAPI spec in JSON](http://localhost:8080/v3/api-docs)
 - [OpenAPI spec in YAML](http://localhost:8080/v3/api-docs.yaml)
 
-### Smoke Test qqqq
+### Smoke Test
 
-- generate create tables scipt met ut
-- load data.sql
+If no data available in the database yet: [Load test](src/test/resources/data.sql)
 
-use swagger or curl (NB swagger also generates the curl commands):
-- get version
-- get token as user
-- find book
+Use Swagger or curl (NB Swagger also generates the curl commands):
+- get the version of the application
+- get token as a user
+- find a book
 

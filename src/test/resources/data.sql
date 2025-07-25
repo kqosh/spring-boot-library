@@ -20,7 +20,8 @@ VALUES (201, 'isbn123', 'De poppenkast deel 1', 101, 'De Uitgeverij', 1, 1100),
 INSERT INTO users (username, password, enabled, loan_period_in_days, max_renew_count, outstanding_balance_in_cent)
 VALUES ('admin', 'pwadmin', true, 365, 10, 0),
        ('user101', 'pwuser', true, 21, 1, 0),
-       ('user102', 'pwuser', true, 21, 1, 0);
+       ('user102', 'pwuser', true, 21, 1, 0),
+       ('user103', 'pwuser', true, 21, 1, 210);
 
 -- NB @PreAuthorize("hasRole('USER')") automatically prefixes 'USER' with 'ROLE_'.
 INSERT INTO authorities (id, authority, username)
@@ -34,3 +35,4 @@ INSERT INTO checkout (id, username, book_id, checkout_at, due_date, renew_count,
 VALUES (401, 'user101', 201, '2025-07-08T12:00:00+02:00', '2025-07-29T12:00:00+02:00', 0, false),
        (402, 'user101', 202, '2025-07-15T12:00:00+02:00', '2025-08-05T12:00:00+02:00', 0, false),
        (403, 'user101', 203, '2025-03-04T12:00:00+02:00', '2025-03-25T12:00:00+02:00', 0, true);
+       (404, 'user103', 203, '2025-01-05T12:00:00+02:00', '2025-01-25T12:00:00+02:00', 0, true);

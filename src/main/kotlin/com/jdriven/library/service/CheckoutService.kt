@@ -62,26 +62,30 @@ class CheckoutService(
 	fun returnBook(username: String, isbn: String): CheckoutDto? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val entity = checkoutRepository.findByUserAndReturned(user, false).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
-		entity.returned = true
 
-		val overdueFine = overdueFine(entity)
+		val overdueFine = entity.overdueFine(finePerDayInCent)
 		if (overdueFine > 0) user.outstandingBalanceInCent += overdueFine
 
+		entity.returned = true
 		return CheckoutDto.of(entity)
 	}
-
-	private fun overdueFine(checkout: CheckoutEntity): Int {
-		val diff: Int = mjd(LocalDate.now()) - mjd(checkout.dueDate.toLocalDate())
-		return if (diff <= 0) 0 else Math.min(diff * finePerDayInCent, checkout.book.priceInCent)
-	}
-
-	private fun mjd(date: LocalDate): Int = date.getLong(JulianFields.MODIFIED_JULIAN_DAY).toInt()
+//
+//	private fun overdueFine(checkout: CheckoutEntity): Int {
+//		val diff: Int = mjd(LocalDate.now()) - mjd(checkout.dueDate.toLocalDate())
+//		return if (diff <= 0) 0 else Math.min(diff * finePerDayInCent, checkout.book.priceInCent)
+//	}
+//
+//	private fun mjd(date: LocalDate): Int = date.getLong(JulianFields.MODIFIED_JULIAN_DAY).toInt()
 
 	@Transactional
 	fun renewBook(username: String, isbn: String): CheckoutDto? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val entity = checkoutRepository.findByUserAndReturned(user, false).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		if (entity.renewCount >= user.maxRenewCount) throw IllegalArgumentException("max renew count (${user.maxRenewCount}) exceeded")
+
+		val overdueFine = entity.overdueFine(finePerDayInCent)
+		if (overdueFine > 0) user.outstandingBalanceInCent += overdueFine
+
 		entity.dueDate = entity.dueDate.plusDays(user.loanPeriodInDays.toLong())
 		entity.renewCount++
 		return CheckoutDto.of(entity)

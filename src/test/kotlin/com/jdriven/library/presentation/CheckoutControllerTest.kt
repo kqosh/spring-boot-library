@@ -249,14 +249,14 @@ class CheckoutControllerTest() {
 	fun checkoutBook_outstandingBalance() {
 		//qqqq
 	}
-
-	@Test
-	fun renewBook_outstandingBalance() {
-		//qqqq
-	}
-
-	@Test
-	fun returnBook_outstandingBalance() {
-		//qqqq
-	}
+//
+//	@Test
+//	fun renewBook_outstandingBalance() {
+//		//qqqq
+//	}
+//
+//	@Test
+//	fun returnBook_outstandingBalance() {
+//		//qqqq
+//	}
 }

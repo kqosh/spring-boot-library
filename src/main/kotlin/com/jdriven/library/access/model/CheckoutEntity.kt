@@ -1,7 +1,9 @@
 package com.jdriven.library.access.model
 
 import jakarta.persistence.*
+import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.time.temporal.JulianFields
 
 @Entity(name = "Checkout")
 @Table(
@@ -34,4 +36,11 @@ class CheckoutEntity() : AbstractBaseEntity() {
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_checkout_users"), nullable = false, name = "username")
     lateinit var user: UserEntity
+
+    fun overdueFine(finePerDayInCent: Int): Int {
+        val diff: Int = mjd(LocalDate.now()) - mjd(dueDate.toLocalDate())
+        return if (diff <= 0) 0 else Math.min(diff * finePerDayInCent, book.priceInCent)
+    }
+
+    private fun mjd(date: LocalDate): Int = date.getLong(JulianFields.MODIFIED_JULIAN_DAY).toInt()
 }

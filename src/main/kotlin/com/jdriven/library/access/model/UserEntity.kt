@@ -22,6 +22,9 @@ class UserEntity {
     @Column(name = "max_renew_count", nullable = false)
     var maxRenewCount: Int = 2
 
+    @Column(name = "outstanding_balance_in_cent", nullable = false)
+    var outstandingBalanceInCent: Int = 0
+
     @OneToMany(mappedBy = "user", targetEntity = AuthorityEntity::class)
     var authorities: List<AuthorityEntity> = emptyList()
 

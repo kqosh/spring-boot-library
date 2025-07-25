@@ -8,7 +8,8 @@ data class BookDto(
     var authorName: String? = null,
     var title: String? = null,
     var publisher: String? = null,
-    var numberOfCopies: Int
+    var numberOfCopies: Int,
+    var priceInCent: Int,
 ) {
 
     fun toEntity(authorEntity: AuthorEntity): BookEntity = updateEntity(BookEntity(), authorEntity)
@@ -19,10 +20,18 @@ data class BookDto(
         bookEntity.title = this.title
         bookEntity.publisher = this.publisher
         bookEntity.numberOfCopies = this.numberOfCopies
+        bookEntity.priceInCent = this.priceInCent
         return bookEntity
     }
 
     companion object {
-        fun of(entity: BookEntity): BookDto = BookDto(entity.isbn!!, entity.author?.name, entity.title, entity.publisher, entity.numberOfCopies)
+        fun of(entity: BookEntity): BookDto = BookDto(
+            entity.isbn!!,
+            entity.author?.name,
+            entity.title,
+            entity.publisher,
+            entity.numberOfCopies,
+            entity.priceInCent
+        )
     }
 }

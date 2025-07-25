@@ -228,4 +228,35 @@ class CheckoutControllerTest() {
 		val rsp = builder("${createBaseUrl(username, isbn)}/renew", 403, user2Jwt).patch().asString()
 		assertTrue(rsp.contains("other user not allowed"))
 	}
+
+	@Test
+	fun checkoutBook_overdue() {
+		//qqqq
+	}
+
+	@Test
+	fun renewBook_overdue() {
+		//qqqq
+	}
+
+
+	@Test
+	fun returnBook_overdue() {
+		//qqqq
+	}
+
+	@Test
+	fun checkoutBook_outstandingBalance() {
+		//qqqq
+	}
+
+	@Test
+	fun renewBook_outstandingBalance() {
+		//qqqq
+	}
+
+	@Test
+	fun returnBook_outstandingBalance() {
+		//qqqq
+	}
 }

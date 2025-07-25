@@ -25,7 +25,7 @@ class CheckoutEntity() : AbstractBaseEntity() {
     var renewCount: Int = 0
 
     @Column(nullable = false )
-    var returned: Boolean = false
+    var returned: Boolean = false //qqqq returned_at: ZonedDateTime
 
     @ManyToOne
     @JoinColumn(foreignKey = ForeignKey(name = "fk_checkout_book"), nullable = false)

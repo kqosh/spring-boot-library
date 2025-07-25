@@ -1,7 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.model.CreateJwtRequest
-import com.jdriven.library.service.model.CreateUserRequest
+import com.jdriven.library.service.model.CreateOrUpdateUserRequest
 import com.jdriven.library.service.model.UserDto
 import io.restassured.RestAssured
 import io.restassured.response.ResponseBodyExtractionOptions
@@ -115,7 +115,7 @@ class UserControllerTest() {
 
         run {
             // when create
-            val createRequest = CreateUserRequest(username, pw, true, 30)
+            val createRequest = CreateOrUpdateUserRequest(username, pw, true, 30, 2, 0)
             RestCallBuilder(baseUrl, 201).body(createRequest).jwt(adminJwt).post()
 
             // then
@@ -220,5 +220,10 @@ class UserControllerTest() {
         assertTrue(
             roleCallBuilder(username, role, 404).delete().asString().contains("/users/$username/roles/$role")
         )
+    }
+
+    @Test
+    fun updateUser() {
+        //qqqq update outstandingBalance
     }
 }

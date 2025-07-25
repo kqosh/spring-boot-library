@@ -2,19 +2,24 @@ package com.jdriven.library.service.model
 
 import com.jdriven.library.access.model.UserEntity
 
-data class CreateUserRequest(
+data class CreateOrUpdateUserRequest(
     val username: String,
     val password: String,
     val enabled: Boolean,
     val loanPeriodInDays: Int,
+    val maxRenewCount: Int,
+    val outstandingBalanceInCent: Int,
 ) {
 
-    fun toEntity(): UserEntity {
-        val entity = UserEntity()
+    fun toEntity(): UserEntity = updateEntity(UserEntity())
+
+    fun updateEntity(entity: UserEntity): UserEntity {
         entity.username = username
         entity.password = password
         entity.enabled = enabled
         entity.loanPeriodInDays = loanPeriodInDays
+        entity.maxRenewCount = maxRenewCount
+        entity.outstandingBalanceInCent = outstandingBalanceInCent
         return entity
     }
 }

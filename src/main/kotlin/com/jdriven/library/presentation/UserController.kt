@@ -2,7 +2,7 @@ package com.jdriven.library.presentation
 
 import com.jdriven.library.service.UserService
 import com.jdriven.library.service.model.CreateJwtRequest
-import com.jdriven.library.service.model.CreateUserRequest
+import com.jdriven.library.service.model.CreateOrUpdateUserRequest
 import com.jdriven.library.service.model.UserDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -55,7 +55,7 @@ class UserController(private val service: UserService) {
     @PreAuthorize("hasRole('ADMIN')")
     @ApiResponse(responseCode = "201", description = "Created")
     @ApiStandardErrors
-    fun create(@RequestBody user: CreateUserRequest) {
+    fun create(@RequestBody user: CreateOrUpdateUserRequest) {
         logger.info("create $user")
         service.create(user)
     }

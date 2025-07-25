@@ -22,33 +22,35 @@
     );
 
     create table book (
-        number_of_copies integer,
-        author_id bigint,
         id bigint not null,
         isbn varchar(255) not null unique,
-        publisher varchar(255),
+        author_id bigint,
         title varchar(255),
+        number_of_copies integer not null,
+        price_in_cent integer not null,
+        publisher varchar(255),
         primary key (id)
     );
 
     create table checkout (
-        renew_count integer not null,
-        returned boolean not null,
-        book_id bigint not null,
-        checkout_at timestamp(6) not null,
-        due_date timestamp(6) not null,
         id bigint not null,
         username varchar(50) not null,
+        book_id bigint not null,
+        renew_count integer not null,
+        returned boolean not null,
+        checkout_at timestamp(6) not null,
+        due_date timestamp(6) not null,
         primary key (id),
         constraint uc_book_users_checkoutat unique (book_id, username, checkout_at)
     );
 
     create table users (
+        username varchar(50) not null,
+        password varchar(500) not null,
         enabled boolean not null,
         loan_period_in_days integer not null,
         max_renew_count integer not null,
-        username varchar(50) not null,
-        password varchar(500) not null,
+        outstanding_balance_in_cent integer not null default 0,
         primary key (username)
     );
 

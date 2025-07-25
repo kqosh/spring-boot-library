@@ -158,7 +158,7 @@ class BookControllerTest() {
 		val baseUrl = "http://localhost:${port}/books"
 		val isbn = "isbn998"
 		val isbnNew = "isbn999"
-		val book = BookDto(isbn, "some author", "some title", numberOfCopies = 4)
+		val book = BookDto(isbn, "some author", "some title", numberOfCopies = 4, priceInCent = 1234)
 
 		// create book
 		RestCallBuilder(baseUrl, 201).body(book).jwt(adminJwt).post()

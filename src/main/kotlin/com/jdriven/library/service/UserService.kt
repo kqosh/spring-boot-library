@@ -6,7 +6,7 @@ import com.jdriven.library.access.model.UserEntity
 import com.jdriven.library.access.model.UserRepository
 import com.jdriven.library.security.TokenService
 import com.jdriven.library.service.model.CreateJwtRequest
-import com.jdriven.library.service.model.CreateUserRequest
+import com.jdriven.library.service.model.CreateOrUpdateUserRequest
 import com.jdriven.library.service.model.UserDto
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
@@ -36,7 +36,7 @@ class UserService(
 	}
 
 	@Transactional
-	fun create(user: CreateUserRequest): UserDto? {
+	fun create(user: CreateOrUpdateUserRequest): UserDto? {
 		val userEntity = user.toEntity()
 		userRepository.save(userEntity)
 		return UserDto.of(userEntity)
@@ -79,4 +79,11 @@ class UserService(
 
 	@Transactional
 	fun findAllRoles(): List<String> = authorityRepository.findAllRoles()
+
+	@Transactional
+	fun update(request: CreateOrUpdateUserRequest): UserDto? {
+		val user = userRepository.findByUsername(request.username) ?: return null
+		request.updateEntity(user)
+		return UserDto.of(user)
+	}
 }

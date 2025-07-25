@@ -5,14 +5,19 @@ import com.jdriven.library.access.model.CheckoutEntity
 import com.jdriven.library.access.model.CheckoutRepository
 import com.jdriven.library.access.model.UserRepository
 import com.jdriven.library.service.model.CheckoutDto
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.temporal.JulianFields
 
 @Service
 class CheckoutService(
 	private val checkoutRepository: CheckoutRepository,
 	private val userRepository: UserRepository,
-	private val bookRepository: BookRepository)  {
+	private val bookRepository: BookRepository,
+	@Value("\${fine.per.day.in.cent}") private val finePerDayInCent: Int,
+)  {
 
 	@Transactional
 	fun create(username: String, isbn: String): CheckoutDto? {
@@ -27,6 +32,10 @@ class CheckoutService(
 		val currentCheckoutsFoUser = checkoutRepository.findByUserAndReturned(user, false)
 		if (currentCheckoutsFoUser.count { it -> it.user.username == username } >= 1) {
 			throw IllegalArgumentException("max one copy can be borrowed: $username $isbn")
+		}
+
+		if (user.outstandingBalanceInCent > 0) {
+			throw IllegalArgumentException("outstandingBalance must be payed first")
 		}
 
 		val entity = CheckoutEntity()
@@ -54,8 +63,19 @@ class CheckoutService(
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val entity = checkoutRepository.findByUserAndReturned(user, false).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		entity.returned = true
+
+		val overdueFine = overdueFine(entity)
+		if (overdueFine > 0) user.outstandingBalanceInCent += overdueFine
+
 		return CheckoutDto.of(entity)
 	}
+
+	private fun overdueFine(checkout: CheckoutEntity): Int {
+		val diff: Int = mjd(LocalDate.now()) - mjd(checkout.dueDate.toLocalDate())
+		return if (diff <= 0) 0 else Math.min(diff * finePerDayInCent, checkout.book.priceInCent)
+	}
+
+	private fun mjd(date: LocalDate): Int = date.getLong(JulianFields.MODIFIED_JULIAN_DAY).toInt()
 
 	@Transactional
 	fun renewBook(username: String, isbn: String): CheckoutDto? {

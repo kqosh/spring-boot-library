@@ -7,6 +7,8 @@ data class UserDto(
     val password: String,
     val enabled: Boolean,
     val loanPeriodInDays: Int,
+    val maxRenewCount: Int,
+    val outstandingBalanceInCent: Int,
     val roles: List<String>
 ) {
 
@@ -16,6 +18,8 @@ data class UserDto(
             entity.password,
             entity.enabled,
             entity.loanPeriodInDays,
+            entity.maxRenewCount,
+            entity.outstandingBalanceInCent,
             entity.authorities.map { it -> it.authority })
     }
 }

@@ -30,8 +30,11 @@ class BookEntity() : AbstractBaseEntity() {
 
     var publisher: String? = null
 
-    @Column(name = "number_of_copies")
+    @Column(name = "number_of_copies", nullable = false)
     var numberOfCopies: Int = 10
+
+    @Column(name = "price_in_cent", nullable = false)
+    var priceInCent: Int = 2_000
 
     @IndexedEmbedded
     @ManyToOne

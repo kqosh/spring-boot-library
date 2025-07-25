@@ -20,7 +20,7 @@ data class CreateOrUpdateUserRequest(
         entity.enabled = enabled
         entity.loanPeriodInDays = loanPeriodInDays
         entity.maxRenewCount = maxRenewCount
-        entity.maxLoanCount = maxLoanCount
+        entity.loanLimit = maxLoanCount
         entity.outstandingBalanceInCent = outstandingBalanceInCent
         return entity
     }

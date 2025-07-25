@@ -8,8 +8,6 @@ import com.jdriven.library.service.model.CheckoutDto
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
-import java.time.temporal.JulianFields
 
 @Service
 class CheckoutService(
@@ -30,8 +28,8 @@ class CheckoutService(
 		}
 
 		val currentCheckoutsFoUser = checkoutRepository.findByUserAndReturned(user, false)
-		if (currentCheckoutsFoUser.size >= user.maxLoanCount) {
-			throw IllegalArgumentException("max number of loans reached: $username ${user.maxLoanCount}")
+		if (currentCheckoutsFoUser.size >= user.loanLimit) {
+			throw IllegalArgumentException("max number of loans reached: $username ${user.loanLimit}")
 		}
 		if (currentCheckoutsFoUser.count { it -> it.book.isbn == isbn } >= 1) {
 			throw IllegalArgumentException("max one copy can be borrowed: $username $isbn")

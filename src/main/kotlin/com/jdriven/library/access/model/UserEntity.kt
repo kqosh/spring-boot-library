@@ -22,8 +22,8 @@ class UserEntity {
     @Column(name = "max_renew_count", nullable = false)
     var maxRenewCount: Int = 2
 
-    @Column(name = "max_loan_count", nullable = false)
-    var maxLoanCount: Int = 10
+    @Column(name = "loan_limit", nullable = false)
+    var loanLimit: Int = 10
 
     @Column(name = "outstanding_balance_in_cent", nullable = false)
     var outstandingBalanceInCent: Int = 0

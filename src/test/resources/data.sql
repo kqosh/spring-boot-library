@@ -17,7 +17,7 @@ VALUES (201, 'isbn123', 'De poppenkast deel 1', 101, 'De Uitgeverij', 1, 1100),
        (215, 'isbn115', 'Zorro part 5',         105, 'De Uitgeverij', 4, 2500),
        (216, 'isbn116', 'Zorro part 6',         105, 'De Uitgeverij', 4, 2500);
 
-INSERT INTO users (username, password, enabled, loan_period_in_days, max_renew_count, max_loan_count, outstanding_balance_in_cent)
+INSERT INTO users (username, password, enabled, loan_period_in_days, max_renew_count, loan_limit, outstanding_balance_in_cent)
 VALUES ('admin', 'pwadmin', true, 365, 2, 20, 0),
        ('user101', 'pwuser', true, 21, 1, 10, 0),
        ('user102', 'pwuser', true, 21, 1, 10, 0),

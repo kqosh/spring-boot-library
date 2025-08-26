@@ -19,14 +19,14 @@ VALUES (201, 'isbn123', 'De poppenkast deel 1', 101, 'De Uitgeverij', 1, 1100),
        (217, 'isbn117', 'Kuifje 7',             105, 'De Uitgeverij', 4, 2500100),
        (218, 'isbn118', 'Kuifje 8',             105, 'De Uitgeverij', 4, 2500100);
 
-INSERT INTO users (username, password, enabled, loan_period_in_days, max_renew_count, loan_limit, outstanding_balance_in_cent)
-VALUES ('admin', 'pwadmin', true, 365, 2, 20, 0),
-       ('user101', 'pwuser', true, 21, 1, 10, 0),
-       ('user102', 'pwuser', true, 21, 1, 10, 0),
-       ('user103', 'pwuser', true, 21, 1, 10, 210),
-       ('user104', 'pwuser', true, 21, 1,  2, 0),
-       ('user105', 'pwuser', true, 21, 1,  2, 0),
-       ('user106', 'pwuser', true, 21, 1,  2, 0);
+INSERT INTO users (username, password, enabled, loan_period_in_days, max_renew_count, loan_limit, outstanding_balance_in_cent, email, phone_number)
+VALUES ('admin', 'pwadmin', true, 365, 2, 20, 0,   'admin@dummy.com',   '+31 6 12345678'),
+       ('user101', 'pwuser', true, 21, 1, 10, 0,   'user101@dummy.com', '+31 6 12345678'),
+       ('user102', 'pwuser', true, 21, 1, 10, 0,   'user102@dummy.com', '+31 6 12345678'),
+       ('user103', 'pwuser', true, 21, 1, 10, 210, 'user103@dummy.com', '+31 6 12345678'),
+       ('user104', 'pwuser', true, 21, 1,  2, 0,   'user104@dummy.com', '+31 6 12345678'),
+       ('user105', 'pwuser', true, 21, 1,  2, 0,   'user105@dummy.com', '+31 6 12345678'),
+       ('user106', 'pwuser', true, 21, 1,  2, 0,   'user106@dummy.com', '+31 6 12345678');
 
 -- NB @PreAuthorize("hasRole('USER')") automatically prefixes 'USER' with 'ROLE_'.
 INSERT INTO authorities (id, authority, username)

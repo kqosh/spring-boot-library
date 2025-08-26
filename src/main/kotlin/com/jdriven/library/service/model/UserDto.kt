@@ -10,6 +10,8 @@ data class UserDto(
     val maxRenewCount: Int,
     val loanLimit: Int,
     val outstandingBalanceInCent: Int,
+    val email: String,
+    val phoneNumber: String,
     val roles: List<String>
 ) {
 
@@ -22,6 +24,8 @@ data class UserDto(
             entity.maxRenewCount,
             entity.loanLimit,
             entity.outstandingBalanceInCent,
+            entity.email,
+            entity.phoneNumber,
             entity.authorities.map { it -> it.authority })
     }
 }

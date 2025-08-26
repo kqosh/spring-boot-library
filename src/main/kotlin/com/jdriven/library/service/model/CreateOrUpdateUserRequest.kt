@@ -10,6 +10,8 @@ data class CreateOrUpdateUserRequest(
     val maxRenewCount: Int,
     val maxLoanCount: Int,
     val outstandingBalanceInCent: Int,
+    val email: String,
+    val phoneNumber: String,
 ) {
 
     fun toEntity(): UserEntity = updateEntity(UserEntity())
@@ -22,6 +24,8 @@ data class CreateOrUpdateUserRequest(
         entity.maxRenewCount = maxRenewCount
         entity.loanLimit = maxLoanCount
         entity.outstandingBalanceInCent = outstandingBalanceInCent
+        entity.email = email
+        entity.phoneNumber = phoneNumber
         return entity
     }
 }

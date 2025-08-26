@@ -8,6 +8,7 @@ import com.jdriven.library.service.model.CheckoutDto
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 
 @Service
 class CheckoutService(
@@ -22,12 +23,12 @@ class CheckoutService(
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
 		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")
 
-		val currentCheckoutsForBook = checkoutRepository.findByBookAndReturned(book, returned = true)
+		val currentCheckoutsForBook = checkoutRepository.findByBookAndReturnedAtIsNull(book)
 		if (currentCheckoutsForBook.size >= book.numberOfCopies) {
 			throw IllegalStateException("currently no books available for: $isbn")
 		}
 
-		val currentCheckoutsFoUser = checkoutRepository.findByUserAndReturned(user, false)
+		val currentCheckoutsFoUser = checkoutRepository.findByUserAndReturnedAtIsNull(user)
 		if (currentCheckoutsFoUser.size >= user.loanLimit) {
 			throw IllegalArgumentException("max number of loans reached: $username ${user.loanLimit}")
 		}
@@ -50,31 +51,31 @@ class CheckoutService(
 	@Transactional(readOnly = true)
 	fun findByUsername(username: String): List<CheckoutDto>? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
-		return checkoutRepository.findByUserAndReturned(user, false).map { it -> CheckoutDto.of(it) }
+		return checkoutRepository.findByUserAndReturnedAtIsNull(user).map { it -> CheckoutDto.of(it) }
 	}
 
 	@Transactional(readOnly = true)
 	fun findByIsbn(isbn: String): List<CheckoutDto>? {
 		val book = bookRepository.findByIsbn(isbn) ?: throw IllegalArgumentException("book not found: $isbn")
-		return checkoutRepository.findByBookAndReturned(book, false).map { it -> CheckoutDto.of(it) }
+		return checkoutRepository.findByBookAndReturnedAtIsNull(book).map { it -> CheckoutDto.of(it) }
 	}
 
 	@Transactional
 	fun returnBook(username: String, isbn: String): CheckoutDto? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
-		val entity = checkoutRepository.findByUserAndReturned(user, false).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
+		val entity = checkoutRepository.findByUserAndReturnedAtIsNull(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 
 		val overdueFine = entity.overdueFine(finePerDayInCent)
 		if (overdueFine > 0) user.outstandingBalanceInCent += overdueFine
 
-		entity.returned = true
+		entity.returnedAt = ZonedDateTime.now()
 		return CheckoutDto.of(entity)
 	}
 
 	@Transactional
 	fun renewBook(username: String, isbn: String): CheckoutDto? {
 		val user = userRepository.findByUsername(username) ?: throw IllegalArgumentException("user not found: $username")
-		val entity = checkoutRepository.findByUserAndReturned(user, false).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
+		val entity = checkoutRepository.findByUserAndReturnedAtIsNull(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		if (entity.renewCount >= user.maxRenewCount) throw IllegalArgumentException("max renew count (${user.maxRenewCount}) exceeded")
 
 		val overdueFine = entity.overdueFine(finePerDayInCent)

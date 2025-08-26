@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CheckoutRepository: CrudRepository<CheckoutEntity, Long> {
 
-    fun findByUserAndReturned(user: UserEntity, returned: Boolean): List<CheckoutEntity>
+    fun findByUserAndReturnedAtIsNull(user: UserEntity): List<CheckoutEntity>
 
-    fun findByBookAndReturned(book: BookEntity, returned: Boolean): List<CheckoutEntity>
+    fun findByBookAndReturnedAtIsNull(book: BookEntity): List<CheckoutEntity>
 }

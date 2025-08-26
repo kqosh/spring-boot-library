@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 data class CheckoutDto(
     val checkoutAt: ZonedDateTime,
     val dueDate: ZonedDateTime,
-    val returned: Boolean,
+    val returned_at: ZonedDateTime?,
     val renewCount: Int,
     val book: BookDto,
     val user: UserDto
@@ -17,7 +17,7 @@ data class CheckoutDto(
             CheckoutDto(
                 entity.checkoutAt,
                 entity.dueDate,
-                entity.returned,
+                entity.returnedAt,
                 entity.renewCount,
                 BookDto.of(entity.book),
                 UserDto.of(entity.user)

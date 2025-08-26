@@ -1,6 +1,7 @@
 package com.jdriven.library.presentation
 
 import com.jdriven.library.service.model.CheckoutDto
+import com.jdriven.library.service.model.UserDto
 import io.restassured.RestAssured
 import io.restassured.common.mapper.TypeRef
 import io.restassured.response.ResponseBodyExtractionOptions
@@ -229,15 +230,46 @@ class CheckoutControllerTest() {
 		assertTrue(rsp.contains("other user not allowed"))
 	}
 
-	@Test
-	fun renewBook_overdue() {
-		//qqqq
-	}
+    @Test
+    fun returnBook_overdue() {
+        val usernameNoRenew = "user105"
+        val jwtNoRenew = UserControllerTest.createJwt(port!!, usernameNoRenew, "pwuser", 200)
+        val isbnNoRenew = "isbn117"
 
-	@Test
-	fun returnBook_overdue() {
-		//qqqq
-	}
+        var userNoRew = findUser(usernameNoRenew, jwtNoRenew)
+        assertEquals(0, userNoRew.outstandingBalanceInCent)
+        builder("${createBaseUrl(usernameNoRenew, isbnNoRenew)}/return", 200, jwtNoRenew).patch()
+        userNoRew = findUser(usernameNoRenew, jwtNoRenew)
+        assertTrue(0 < userNoRew.outstandingBalanceInCent)
+
+        val usernameWithRenew = "user106"
+        val jwtWithRenew = UserControllerTest.createJwt(port!!, usernameWithRenew, "pwuser", 200)
+        val isbnWithRenew = "isbn118"
+
+        var userWithRenew = findUser(usernameWithRenew, jwtWithRenew)
+        assertEquals(0, userWithRenew.outstandingBalanceInCent)
+        builder("${createBaseUrl(usernameWithRenew, isbnWithRenew)}/renew", 200, jwtWithRenew).patch()
+        builder("${createBaseUrl(usernameWithRenew, isbnWithRenew)}/return", 200, jwtWithRenew).patch()
+        userWithRenew = findUser(usernameWithRenew, jwtWithRenew)
+        assertTrue(userWithRenew.outstandingBalanceInCent < userNoRew.outstandingBalanceInCent)
+    }
+
+    private fun findUser(username: String, jwt: String): UserDto =
+        UserControllerTest.findByUsername(port!!, username, 200, jwt).`as`(UserDto::class.java)!!
+
+    private fun returnBook_overdue(username: String, isbn: String): UserDto {
+        val jwt = UserControllerTest.createJwt(port!!, username, "pwuser", 200)
+        run {
+            val user = UserControllerTest.findByUsername(port!!, username, 200, jwt).`as`(UserDto::class.java)!!
+            assertEquals(0, user.outstandingBalanceInCent)
+        }
+        run {
+            val rsp = builder("${createBaseUrl(username, isbn)}/return", 200, jwt).patch().asString()
+            val user = UserControllerTest.findByUsername(port!!, username, 200, jwt).`as`(UserDto::class.java)!!
+            assertTrue(user.outstandingBalanceInCent > 0)
+            return user
+        }
+    }
 
 	@Test
 	fun checkoutBook_outstandingBalance() {

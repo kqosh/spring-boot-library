@@ -24,22 +24,25 @@ class UserControllerTest() {
     @BeforeEach
     fun setup() {
         RestAssured.port = port!!
+        baseUrl = createBaseUrl(port!!)
         baseUrl = "http://localhost:${port}/users"
         adminJwt = createAdminJwt(port!!, "admin", "pwadmin", 200)
     }
 
     companion object {
-
         fun createAdminJwt(
             port: Int, username: String = "admin", password: String = "pwadmin", expectedStatusCode: Int = 200
         ): String = createJwt(port, username, password, expectedStatusCode)
 
         fun createJwt(port: Int, username: String, password: String, expectedStatusCode: Int = 200): String {
-            val url = "http://localhost:${port}/users"
-
-            return RestCallBuilder("${url}/jwts", expectedStatusCode).body(CreateJwtRequest(username, password)).post()
-                .asString()
+            return RestCallBuilder("${createBaseUrl(port)}/jwts", expectedStatusCode).body(CreateJwtRequest(username, password)).post().asString()
         }
+
+        fun findByUsername(port: Int, username: String, expectedStatusCode: Int, jwt: String): ResponseBodyExtractionOptions {
+            return RestCallBuilder("${createBaseUrl(port)}/${username}", expectedStatusCode).jwt(jwt).get()
+        }
+
+        fun createBaseUrl(port: Int): String = "http://localhost:${port}/users"
     }
 
     private fun createJwt(username: String, password: String, expectedStatusCode: Int = 200): String =
@@ -47,7 +50,7 @@ class UserControllerTest() {
 
     private fun findByUsername(username: String, expectedStatusCode: Int, jwt: String): ResponseBodyExtractionOptions {
         try {
-            return RestCallBuilder("${baseUrl}/${username}", expectedStatusCode).jwt(jwt).get()
+            return findByUsername(port!!, username, expectedStatusCode, jwt)
         } catch (ex: Exception) {
             ex.printStackTrace()
             throw ex

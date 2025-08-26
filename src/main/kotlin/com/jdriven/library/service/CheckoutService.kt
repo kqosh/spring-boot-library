@@ -78,9 +78,6 @@ class CheckoutService(
 		val entity = checkoutRepository.findByUserAndReturnedAtIsNull(user).filter { it.book.isbn == isbn }.firstOrNull() ?: return null
 		if (entity.renewCount >= user.maxRenewCount) throw IllegalArgumentException("max renew count (${user.maxRenewCount}) exceeded")
 
-		val overdueFine = entity.overdueFine(finePerDayInCent)
-		if (overdueFine > 0) user.outstandingBalanceInCent += overdueFine
-
 		entity.dueDate = entity.dueDate.plusDays(user.loanPeriodInDays.toLong())
 		entity.renewCount++
 		return CheckoutDto.of(entity)

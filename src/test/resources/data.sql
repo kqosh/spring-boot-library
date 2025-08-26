@@ -15,14 +15,18 @@ VALUES (201, 'isbn123', 'De poppenkast deel 1', 101, 'De Uitgeverij', 1, 1100),
        (213, 'isbn113', 'Zorro part 3',         105, 'De Uitgeverij', 4, 2500),
        (214, 'isbn114', 'Zorro part 4',         105, 'De Uitgeverij', 4, 2500),
        (215, 'isbn115', 'Zorro part 5',         105, 'De Uitgeverij', 4, 2500),
-       (216, 'isbn116', 'Zorro part 6',         105, 'De Uitgeverij', 4, 2500);
+       (216, 'isbn116', 'Zorro part 6',         105, 'De Uitgeverij', 4, 2500),
+       (217, 'isbn117', 'Kuifje 7',             105, 'De Uitgeverij', 4, 2500100),
+       (218, 'isbn118', 'Kuifje 8',             105, 'De Uitgeverij', 4, 2500100);
 
 INSERT INTO users (username, password, enabled, loan_period_in_days, max_renew_count, loan_limit, outstanding_balance_in_cent)
 VALUES ('admin', 'pwadmin', true, 365, 2, 20, 0),
        ('user101', 'pwuser', true, 21, 1, 10, 0),
        ('user102', 'pwuser', true, 21, 1, 10, 0),
        ('user103', 'pwuser', true, 21, 1, 10, 210),
-       ('user104', 'pwuser', true, 21, 1,  2, 0);
+       ('user104', 'pwuser', true, 21, 1,  2, 0),
+       ('user105', 'pwuser', true, 21, 1,  2, 0),
+       ('user106', 'pwuser', true, 21, 1,  2, 0);
 
 -- NB @PreAuthorize("hasRole('USER')") automatically prefixes 'USER' with 'ROLE_'.
 INSERT INTO authorities (id, authority, username)
@@ -31,7 +35,9 @@ VALUES (500, 'ROLE_ADMIN', 'admin'),
        (502, 'ROLE_USER', 'user101'),
        (503, 'ROLE_USER', 'user102'),
        (504, 'ROLE_USER', 'user103'),
-       (505, 'ROLE_USER', 'user104');
+       (505, 'ROLE_USER', 'user104'),
+       (506, 'ROLE_USER', 'user105'),
+       (507, 'ROLE_USER', 'user106');
 
 -- NB For Mariadb remove the timezone parts, and adjust if needed the time part so that it is UTC.
 INSERT INTO checkout (id, username, book_id, checkout_at, due_date, renew_count, returned_at)
@@ -40,4 +46,6 @@ VALUES (401, 'user101', 201, '2025-07-08T12:00:00+02:00', '2025-07-29T12:00:00+0
        (403, 'user101', 203, '2025-03-04T12:00:00+02:00', '2025-03-25T12:00:00+01:00', 0, '2025-04-09T12:00:00+02:00'),
        (404, 'user103', 211, '2025-01-05T12:00:00+02:00', '2025-01-25T12:00:00+01:00', 0, null),
        (405, 'user104', 212, '2025-01-05T12:00:00+02:00', '2025-01-25T12:00:00+01:00', 0, null),
-       (406, 'user104', 213, '2025-01-05T12:00:00+02:00', '2025-01-25T12:00:00+01:00', 0, null);
+       (406, 'user104', 215, '2025-01-05T12:00:00+02:00', '2025-01-25T12:00:00+01:00', 0, null),
+       (407, 'user105', 217, '2025-01-05T12:00:00+02:00', '2025-01-25T12:00:00+01:00', 0, null),
+       (408, 'user106', 218, '2025-01-05T12:00:00+02:00', '2025-01-25T12:00:00+01:00', 0, null);

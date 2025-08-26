@@ -79,6 +79,6 @@ class CheckoutController(private val service: CheckoutService) {
 	fun renewBook(@PathVariable(value = "username") username: String, @PathVariable(value = "isbn") isbn: String, authentication: Authentication) {
 		logger.info("renewBook $username, $isbn")
 		validateUser(username, authentication)
-		service.renewBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/return")
+		service.renewBook(username, isbn) ?: throw NoResourceFoundException(HttpMethod.PATCH, "/checkouts/${username}/${isbn}/renew")
 	}
 }
